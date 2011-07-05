@@ -61,28 +61,28 @@ def build_config( path ):
     config_txt = ConfigParser.RawConfigParser()
     config_txt.read( path + '/config/config.txt' )
 
-    compass= ET.SubElement( root, "compass" )
+    # compass= ET.SubElement( root, "compass" )
     db     = ET.SubElement( root, "database" )
     dd     = ET.SubElement( root, "datadock" )
     fedora = ET.SubElement( root, "fedora" )
     filest = ET.SubElement( root, "filesystem" )
     harvest= ET.SubElement( root, "harvester" )
     pidmng = ET.SubElement( root, "pidmanager" )
-    pti    = ET.SubElement( root, "pti" )
+    # pti    = ET.SubElement( root, "pti" )
 
-    # compass settings
-    configpath         = ET.SubElement( compass, "configpath" )
-    xsempath           = ET.SubElement( compass, "xsempath" )
-    modified_xsempath  = ET.SubElement( compass, "modified_xsempath" )
-    dtdpath            = ET.SubElement( compass, "dtdpath" )
-    httpurl            = ET.SubElement( compass, "httpurl" )
-    compass_section = "compass"
-    config = "/config/"
-    configpath.text        = path + config + config_txt.get( compass_section, "configpath" )
-    xsempath.text          = path + config + config_txt.get( compass_section, "xsempath" )
-    modified_xsempath.text = path + config + config_txt.get( compass_section, "modified_xsempath" )
-    dtdpath.text           = path + config + config_txt.get( compass_section, "dtdpath" )
-    httpurl.text           = config_txt.get( compass_section, "httpurl" )
+    # # compass settings
+    # configpath         = ET.SubElement( compass, "configpath" )
+    # xsempath           = ET.SubElement( compass, "xsempath" )
+    # modified_xsempath  = ET.SubElement( compass, "modified_xsempath" )
+    # dtdpath            = ET.SubElement( compass, "dtdpath" )
+    # httpurl            = ET.SubElement( compass, "httpurl" )
+    # compass_section = "compass"
+    # config = "/config/"
+    # configpath.text        = path + config + config_txt.get( compass_section, "configpath" )
+    # xsempath.text          = path + config + config_txt.get( compass_section, "xsempath" )
+    # modified_xsempath.text = path + config + config_txt.get( compass_section, "modified_xsempath" )
+    # dtdpath.text           = path + config + config_txt.get( compass_section, "dtdpath" )
+    # httpurl.text           = config_txt.get( compass_section, "httpurl" )
 
     # database settings
     postgresql_driver = ET.SubElement( db, "postgresql_driver" )
@@ -174,11 +174,11 @@ def build_config( path ):
     trunk        = ET.SubElement( filest, "trunk" )
     plugins      = ET.SubElement( filest, "plugins" )
     datadock_xsd = ET.SubElement( filest, "datadock-jobs-xsd" )
-    pti_xsd = ET.SubElement( filest, "pti-jobs-xsd" )
+    # pti_xsd = ET.SubElement( filest, "pti-jobs-xsd" )
     trunk.text   = path
     plugins.text = pluginpath
     datadock_xsd.text     = os.path.join( path, "config/datadock_jobs.xsd" )
-    pti_xsd.text     = os.path.join( path, "config/pti_jobs.xsd" )
+    # pti_xsd.text     = os.path.join( path, "config/pti_jobs.xsd" )
 
     #harvester settings
     toharvestfolder       = ET.SubElement( harvest, "toharvest" )
@@ -198,26 +198,26 @@ def build_config( path ):
     pidmanager_section = "pidmanager"
     num_of_pids.text = config_txt.get( pidmanager_section, "num_of_pids" )
 
-    #pti settings
-    poll      = ET.SubElement( pti, "main-poll-time" )
-    reject    = ET.SubElement( pti, "rejected-sleep-time" )
-    shutdown  = ET.SubElement( pti, "shutdown-poll-time" )
-    resultsz  = ET.SubElement( pti, "queue-resultset-maxsize" )
-    queuesz   = ET.SubElement( pti, "queuesize" )
-    corepool  = ET.SubElement( pti, "corepoolsize" )
-    maxpool   = ET.SubElement( pti, "maxpoolsize" )
-    keepalive = ET.SubElement( pti, "keepalivetime" )
-    pti_el    = ET.SubElement( pti, "path" )
-    pti_section = "pti"
-    poll.text      = config_txt.get( pti_section, "main_poll_time" )
-    reject.text    = config_txt.get( pti_section, "rejected_sleep_time" )
-    shutdown.text  = config_txt.get( pti_section, "shutdown_poll_time" )
-    resultsz.text  = config_txt.get( pti_section, "queue_resultset_maxsize" )
-    queuesz.text   = config_txt.get( pti_section, "queue_size" )
-    corepool.text  = config_txt.get( pti_section, "core_poll_size" )
-    maxpool.text   = config_txt.get( pti_section, "max_poll_size" )
-    keepalive.text = config_txt.get( pti_section, "keep_alive_time" )
-    pti_el.text    = path + "/" + config_txt.get( pti_section, "path" )
+    # #pti settings
+    # poll      = ET.SubElement( pti, "main-poll-time" )
+    # reject    = ET.SubElement( pti, "rejected-sleep-time" )
+    # shutdown  = ET.SubElement( pti, "shutdown-poll-time" )
+    # resultsz  = ET.SubElement( pti, "queue-resultset-maxsize" )
+    # queuesz   = ET.SubElement( pti, "queuesize" )
+    # corepool  = ET.SubElement( pti, "corepoolsize" )
+    # maxpool   = ET.SubElement( pti, "maxpoolsize" )
+    # keepalive = ET.SubElement( pti, "keepalivetime" )
+    # pti_el    = ET.SubElement( pti, "path" )
+    # pti_section = "pti"
+    # poll.text      = config_txt.get( pti_section, "main_poll_time" )
+    # reject.text    = config_txt.get( pti_section, "rejected_sleep_time" )
+    # shutdown.text  = config_txt.get( pti_section, "shutdown_poll_time" )
+    # resultsz.text  = config_txt.get( pti_section, "queue_resultset_maxsize" )
+    # queuesz.text   = config_txt.get( pti_section, "queue_size" )
+    # corepool.text  = config_txt.get( pti_section, "core_poll_size" )
+    # maxpool.text   = config_txt.get( pti_section, "max_poll_size" )
+    # keepalive.text = config_txt.get( pti_section, "keep_alive_time" )
+    # pti_el.text    = path + "/" + config_txt.get( pti_section, "path" )
 
     return root
 

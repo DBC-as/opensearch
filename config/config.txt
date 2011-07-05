@@ -2,21 +2,6 @@
 # not-so-human-readable) config.xml, which is used as the actual
 # config file of the program.
 
-
-# the COMPASS section specifies settings relating to the lucene wrapper framework Compass.
-[compass]
-# name of the compass main configuration file
-configpath: compass.cfg.xml
-# name of the index specification file
-xsempath:   xml.cpm.xml
-# name of the modified index specification file
-modified_xsempath: modified.xml.cpm.xml
-# name of the Document Type Definition file for the compass configuration file
-dtdpath:    compass-core-mapping-2.2.dtd
-# url pointing to the network accessible version of the above
-httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.2.dtd
-
-
 # the DATABASE section contains configuration values relating to databases used by the system
 [database]
 # The user name for the postgresql database. Leave unassigned if user should equal $USER
@@ -28,9 +13,9 @@ postgresql_driver:   org.postgresql.Driver
 # the url used by the jdbc to connect to the postgresql database through
 postgresql_url:      jdbc:postgresql://localhost:5432/
 # As with postgresql_user, but for Oracle databases
-oracle_user:         thp
+oracle_user:         damkjaer
 # As with postgresql_password, but for Oracle databases
-oracle_password:     thp
+oracle_password:     damkjaer
 # As with postgresql_driver, but for Oracle databases
 oracle_driver:   oracle.jdbc.driver.OracleDriver
 # As with postgresql_url, but for Oracle databases
@@ -110,15 +95,3 @@ usepriorityfield: false
 [pidmanager]
 # number of pids to return on a pid request
 num_of_pids: 10
-
-# PTI: configuration values for the pti module. Identical to those specified in the datadock section
-[pti]
-main_poll_time:          1000
-rejected_sleep_time:     3000
-shutdown_poll_time:      1000
-queue_resultset_maxsize: 20
-queue_size:              20
-core_poll_size:          1 
-max_poll_size:           1 
-keep_alive_time:         10
-path:                    config/pti_jobs.xml
