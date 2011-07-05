@@ -4,7 +4,7 @@
 
   <groupId>dk.dbc</groupId>
   <artifactId>opensearch</artifactId>
-  <version>1.5</version>
+  <version>1.9</version>
   <packaging>jar</packaging>
 
   <name>opensearch</name>
@@ -58,6 +58,30 @@
           <argLine>-javaagent:"${settings.localRepository}"/mockit/jmockit/0.998/jmockit-0.998.jar</argLine>
 	  <useFile>false</useFile>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-4</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>dk.dbc.opensearch.datadock.DatadockMain</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
@@ -154,63 +178,70 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- Notice: The dependecies below are not in any repositories
-         They are located together with the source -->
+    
 
     <!-- Oracle -->
     <dependency>
       <groupId>oracle</groupId>
       <artifactId>ojdbc6</artifactId>
       <version>11.2.0.2.0</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/ojdbc6-11.2.0.2.0.jar</systemPath>
-    </dependency>
-    <!-- fcrepo stuff -->
-    <dependency>
-      <groupId>fcrepo</groupId>
-      <artifactId>fcrepo-client-admin</artifactId>
-      <version>3.4.1</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/fcrepo-client-admin-3.4.1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>fcrepo</groupId>
-      <artifactId>fcrepo-common</artifactId>
-      <version>3.4.1</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/fcrepo-common-3.4.1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>fcrepo</groupId>
-      <artifactId>fcrepo-server</artifactId>
-      <version>3.4.1</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/fcrepo-server-3.4.1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>trippi</groupId>
-      <artifactId>trippi</artifactId>
-      <version>1.3.2</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/trippi-1.3.2-core.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>jrdf</groupId>
-      <artifactId>jrdf</artifactId>
-      <version>0.3.4.3</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/jrdf-0.3.4.3.jar</systemPath>
     </dependency>
     <!-- We need a special patched homebrew version of rhino -->
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
-      <version>1.7R2</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/js-1.7R2-patch.jar</systemPath>
+      <version>1.7R2-patch</version>
     </dependency>
-
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-606.jdbc4</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>jrdf</groupId>
+      <artifactId>jrdf</artifactId>
+      <version>0.3.4.3</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- fcrepo stuff -->
+    <dependency>
+      <groupId>org.fcrepo</groupId>
+      <artifactId>trippi-core</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>fcrepo</groupId>
+      <artifactId>fcrepo-client-admin</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>fcrepo</groupId>
+      <artifactId>fcrepo-common</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>fcrepo</groupId>
+      <artifactId>fcrepo-server</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>wsdl4j</groupId>
+      <artifactId>wsdl4j</artifactId>
+      <version>1.5.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.9.1</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
 </project>
