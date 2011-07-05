@@ -22,8 +22,6 @@ package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.db.IProcessqueue;
-import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.harvest.ESHarvest;
 import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.pluginframework.PluginTask;
@@ -60,7 +58,6 @@ public class DatadockPoolTest
      * The (mock)objects we need for the most of the tests
      */
 
-    Processqueue mockProcessqueue;
     CargoContainer mockCargoContainer;
     FutureTask mockFutureTask;
     ThreadPoolExecutor mockThreadPool;
@@ -78,19 +75,13 @@ public class DatadockPoolTest
     @MockClass( realClass = DatadockPool.class )
     public static class MockDatadockPool
     {
-//        private ThreadPoolExecutor ThreadPoolExecutor;
-//        @Mock(invocations = 1)
-//        public void $init(ThreadPoolExecutor threadpool, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester, PluginResolver pluginResolver)
-//        {
-//            threadpool = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>( 1 ) );
-//        }
     }
 
     @MockClass(realClass=DatadockThread.class)
     public static class MockDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
         { 
         }
 
@@ -105,7 +96,7 @@ public class DatadockPoolTest
     public static class MockNullDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
         {
         }
 
@@ -172,7 +163,7 @@ public class DatadockPoolTest
      public void submitTest() throws Exception
      {
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, null, null );
+         DatadockPool pool = new DatadockPool( tpe, null, null );
 	 pool.submit( new MockIdentifier() );
      }
 
@@ -180,7 +171,7 @@ public class DatadockPoolTest
      public void submitWithNullJobFails() throws Exception
      {
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, null, null );
+         DatadockPool pool = new DatadockPool( tpe, null, null );
          pool.submit( null );
      }
 
@@ -190,10 +181,8 @@ public class DatadockPoolTest
          final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"dk\"/></referencedata>";
          Document referenceData = XMLUtils.documentFromString( refdata );
 
-	 //         IJob job = new DatadockJob( new MockIdentifier(), referenceData );
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, mockHarvester, null );
-	 //         pool.submit( job.getIdentifier() );
+         DatadockPool pool = new DatadockPool( tpe, mockHarvester, null );
          pool.submit( new MockIdentifier() );
          pool.checkJobs();
      }

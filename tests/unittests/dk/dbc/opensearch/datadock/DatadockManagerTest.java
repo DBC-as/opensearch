@@ -26,7 +26,6 @@ package dk.dbc.opensearch.datadock;
 
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.harvest.ESHarvest;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
 import dk.dbc.opensearch.harvest.IHarvest;
@@ -91,7 +90,7 @@ public class DatadockManagerTest
         setUpMocks( MockHarvester.class );
         setUpMocks( MockDatadockPool.class );
         mockHarvester = new ESHarvest( null, null, false );
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
+        mockDatadockPool = new DatadockPool( null, mockHarvester, null );
     }
 
     @After
@@ -176,7 +175,7 @@ public class DatadockManagerTest
     public static class MockDatadockPool
     {
         @Mock
-        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ){}
+        public void $init( ThreadPoolExecutor threadpool, IHarvest harvester, Map<String, List<PluginTask>> flowMap ){}
 
         @Mock
         public void submit( IIdentifier identifier )

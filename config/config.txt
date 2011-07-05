@@ -4,14 +4,6 @@
 
 # the DATABASE section contains configuration values relating to databases used by the system
 [database]
-# The user name for the postgresql database. Leave unassigned if user should equal $USER
-postgresql_user:
-# the password for the postgresql database. If unassigned, $USER is used as password
-postgresql_password:
-# the java postgresql driver used by the system
-postgresql_driver:   org.postgresql.Driver
-# the url used by the jdbc to connect to the postgresql database through
-postgresql_url:      jdbc:postgresql://localhost:5432/
 # As with postgresql_user, but for Oracle databases
 oracle_user:         damkjaer
 # As with postgresql_password, but for Oracle databases

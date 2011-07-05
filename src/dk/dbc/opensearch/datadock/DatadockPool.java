@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.datadock;
 
 
-import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
 import dk.dbc.opensearch.harvest.HarvesterUnknownIdentifierException;
@@ -66,7 +65,6 @@ public class DatadockPool
 
     private Map< IIdentifier, FutureTask< Boolean > > jobs;
     private final ThreadPoolExecutor threadpool;
-    private IProcessqueue processqueue;
     private IHarvest harvester;
     private Map<String, List<PluginTask>> flowMap;
 
@@ -107,18 +105,16 @@ public class DatadockPool
     /**
      * 
      * @param threadpool
-     * @param processqueue
      * @param harvester
      * @param flowMap
      * @throws ConfigurationException
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
         this.flowMap = flowMap;
         this.harvester = harvester;
         this.threadpool = threadpool;
-        this.processqueue = processqueue;
 
         jobs = new HashMap< IIdentifier, FutureTask< Boolean > >();
         
@@ -145,7 +141,7 @@ public class DatadockPool
         }
         log.debug( String.format( "Submitting job '%s'", identifier ) );
 
-        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, flowMap ) );
+        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, harvester, flowMap ) );
         
         if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {

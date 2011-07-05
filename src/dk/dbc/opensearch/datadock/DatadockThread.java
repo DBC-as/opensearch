@@ -25,7 +25,6 @@
 package dk.dbc.opensearch.datadock;
 
 
-import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
@@ -76,7 +75,6 @@ public class DatadockThread implements Callable<Boolean>
     private static final Logger log = Logger.getLogger( DatadockThread.class );
 
     private IIdentifier identifier;
-    private IProcessqueue queue;
     private IHarvest harvester;
     private Map<String, List<PluginTask>> flowMap;
 
@@ -87,15 +85,12 @@ public class DatadockThread implements Callable<Boolean>
      *
      * @param identifier
      *            the information about the data to be docked
-     * @param processqueue
-     *            the processqueue handler
      */
-    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
+    public DatadockThread( IIdentifier identifier, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
         this.identifier = identifier;
-        this.queue = processqueue;
         this.harvester = harvester;
         this.flowMap = flowMap;
 
@@ -166,9 +161,6 @@ public class DatadockThread implements Callable<Boolean>
         }
 
         String identifierAsString = cargo.getIdentifierAsString();
-
-        //push to processqueue job to processqueue
-        queue.push( identifierAsString );
 
         //inform the harvester that it was a success
         try

@@ -27,15 +27,12 @@ package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.commons.db.OracleDBPooledConnection;
-import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.db.IProcessqueue;
-import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
@@ -429,14 +426,6 @@ public class DatadockMain
 
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
-        log.trace( "Initializing process queue" );
-        String driver = DataBaseConfig.getPostgresqlDriver();
-        String url    = DataBaseConfig.getPostgresqlUrl();
-        String userId = DataBaseConfig.getPostgresqlUserID();
-        String passwd = DataBaseConfig.getPostgresqlPassWd();
-        PostgresqlDBConnection conn = new PostgresqlDBConnection( userId, passwd, url, driver );
-        IProcessqueue processqueue = new Processqueue( conn );
-
         log.trace( "Initializing plugin resolver" );
 	String host = FedoraConfig.getHost();
 	String port = FedoraConfig.getPort();
@@ -454,7 +443,7 @@ public class DatadockMain
         log.trace( "Initializing the DatadockPool" );
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( this.queueSize );
         ThreadPoolExecutor threadpool = new ThreadPoolExecutor( this.corePoolSize, this.maxPoolSize, this.keepAliveTime, TimeUnit.SECONDS, queue );
-        DatadockPool datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
+        DatadockPool datadockPool = new DatadockPool( threadpool, harvester, flowMap );
 
         log.trace( "Initializing the DatadockManager" );
         datadockManager = new DatadockManager( datadockPool, harvester, flowMap );

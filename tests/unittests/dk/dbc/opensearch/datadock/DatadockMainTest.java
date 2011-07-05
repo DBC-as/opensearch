@@ -35,7 +35,6 @@ import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
-import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.harvest.IHarvest;
