@@ -22,15 +22,11 @@ var DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
 
-//  This part is to be used with next version of work relation
-//    for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
-//      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
-//    }
     //Used until better implementation in Java
     if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
-    // Used until next version of work relation
+
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
@@ -274,16 +270,9 @@ var DcCreator = function(){
 
     var dcXml = DcCreator.createDcObject();
  
- // Until next version of work relation
- //   if (String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) !== "") {
- //     for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
- //       dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
- //     }
- //   } else {
-     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
+    if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
-     }
- //   }
+    }
  
     if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);

@@ -457,10 +457,10 @@ var Relations = function() {
     var type = String(manifestationXML.dkabm::record.dc::type);
     Log.info( "Type: " + type );
 
-    var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydb\u00e5nd", "Lydbog (b\u00e5nd)", "Lydbog (cd)", "Lydbog (online)", "Lydbog (cd-mp3)", "Netdokument", "Tegneserie", "Tidsskriftsartikel", "CD", "Punktskrift"];
+    //var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "Bog stor skrift", "Graphic novel", "Kassettelydb\u00e5nd", "Lydbog (b\u00e5nd)", "Lydbog (cd)", "Lydbog (net)", "Lydbog (cd-mp3)", "Netdokument", "Tegneserie", "Tidsskriftsartikel", "Cd", "Punktskrift"];
 
-    for (var a in types) {
-      if (type === types[a]) {
+    //for (var a in types) {
+      //if (type === types[a]) {
         var creator = String(manifestationXML.dkabm::record.dc::creator[0]);
 
         Log.info( "Creator: " + creator );
@@ -475,12 +475,12 @@ var Relations = function() {
             Log.info( "result: " + result );
 
             if (String(result).match(/150016:.*/) && !String(result).match(/image/)) {
-              DbcAddiRelations.hasAuthorDescription( pid, result );
+              DbcAddiRelations.hasCreatorDescription( pid, result );
             }
           }
         }
-      }
-    }
+    //  }
+    //}
 
     Log.info ("End hasAuthorDescription" );
 
