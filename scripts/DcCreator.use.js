@@ -23,7 +23,7 @@ var DcCreator = function(){
     var dcXml = DcCreator.createDcObject();
 
     //Used until better implementation in Java
-    if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+    if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
 
@@ -101,13 +101,13 @@ var DcCreator = function(){
       }
     }
 
-    for each (child in originalXml.collection.record.datafield.(@tag=="014").subfield.(@code=="a")) {
+    for each (child in originalXml.marcx::collection.record.datafield.(@tag=="014").subfield.(@code=="a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace( /-/g, ""), "relation", dc );
 	  }
     }
 
-    for each (child in originalXml.collection.record.datafield.(@tag=="016").subfield.(@code=="a")) {
+    for each (child in originalXml.marcx::collection.record.datafield.(@tag=="016").subfield.(@code=="a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
 	  }
@@ -253,7 +253,19 @@ var DcCreator = function(){
   </doc>;
 
   that.createElement = function ( elementValue, elementName, namespace ) {
-    var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
+    
+		var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
+    if (namespace !== undefined) {
+      element.setNamespace( namespace );
+    }
+
+    return element;
+
+  };
+
+	that.createElementNoNormalize = function ( elementValue, elementName, namespace ) {
+    
+		var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
     if (namespace !== undefined) {
       element.setNamespace( namespace );
     }
@@ -274,7 +286,7 @@ var DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
  
-    if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+    if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
     if (String(originalXml.ting::originalData.status) === "d" || String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope") {
