@@ -693,14 +693,14 @@ var Relations = function() {
 
     if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
       var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
-      DbcAddiRelations.hasFulltext( pid, url );
+      DbcAddiRelations.hasOnlineAccess( pid, url );
     }
     
     var child;
     if (String(manifestationXML.dkabm::record.ac::source).match(/Faktalink|Forfatterweb/)) {
       for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
-          DbcAddiRelations.hasFulltext( pid, String(child) );
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
         }
       }
     }
