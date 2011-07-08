@@ -69,7 +69,7 @@ function checkmatch( newObject, workObject )
         break;
       case "artikel":
         Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match(/artikel/)) {
           result = true;
         } else {
           result = false;
@@ -85,7 +85,7 @@ function checkmatch( newObject, workObject )
         break;
       case "avisartikel":
         Log.debug( "RLO: Avisartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match(/artikel/)) {
           result = true;
         } else {
           result = false;
@@ -101,7 +101,7 @@ function checkmatch( newObject, workObject )
         break;
       case "tidsskriftsartikel":
         Log.debug( "RLO: Tidsskriftsartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match(/artikel/)) {
           result = true;
         } else {
           result = false;
@@ -109,7 +109,7 @@ function checkmatch( newObject, workObject )
         break;
       case "cd (musik)": case "grammofonplade": case "musik (net)":
         Log.debug( "RLO: Musik (album)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("cd \(musik\)|grammofonplade|musik \(net\)")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match(/cd \(musik\)|grammofonplade|musik \(net\)/)) {
           result = true;
         } else {
           result = false;
@@ -117,7 +117,7 @@ function checkmatch( newObject, workObject )
         break;
       case "musiktrack (net)": 
         Log.debug( "RLO: Musik (track)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("musiktrack")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match(/musiktrack/)) {
           result = true;
         } else {
           result = false;
@@ -126,13 +126,13 @@ function checkmatch( newObject, workObject )
       default:
         Log.debug( "RLO: default\n");
         if (newCreator === workCreator) {
-          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
+          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
+          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
+          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
+          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
           } else {
             result = false;
