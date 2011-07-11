@@ -58,23 +58,29 @@ public class Store implements IPluggable
     @Override
     public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-	if ( !( ienv instanceof StoreEnvironment) )
-	{
-	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "StoreEnvironment", ienv.getClass().getName() );
-	    log.error( errMsg );
-	    throw new PluginException( errMsg );
-	}
+        if ( !( ienv instanceof StoreEnvironment ) )
+        {
+            String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "StoreEnvironment", ienv.getClass().getName() );
+            log.error( errMsg );
+            throw new PluginException( errMsg );
+        }
 
-	StoreEnvironment env = (StoreEnvironment)ienv;
+        StoreEnvironment env = ( StoreEnvironment ) ienv;
 
-    	log.trace( "Entering storeCargoContainer( CargoContainer )" );
+        log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
-	String pid = cargo.getIdentifierAsString(); // saving pid in case cargo should be modified during call!
-	strlock.lock( pid );
-	CargoContainer returnCC = env.run( cargo );
-	strlock.unlock( pid );
+        String pid = cargo.getIdentifierAsString(); // saving pid in case cargo should be modified during call!
+        strlock.lock( pid );
+        try
+        {
+            CargoContainer returnCC = env.run( cargo );
+            return returnCC;
+        }
+        finally
+        {
+            strlock.unlock( pid );
+        }
 
-	return returnCC;
     }
 
     @Override
