@@ -107,3 +107,7 @@ function hasCreator ( submitter, format, language, xml, pid ) {
 function isCreatorOf ( submitter, format, language, xml, pid ) {
   Relations.isCreatorOf ( xml, pid );
 }
+
+function hasOpenUrl ( submitter, format, language, xml, pid ) {
+  Relations.hasOpenUrl ( xml, pid );
+}
