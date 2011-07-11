@@ -24,7 +24,7 @@
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -73,7 +73,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -197,7 +197,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -255,7 +255,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-	      <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+	      <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -298,7 +298,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-	      <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+	      <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -338,7 +338,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-	      <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+	      <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -395,7 +395,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -479,7 +479,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -503,7 +503,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -554,7 +554,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -600,7 +600,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -646,7 +646,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -671,7 +671,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -701,7 +701,7 @@
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -744,7 +744,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -787,7 +787,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -830,7 +830,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -874,7 +874,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -918,7 +918,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -962,7 +962,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1006,7 +1006,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1050,7 +1050,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1093,7 +1093,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
               <arg name="searchfunction" value="generateSearchPairs"/>
               <arg name="matchfunction" value="checkmatch"/>
               <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1137,7 +1137,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1181,7 +1181,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1225,7 +1225,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1269,7 +1269,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1313,7 +1313,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1357,7 +1357,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1401,7 +1401,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1445,7 +1445,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1489,7 +1489,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1533,7 +1533,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1576,7 +1576,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1619,7 +1619,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1662,7 +1662,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1705,7 +1705,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1748,7 +1748,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1791,7 +1791,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1834,7 +1834,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1877,7 +1877,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1921,7 +1921,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -1965,7 +1965,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2009,7 +2009,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2052,7 +2052,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2095,7 +2095,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2114,7 +2114,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2157,7 +2157,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2294,7 +2294,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
@@ -2337,7 +2337,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
         <arg name="searchfunction" value="generateSearchPairs"/>
         <arg name="matchfunction" value="checkmatch"/>
         <arg name="createobjectfunction" value="makeworkobject"/>
