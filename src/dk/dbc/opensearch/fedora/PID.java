@@ -68,4 +68,9 @@ public class PID implements IObjectIdentifier
         return this.id.substring( 0, index );
     }
 
+    public String toString()
+    {
+        return getIdentifier();
+    }
+
 }
