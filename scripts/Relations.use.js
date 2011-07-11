@@ -15,6 +15,7 @@ var Relations = function() {
   var xsi = XmlNamespaces.xsi;
   var ting = XmlNamespaces.ting;
   var oso = XmlNamespaces.oso;
+	var oss = XmlNamespaces.oss;
 
   var that = {};
 
@@ -819,6 +820,22 @@ var Relations = function() {
     }
 
     Log.info ("End hasCreatorHomePage" );
+
+  };
+	
+	that.hasOpenUrl = function( xml, pid ) {
+
+    Log.info ("Start hasOpenUrl" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.oss::openurl) !== "") {
+      var url = String(manifestationXML.oss::openurl);
+      DbcAddiRelations.hasOpenUrl( pid, url );
+    }
+
+    Log.info ("End hasOpenUrl" );
 
   };
 

@@ -54,6 +54,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="100450">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
