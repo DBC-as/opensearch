@@ -29,7 +29,6 @@ import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.IObjectIdentifier;
-import java.util.logging.Level;
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.server.management.FedoraAPIM;
 import org.fcrepo.server.types.gen.Datastream;
@@ -44,11 +43,9 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.axis.types.NonNegativeInteger;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.fcrepo.common.Constants;
 import org.xml.sax.SAXException;
@@ -60,7 +57,6 @@ public class FcrepoModifier
 {
     private static final Logger log = Logger.getLogger( FcrepoModifier.class );
     private static final String DeletedState = "D";
-
     private final FedoraAPIM fem;
     private final FedoraClient fc;
     private final String fedora_base_url;
@@ -74,30 +70,31 @@ public class FcrepoModifier
         {
             fc = new FedoraClient( fedora_base_url, user, pass );
         }
-        catch( MalformedURLException ex )
+        catch( MalformedURLException e )
         {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
+            String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
 
         try
         {
             fem = fc.getAPIM();
         }
-        catch( ServiceException ex )
+        catch( ServiceException e )
         {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
+            String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
-        catch( IOException ex )
+        catch( IOException e )
         {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
+            String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
     }
+
 
     private FedoraAPIM getAPIM()
     {
@@ -149,7 +146,7 @@ public class FcrepoModifier
 
             timer = System.currentTimeMillis() - timer;
             log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-            if ( ds == null )
+            if( ds == null )
             {
                 String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': Got nothing back from the object repository", dataStreamID, objectIdentifier );
                 log.error( error );
@@ -157,11 +154,11 @@ public class FcrepoModifier
             }
             return ds;
         }
-        catch( RemoteException re )
+        catch( RemoteException e )
         {
-            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s", dataStreamID, objectIdentifier, re.getMessage() );
+            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s", dataStreamID, objectIdentifier, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, re );
+            throw new ObjectRepositoryException( error, e );
         }
     }
 
@@ -194,7 +191,7 @@ public class FcrepoModifier
      * @param subject
      * @throws ObjectRepositoryException
      */
-    public boolean  addObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
+    public boolean addObjectRelation( String objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
         String relationString = relation.getPredicateString();
         return this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
@@ -207,32 +204,32 @@ public class FcrepoModifier
      * @param subject
      * @throws ObjectRepositoryException
      */
-    public boolean addUncheckedObjectRelation( IObjectIdentifier objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
+    public boolean addUncheckedObjectRelation( String objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
     {
         try
         {
-            String pid = objectIdentifier.getIdentifier();
-            log.info( String.format( "trying to add %s - %s -> %s", pid, relationString, subject ) );
+            log.info( String.format( "trying to add %s - %s -> %s", objectIdentifier, relationString, subject ) );
             long timer = System.currentTimeMillis();
 
-            if( pid.equals( subject ) )
+            if( objectIdentifier.equals( subject ) )
             {
-                log.warn( String.format( "We do not allow for a relation=[%s] to have identical subject=[%s] and object=[%s]", relationString, pid, subject ) );
+                log.warn( String.format( "We do not allow for a relation=[%s] to have identical subject=[%s] and object=[%s]", 
+                        relationString, objectIdentifier, subject ) );
                 return false;
             }
 
-            boolean ret = this.getAPIM().addRelationship( pid, relationString, subject, true, null );
+            boolean ret = this.getAPIM().addRelationship( objectIdentifier, relationString, subject, true, null );
 
             timer = System.currentTimeMillis() - timer;
             log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
             return ret;
         }
-        catch( RemoteException ex )
+        catch( RemoteException e )
         {
             String error = "Failed to add Relation to fedora Object";
-            log.error( error, ex );
-            throw new ObjectRepositoryException( error, ex );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
         }
     }
 
@@ -268,16 +265,13 @@ public class FcrepoModifier
             }
 
         }
-        catch( RemoteException ex )
+        catch( RemoteException e )
         {
-            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", pid, ex.getMessage() );
+            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", pid, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
     }
-
-
-
 
 
     /**
@@ -292,7 +286,7 @@ public class FcrepoModifier
      * \Todo: Why do we return the IPredicate telleing what relation we found, when we in the predicate param
      * specifies what relation type to search for?
      */
-    public List< Pair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
+    public List<Pair<IPredicate, String>> getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
     {
         try
         {
@@ -305,13 +299,13 @@ public class FcrepoModifier
             timer = System.currentTimeMillis() - timer;
             log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
-            if ( tuple != null )
+            if( tuple != null )
             {
-                List< Pair< IPredicate, String > > ret = new ArrayList< Pair< IPredicate, String> >();
-                for ( RelationshipTuple relationship : tuple )
+                List<Pair<IPredicate, String>> ret = new ArrayList<Pair<IPredicate, String>>();
+                for( RelationshipTuple relationship : tuple )
                 {
                     String object = relationship.getObject();
-                    Pair< IPredicate, String > pair = new Pair( predicate, object ); //we put the predicate param into the return value, why?
+                    Pair<IPredicate, String> pair = new Pair( predicate, object ); //we put the predicate param into the return value, why?
                     ret.add( pair );
                 }
 
@@ -328,8 +322,6 @@ public class FcrepoModifier
         log.debug( "returning null" );
         return null;
     }
-
-
 
 
     String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws RemoteException
@@ -361,7 +353,7 @@ public class FcrepoModifier
         try
         {
             String timestamp = this.getAPIM().purgeObject( identifier, logmessage, false );
-            if ( timestamp == null )
+            if( timestamp == null )
             {
                 String error = String.format( "Could not delete object reference by pid %s (timestamp == null)", identifier );
                 log.error( error );
@@ -371,13 +363,14 @@ public class FcrepoModifier
             log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
             return timestamp;
         }
-        catch( RemoteException ex )
+        catch( RemoteException e )
         {
-            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", identifier, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
     }
+
 
     /**
      * Stores data in {@code cargo} in the fedora repository
@@ -408,49 +401,48 @@ public class FcrepoModifier
             foxml = FcrepoUtils.CargoContainerToFoxml( cargo );
 
         }
-        catch ( XMLStreamException ex )
+        catch( XMLStreamException e )
         {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
-        catch ( TransformerException ex )
+        catch( TransformerException e )
         {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
-        catch ( SAXException ex )
+        catch( SAXException e )
         {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
-        catch ( IOException ex )
+        catch( IOException e )
         {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, e.getMessage() );
             log.error( error );
-            throw new ObjectRepositoryException( error, ex );
+            throw new ObjectRepositoryException( error, e );
         }
-
 
         String returnedobjectIdentifier = null;
         try
         {
             returnedobjectIdentifier = ingest( foxml, Constants.FOXML1_1.uri, logmessage );
         }
-        catch( RemoteException ex )
+        catch( RemoteException e )
         {
-            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s. Foxml: %s", identifierAsString, ex.getMessage(), new String( foxml ) );
-            log.error( error, ex );
-            throw new ObjectRepositoryException( error, ex );
+            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s. Foxml: %s", identifierAsString, e.getMessage(), new String( foxml ) );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
         }
 
-        if ( returnedobjectIdentifier.equals( "" ) )
+        if( returnedobjectIdentifier.equals( "" ) )
         {
             log.info( String.format( "For empty identifier, we recieved '%s' from the ingest", returnedobjectIdentifier ) );
         }
-        else if ( ! returnedobjectIdentifier.equals( identifierAsString ) )
+        else if( !returnedobjectIdentifier.equals( identifierAsString ) )
         {
             log.warn( String.format( "I expected pid '%s' to be returned from the repository, but got '%s'", identifierAsString, returnedobjectIdentifier ) );
         }
@@ -466,7 +458,7 @@ public class FcrepoModifier
             modifyObject( objectIdentifier, DeletedState, null, null, logMessage );
             log.debug( String.format( "marked object '%s' as deleted", objectIdentifier ) );
         }
-        catch ( RemoteException e )
+        catch( RemoteException e )
         {
             String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
             log.error( error, e );
@@ -519,12 +511,12 @@ public class FcrepoModifier
     {
         IObjectIdentifier identifier = cargo.getIdentifier();
 
-        if (identifier != null)
+        if( identifier != null )
         {
             return identifier;
         }
 
-        if (defaultPidNameSpace == null)
+        if( defaultPidNameSpace == null )
         {
             defaultPidNameSpace = new String( "auto" );
         }
@@ -534,13 +526,14 @@ public class FcrepoModifier
         {
             newPid = getNextPID( 1, defaultPidNameSpace )[0];
         }
-        catch (RemoteException e)
+        catch( RemoteException e )
         {
             throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
 
         return new PID( newPid );
     }
+
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
