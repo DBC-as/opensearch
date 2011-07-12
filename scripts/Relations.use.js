@@ -417,15 +417,17 @@ var Relations = function() {
     Log.info ("End hasTrack" );
 
   };
+  
+  that.isCreatorDescriptionOf = function ( xml, pid ) {
 
-  that.isAuthorDescriptionOf = function ( xml, pid ) {
-
-    Log.info ("Start isAuthorDescriptionOf" );
+    Log.info ("Start isCreatorDescriptionOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var authorXML = XmlUtil.fromString( xml );
+    var creatorXML = XmlUtil.fromString( xml );
+    
+    var child;
 
-    var creator = String(authorXML.dkabm::record.dc::title);
+    var creator = String(creatorXML.dkabm::record.dc::title);
 
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
@@ -444,79 +446,6 @@ var Relations = function() {
       }
     }
 
-    Log.info ("End isAuthorDescriptionOf" );
-
-  };
-
-  that.hasAuthorDescription = function ( xml, pid ) {
-
-    Log.info ("Start hasAuthorDescription" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var manifestationXML = XmlUtil.fromString( xml );
-
-    var type = String(manifestationXML.dkabm::record.dc::type);
-    Log.info( "Type: " + type );
-
-    //var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "Bog stor skrift", "Graphic novel", "Kassettelydb\u00e5nd", "Lydbog (b\u00e5nd)", "Lydbog (cd)", "Lydbog (net)", "Lydbog (cd-mp3)", "Netdokument", "Tegneserie", "Tidsskriftsartikel", "Cd", "Punktskrift"];
-
-    //for (var a in types) {
-      //if (type === types[a]) {
-        var creator = String(manifestationXML.dkabm::record.dc::creator[0]);
-
-        Log.info( "Creator: " + creator );
-        Log.info( "pid: " + pid );
-        
-        if (creator !== "undefined") {
-          var results = FedoraPIDSearch.title( creator );
-
-          for ( var i = 0; i < results.length; ++i ) {
-            var result = results[i];
-
-            Log.info( "result: " + result );
-
-            if (String(result).match(/150016:.*/) && !String(result).match(/image/)) {
-              DbcAddiRelations.hasCreatorDescription( pid, result );
-            }
-          }
-        }
-    //  }
-    //}
-
-    Log.info ("End hasAuthorDescription" );
-
-  };
-  
-  that.isCreatorDescriptionOf = function ( xml, pid ) {
-
-    Log.info ("Start isCreatorDescriptionOf" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var manifestationXML = XmlUtil.fromString( xml );
-    
-    var child;
-    
-    for each(child in manifestationXML.dkabm::record.dc::subject) {
-
-      var subject = String(child);
-
-      Log.info( "SubjectCreator: " + subject );
-      Log.info( "pid: " + pid );
-
-      var results = FedoraPIDSearch.creator( subject );
-
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-
-        Log.info( "result: " + result );
-
-        if (String(result).match(/150026:.*/)) {
-          DbcAddiRelations.hasCreatorDescription( result, pid );
-        }
-      }
-
-    }
-
     Log.info ("End isCreatorDescriptionOf" );
 
   };
@@ -526,23 +455,23 @@ var Relations = function() {
     Log.info ("Start hasCreatorDescription" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var creatorXml = XmlUtil.fromString( xml );
+    var manifestationXml = XmlUtil.fromString( xml );
     
-    var creator = String(creatorXml.dkabm::record.dc::creator[0]);
-    
+    var creator = String(manifestationXml.dkabm::record.dc::creator[0]);
+        
     if (creator !== "undefined") {
-      var results = FedoraPIDSearch.subject(creator);
-      
-      for (var i = 0; i < results.length; ++i) {
+      var results = FedoraPIDSearch.title( creator );
+
+      for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
-        
-        Log.info("result: " + result);
-        
-        if (!String(result).match(/work:.*/)) {
+
+        Log.info( "result: " + result );
+
+        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/)) && !String(result).match(/image/)) {
           DbcAddiRelations.hasCreatorDescription( pid, result );
         }
       }
-    }
+		}
     
     Log.info ("End hasCreatorDescription" );
 
@@ -684,31 +613,6 @@ var Relations = function() {
     Log.info ("End hasSoundClip" );
 
   };
-
-  that.hasFullText = function( xml, pid ) {
-
-    Log.info ("Start hasFullText" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var manifestationXML = XmlUtil.fromString( xml );
-
-    if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
-      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
-      DbcAddiRelations.hasOnlineAccess( pid, url );
-    }
-    
-    var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Faktalink|Forfatterweb/)) {
-      for each (child in manifestationXML.dkabm::record.dc::identifier) {
-        if (String(child.@xsi::type).match("dcterms:URI")) {
-          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
-        }
-      }
-    }
-
-    Log.info ("End hasFullText" );
-
-  };
   
   that.hasOnlineAccess = function( xml, pid ) {
 
@@ -718,7 +622,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
     
     var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden/)) {
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb/)) {
       for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
           DbcAddiRelations.hasOnlineAccess( pid, String(child) );
@@ -728,6 +632,11 @@ var Relations = function() {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
     } else {
       DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+    }
+		
+		if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
+      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
+      DbcAddiRelations.hasOnlineAccess( pid, url );
     }
 
     Log.info ("End hasOnlineAccess" );

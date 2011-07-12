@@ -32,14 +32,6 @@ function hasSoundClip ( submitter, format, language, xml, pid ) {
   Relations.hasSoundClip ( xml, pid );
 }
 
-function isAuthorDescriptionOf ( submitter, format, language, xml, pid ) {
-  Relations.isAuthorDescriptionOf ( xml, pid );
-}
-
-function hasAuthorDescription ( submitter, format, language, xml, pid ) {
-  Relations.hasAuthorDescription ( xml, pid );
-}
-
 function isCreatorDescriptionOf ( submitter, format, language, xml, pid ) {
   Relations.isCreatorDescriptionOf ( xml, pid );
 }
@@ -62,10 +54,6 @@ function isImageOf ( submitter, format, language, xml, pid ) {
 
 function hasImage ( submitter, format, language, xml, pid ) {
   Relations.hasImage ( xml, pid );
-}
-
-function hasFullText ( submitter, format, language, xml, pid ) {
-  Relations.hasFullText ( xml, pid );
 }
 
 function hasOnlineAccess ( submitter, format, language, xml, pid ) {
