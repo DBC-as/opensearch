@@ -630,7 +630,7 @@ var Relations = function() {
       }
 		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Gale/)) {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
-    } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco/)){
+    } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
     }
 		
