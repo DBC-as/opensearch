@@ -2,6 +2,7 @@ EXPORTED_SYMBOLS = ['DcCreator'];
 
 use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
+use ( "Normalize.use.js" );
 
 var DcCreator = function(){
 
@@ -24,47 +25,47 @@ var DcCreator = function(){
 
     //Used until better implementation in Java
     if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
-      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
 
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
     
 	  if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
     var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("dkdcplus:subtitles") && !String(child.@xsi::type).match("dkdcplus:spoken")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "language", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5") && !String(child.@xsi::type).match("dkdcplus:genre")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
       }
     }
     
     for each (child in originalXml.dkabm::record.dcterms::spatial) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
     
     for each (child in originalXml.dkabm::record.dcterms::temporal) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::type) {
       if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "type", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::contributor) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "contributor", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::source) {
@@ -73,43 +74,43 @@ var DcCreator = function(){
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:upc")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISSN:" + String(child).replace( /-/g, ""), "relation", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
       }
     }
 
     for each (child in originalXml.marcx::collection.record.datafield.(@tag=="014").subfield.(@code=="a")) {
       if (String(child) !== "") {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace( /-/g, ""), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child).replace( /-/g, ""), "relation", dc );
 	  }
     }
 
     for each (child in originalXml.marcx::collection.record.datafield.(@tag=="016").subfield.(@code=="a")) {
       if (String(child) !== "") {
-        dcXml.oai_dc::dc += DcCreator.createElement( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
 	  }
     }
 
@@ -134,23 +135,23 @@ var DcCreator = function(){
     var dcXml = DcCreator.createDcObject();
     
     if (String(originalXml.ting::originalData.status) === "d") {
-      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
     
     if (String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
-      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
 
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "language", dc );
       }
     }
 
@@ -158,26 +159,26 @@ var DcCreator = function(){
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")  && !String(child.@xsi::type).match("dkdcplus:genre")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
       }
     }
     
     for each (child in originalXml.dkabm::record.dcterms::spatial) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
     
     for each (child in originalXml.dkabm::record.dcterms::temporal) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::type) {
       if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "type", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::contributor) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "contributor", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::source) {
@@ -186,35 +187,35 @@ var DcCreator = function(){
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:upc")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
     
     for each (child in originalXml.dkabm::record.dcterms::references) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
       } else if (child.match("LokalKunstner")){
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "relation", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("dkdcplus:albumId")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "albumId:" + String(child), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "albumId:" + String(child), "relation", dc );
       } else {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "relation", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "relation", dc );
       }
     }
 
@@ -253,8 +254,10 @@ var DcCreator = function(){
   </doc>;
 
   that.createElement = function ( elementValue, elementName, namespace ) {
+		
+		var normalizedElementValue = Normalize.removeSpecialCharacters( elementValue );
     
-		var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
+		var element = XmlUtil.fromString (<{elementName}>{normalizedElementValue}</{elementName}>);
     if (namespace !== undefined) {
       element.setNamespace( namespace );
     }
@@ -287,46 +290,46 @@ var DcCreator = function(){
     }
  
     if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
-      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
     if (String(originalXml.ting::originalData.status) === "d" || String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope") {
-      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
  
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
     var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("dkdcplus:subtitles") && !String(child.@xsi::type).match("dkdcplus:spoken")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "language", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (String(child).match("computerspil") || String(child).match("soundtracks")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
       }
     }
     
     for each (child in originalXml.dkabm::record.dcterms::spatial) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
     
     for each (child in originalXml.dkabm::record.dcterms::temporal) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::type) {
       if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "type", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::contributor) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "contributor", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::source) {
@@ -335,19 +338,19 @@ var DcCreator = function(){
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:upc")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
@@ -381,10 +384,10 @@ var DcCreator = function(){
       if (String(originalXml.ting::originalData.status) === "d") {
         dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
       } else {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::title), "title", dc );
-        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::creator), "creator", dc );
-        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::identifier), "identifier", dc );
-        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::type), "type", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.oso::object.oso::title), "title", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.oso::object.oso::creator), "creator", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.oso::object.oso::identifier), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.oso::object.oso::type), "type", dc );
       }
       
     Log.debug( "RLO, DCXML: " + dcXml);

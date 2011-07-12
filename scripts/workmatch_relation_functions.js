@@ -2,6 +2,7 @@
 //importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
 
 use ( "DcCreator.use.js" );
+use ( "Normalize.use.js" );
 
 
 // Takes a string representation of a marcxchange posts dc-stream
@@ -25,19 +26,19 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
     //but it works for now
     if (String(XML_dc.dc::title) !== "") {
       resultArray[0] = "title";
-      resultArray[1] = XML_dc.dc::title;
+      resultArray[1] = Normalize.removeSpecialCharacters( XML_dc.dc::title );
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[2] = "title";
-      resultArray[3] = XML_dc.dc::source;
+      resultArray[3] = Normalize.removeSpecialCharacters( XML_dc.dc::source );
     }
     if (String(XML_dc.dc::title) !== "") {
       resultArray[4] = "source";
-      resultArray[5] = XML_dc.dc::title;
+      resultArray[5] = Normalize.removeSpecialCharacters( XML_dc.dc::title );
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[6] = "source";
-      resultArray[7] = XML_dc.dc::source;
+      resultArray[7] = Normalize.removeSpecialCharacters( XML_dc.dc::source );
     }
 } 
 
@@ -51,10 +52,10 @@ function checkmatch( newObject, workObject )
     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
 
     var result = false;
-    var newTitle = String(newObjectXml.dc::title).toLowerCase();
-    var workTitle = String(workObjectXml.dc::title).toLowerCase();
-    var newSource = String(newObjectXml.dc::source).toLowerCase();
-    var workSource = String(workObjectXml.dc::source).toLowerCase();
+    var newTitle = Normalize.removeSpecialCharacters( String(newObjectXml.dc::title).toLowerCase() );
+    var workTitle = Normalize.removeSpecialCharacters( String(workObjectXml.dc::title).toLowerCase() );
+    var newSource = Normalize.removeSpecialCharacters( String(newObjectXml.dc::source).toLowerCase() );
+    var workSource = Normalize.removeSpecialCharacters( String(workObjectXml.dc::source).toLowerCase() );
     var newCreator = String(newObjectXml.dc::creator).toLowerCase();
     var workCreator = String(workObjectXml.dc::creator).toLowerCase();
     var newType = String(newObjectXml.dc::type).toLowerCase();
