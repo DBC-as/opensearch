@@ -427,7 +427,7 @@ var Relations = function() {
     
     var child;
 
-    var creator = String(creatorXML.dkabm::record.dc::title);
+    var creator = String(creatorXML.dkabm::record.dc::title[0]);
 
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
