@@ -441,7 +441,7 @@ var Relations = function() {
         Log.info("result: " + result);
         
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.hasAuthorDescription(result, pid);
+          DbcAddiRelations.hasCreatorDescription(result, pid);
         }
       }
     }
