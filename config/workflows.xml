@@ -2212,7 +2212,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasFullText"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -2234,7 +2234,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasFullText"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -2262,7 +2262,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasFullText"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -2315,7 +2315,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasAuthorDescription"/>
+        <arg name="entryfunction" value="hasCreatorDescription"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
