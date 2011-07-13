@@ -26,19 +26,19 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
     //but it works for now
     if (String(XML_dc.dc::title) !== "") {
       resultArray[0] = "title";
-      resultArray[1] = Normalize.removeSpecialCharacters( XML_dc.dc::title );
+      resultArray[1] = XML_dc.dc::title;
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[2] = "title";
-      resultArray[3] = Normalize.removeSpecialCharacters( XML_dc.dc::source );
+      resultArray[3] = XML_dc.dc::source;
     }
     if (String(XML_dc.dc::title) !== "") {
       resultArray[4] = "source";
-      resultArray[5] = Normalize.removeSpecialCharacters( XML_dc.dc::title );
+      resultArray[5] = XML_dc.dc::title;
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[6] = "source";
-      resultArray[7] = Normalize.removeSpecialCharacters( XML_dc.dc::source );
+      resultArray[7] = XML_dc.dc::source;
     }
 } 
 
