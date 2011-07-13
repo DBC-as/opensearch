@@ -126,12 +126,12 @@ function checkmatch( newObject, workObject )
         break;
       default:
         Log.debug( "RLO: default\n");
-				Log.debug( "New Creator" + newCreator);
-				Log.debug( "Work Creator" + workCreator);
-				Log.debug( "New Title" + newTitle);
-				Log.debug( "Work Title" + workTitle);
-				Log.debug( "New Source" + newSource);
-				Log.debug( "Work Source" + workSource);
+				Log.debug( "New Creator: " + newCreator);
+				Log.debug( "Work Creator: " + workCreator);
+				Log.debug( "New Title: " + newTitle);
+				Log.debug( "Work Title: " + workTitle);
+				Log.debug( "New Source: " + newSource);
+				Log.debug( "Work Source: " + workSource);
         if (newCreator === workCreator) {
           if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
