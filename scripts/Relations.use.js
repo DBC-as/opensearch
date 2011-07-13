@@ -3,6 +3,7 @@ use ( "XmlNamespaces.use.js" );
 use ( "DbcAddiRelations.use.js" );
 use ( "DbcBibRelations.use.js" );
 use ( "Dcterms.use.js" );
+use ( "Normalize.use.js" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
@@ -460,7 +461,7 @@ var Relations = function() {
     var creator = String(manifestationXml.dkabm::record.dc::creator[0]);
         
     if (creator !== "undefined") {
-      var results = FedoraPIDSearch.title( creator );
+      var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( creator ) );
 
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
@@ -523,7 +524,7 @@ var Relations = function() {
 	      Log.info( "Subject: " + subject );
 	      Log.info( "pid: " + pid );
 	
-	      var results = FedoraPIDSearch.title( subject );
+	      var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( subject ) );
 	
 	      for ( var i = 0; i < results.length; ++i ) {
 	        var result = results[i];
