@@ -30,6 +30,7 @@ package dk.dbc.opensearch.javascript;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
+import dk.dbc.opensearch.helpers.ConvertCQLToFedoraConditions;
 import dk.dbc.opensearch.types.ITargetField;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class JSFedoraCQLSearch
         this.repository = repository;
     }
 
-    private ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
+    ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
     {
         ArrayList< ArrayList< OpenSearchCondition > > queries = new ArrayList< ArrayList< OpenSearchCondition > >();
         ArrayList< ArrayList< OpenSearchCondition > > currentConditionLists = new ArrayList< ArrayList< OpenSearchCondition > >();
@@ -93,12 +94,12 @@ public class JSFedoraCQLSearch
                 //if we have a condition in inHand we transform it to a condition list
                 if( inHand != null )
                 {
-                    currentConditionLists.add( transformQueryStringToConditionList ( inHand ) );
+                    currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList ( inHand ) );
                     inHand = null;
                 }
 
                 //write all lists of conditions to all queries to get unique lists of conditions
-                queries = writeAllConditionListsToAllQueries( queries, currentConditionLists );
+                queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
 
                 //reset the list of list of conditions
                 currentConditionLists.clear();
@@ -111,7 +112,7 @@ public class JSFedoraCQLSearch
                 //if we have a condition in inHand we transform it to a condition list
                 if( inHand != null )
                 {
-                    currentConditionLists.add( transformQueryStringToConditionList( inHand ) );
+                    currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList( inHand ) );
                     inHand = null;
                 }
 
@@ -121,7 +122,7 @@ public class JSFedoraCQLSearch
             if( part.equals( "(" ) )
             {
                 //call method that gets the subquery between the parantheses
-                String[] subQuery = getQueryInParantheses( next, theQuery );
+                String[] subQuery = ConvertCQLToFedoraConditions.getQueryInParantheses( next, theQuery );
 
                 //increase next with the length of subQuery + 1, we need to get past the right paranthese
                 next = next + subQuery.length + 1;
@@ -158,105 +159,10 @@ public class JSFedoraCQLSearch
 
         if( inHand != null )
         {
-            currentConditionLists.add( transformQueryStringToConditionList( inHand ) );
+            currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList( inHand ) );
         }
-        queries = writeAllConditionListsToAllQueries( queries, currentConditionLists );
+        queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
 
         return queries;
-    }
-
-    private ArrayList< OpenSearchCondition >  transformQueryStringToConditionList( String condition)
-    {
-        //the string contains three parts: first a field name, then
-        //the = operator and the the value of the condition.
-        int equalPos = condition.indexOf( "=" );
-        String fieldname = condition.substring( 0 , equalPos );
-        String value = condition.substring( equalPos + 1 );
-
-        FedoraObjectFields field = FedoraObjectFields.getFedoraObjectFields( fieldname );
-
-        OpenSearchCondition theCondition = new OpenSearchCondition( (ITargetField)field, OpenSearchCondition.Operator.EQUALS, value );
-
-        ArrayList < OpenSearchCondition > returnList = new ArrayList< OpenSearchCondition >();
-        returnList.add( theCondition );
-        return returnList;
-    }
-
-    /**
-     * Finds the query between parantheses
-     * We start the search after the first left paranthese
-     */
-
-    private String[] getQueryInParantheses( int start, String[] query )
-    {
-        int position = start++;
-        int rightPar = 0;
-        int leftPar = 1;
-        String queryString = "";
-        String part = "";
-
-        while( leftPar > rightPar )
-        {
-            queryString = queryString + " " + part;
-            part = query[ position ];
-
-
-            if( part.equals( "(" ) )
-            {
-                leftPar++;
-            }
-            if( part.equals( ")" ) )
-            {
-                rightPar++;
-            }
-            position++;
-        }
-
-        String[] returnArray = queryString.split( " " );
-
-        return returnArray;
-    }
-
-    /**
-     * Method for creating a list of unique lists of conditions from two
-     * lists of lists of conditions where in the following way:
-     * List x contains the lists a b c and list y contains d and e. The
-     * result will be 6 lists: ad ae bd be cd ce
-     * @param queries {@link ArrayList} of {@link ArrayList} of {@code openSearchCondition}
-     * the base lists to append lista to
-     * @param conditionLists {@link ArrayList} of {@link ArrayList} of {@code openSearchCondition}
-     * the lists to append to the base lists
-     * @return {@link ArrayList} of {@link ArrayList} of {@code openSearchCondition}
-     */
-    private ArrayList< ArrayList < OpenSearchCondition > > writeAllConditionListsToAllQueries( ArrayList< ArrayList< OpenSearchCondition > > queries, ArrayList< ArrayList< OpenSearchCondition > > conditionLists )
-    {
-        //if there are no condition lists in queries return conditionLists
-        if( queries.size() == 0 )
-        {
-            return conditionLists;
-        }
-
-        int conditionListCount = conditionLists.size();
-        int queryCount = queries.size();
-        OpenSearchCondition theCondition = null;
-        ArrayList< ArrayList< OpenSearchCondition > > newQueries = new ArrayList< ArrayList< OpenSearchCondition > >();
-        ArrayList< OpenSearchCondition > tempQueryList = new ArrayList< OpenSearchCondition >();
-        ArrayList< OpenSearchCondition > tempConditionList = new ArrayList< OpenSearchCondition >();
-
-        for( int i = 0; i < conditionListCount; i++ )
-        {
-            tempConditionList = conditionLists.get( i );
-            for( int r = 0; r < queryCount; r++ )
-            {
-                tempQueryList = queries.get( r );
-                for( OpenSearchCondition condition : tempConditionList )
-                {
-                    tempQueryList.add( condition );
-                }
-
-                newQueries.add( tempQueryList );
-            }
-        }
-        return newQueries;
     }
 }
