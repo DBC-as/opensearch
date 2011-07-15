@@ -133,13 +133,13 @@ function checkmatch( newObject, workObject )
 				Log.debug( "New Source: " + newSource);
 				Log.debug( "Work Source: " + workSource);
         if (newCreator === workCreator) {
-          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
+          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassetteb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
+          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassetteb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
+          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassetteb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
-          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack/)) {
+          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match(/anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassetteb\u00e5nd|musik \(net\)|musiktrack/)) {
             result = true;
           } else {
             result = false;
