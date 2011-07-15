@@ -26,6 +26,102 @@ import dk.dbc.opensearch.types.ITargetField;
 import java.util.ArrayList;
 
 public class ConvertCQLToFedoraConditions {
+    
+    ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
+    {
+        ArrayList< ArrayList< OpenSearchCondition > > queries = new ArrayList< ArrayList< OpenSearchCondition > >();
+        ArrayList< ArrayList< OpenSearchCondition > > currentConditionLists = new ArrayList< ArrayList< OpenSearchCondition > >();
+        ArrayList< OpenSearchCondition > tempConditionList = new ArrayList< OpenSearchCondition >();
+        //Array< String > currentConditionStrings = new ArrayList< String >();
+        int queryCount = 0;
+        int currentCount = 0;
+        String inHand = null;
+        int next = 0;
+        String part = null;
+
+        int queryLength = theQuery.length;
+
+        while( next < queryLength )
+        {
+            part = theQuery[ next ];
+
+            if( part.equals( "AND" ) )
+            {
+                //if we have a condition in inHand we transform it to a condition list
+                if( inHand != null )
+                {
+                    currentConditionLists.add( transformConditionStringToConditionList ( inHand ) );
+                    inHand = null;
+                }
+
+                //write all lists of conditions to all queries to get unique lists of conditions
+                queries = makeListPermutations( queries, currentConditionLists );
+
+                //reset the list of list of conditions
+                currentConditionLists.clear();
+
+                next++;
+            }
+
+            if( part.equals( "OR" ) )
+            {
+                //if we have a condition in inHand we transform it to a condition list
+                if( inHand != null )
+                {
+                    currentConditionLists.add( transformConditionStringToConditionList( inHand ) );
+                    inHand = null;
+                }
+
+                next++;
+            }
+
+            if( part.equals( "(" ) )
+            {
+                //call method that gets the subquery between the parantheses
+                String[] subQuery = getQueryInParantheses( next, theQuery );
+
+                //increase next with the length of subQuery + 1, we need to get past the right paranthese
+                next = next + subQuery.length + 1;
+
+                //We transform the subquery to lists of conditions, by recursivly calling this method
+                ArrayList < ArrayList < OpenSearchCondition > > subQueries = searchTransformer( subQuery );
+
+                //We add all the resulting lists of conditions to currentConditionLists
+                for( ArrayList< OpenSearchCondition > condList : subQueries )
+                {
+                    currentConditionLists.add( condList );
+                }
+
+            }
+
+            //we are in a condition
+            if( !part.equals( "AND" ) && !part.equals( "OR" ) && !part.equals( "(" ) )
+            {
+
+                if ( inHand == null )
+                {
+                    //stat of new condition
+                    inHand = part;
+                }
+                else
+                {
+                    //add more to the current condition
+                    inHand = inHand + " " + part;
+                }
+                next++;
+            }
+
+        }
+
+        if( inHand != null )
+        {
+            currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList( inHand ) );
+        }
+        queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
+
+        return queries;
+    }
+
 
     public static ArrayList< OpenSearchCondition >  transformConditionStringToConditionList( String condition ) {
         //the string contains three parts: first a field name, then
