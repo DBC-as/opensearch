@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
  */
 public class FcrepoUtils
 {
-    static Logger log = Logger.getLogger( FcrepoUtils.class );
+    private final static Logger log = Logger.getLogger( FcrepoUtils.class );
 
 
     /**

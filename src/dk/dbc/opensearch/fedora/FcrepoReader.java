@@ -63,7 +63,7 @@ public class FcrepoReader
     private final String fedora_base_url;
 
 
-    FcrepoReader( String host, String port ) throws ObjectRepositoryException
+    public FcrepoReader( String host, String port ) throws ObjectRepositoryException
     {
         this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s", fedora_base_url ) );

@@ -62,7 +62,7 @@ public class FcrepoModifier
     private final String fedora_base_url;
 
 
-    FcrepoModifier( String host, String port, String user, String pass ) throws ObjectRepositoryException
+    public FcrepoModifier( String host, String port, String user, String pass ) throws ObjectRepositoryException
     {
         this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
