@@ -60,6 +60,10 @@ function hasOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasOnlineAccess ( xml, pid );
 }
 
+function isOnlineAccessOf ( submitter, format, language, xml, pid ) {
+  Relations.isOnlineAccessOf ( xml, pid );
+}
+
 function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasSpecificOnlineAccess ( xml, pid );
 }

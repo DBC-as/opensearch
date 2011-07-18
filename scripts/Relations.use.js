@@ -632,8 +632,41 @@ var Relations = function() {
 		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Gale/)) {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
-      DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
-    }
+      	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+    } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom (tracks)/)) {
+				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1dlink");
+
+    		Log.info( "Identifier: " + identifier );
+    		Log.info( "pid: " + pid );
+
+    		var results = FedoraPIDSearch.pid( identifier );
+
+      	for ( var i = 0; i < results.length; ++i ) {
+        	var result = results[i];
+
+        	Log.info( "result: " + result );
+
+        	if (!String(result).match(/work:.*/)) {
+          	DbcAddiRelations.hasOnlineAccess( pid, result );
+        	}
+      	}
+				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1slink");
+
+    		Log.info( "Identifier: " + identifier );
+    		Log.info( "pid: " + pid );
+
+    		var results = FedoraPIDSearch.pid( identifier );
+
+      	for ( var i = 0; i < results.length; ++i ) {
+        	var result = results[i];
+
+        	Log.info( "result: " + result );
+
+        	if (!String(result).match(/work:.*/)) {
+          	DbcAddiRelations.hasOnlineAccess( pid, result );
+        	}
+      	}
+			}
 		
 		if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
       var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
@@ -641,6 +674,50 @@ var Relations = function() {
     }
 
     Log.info ("End hasOnlineAccess" );
+
+  };
+
+  that.isOnlineAccessOf = function ( xml, pid ) {
+
+    Log.info ("Start isOnlineAccessOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var imageXML = XmlUtil.fromString( xml );
+
+    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)dlink\|(.*)/, "$2:$1");
+
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.pid( identifier );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasOnlineAccess( result, pid );
+      }
+    }
+		identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)slink\|(.*)/, "$2:$1");
+
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.pid( identifier );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasOnlineAccess( result, pid );
+      }
+    }
+
+    Log.info ("End isOnlineAccessOf" );
 
   };
   
