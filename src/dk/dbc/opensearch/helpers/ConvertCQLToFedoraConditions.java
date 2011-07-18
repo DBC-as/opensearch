@@ -27,6 +27,16 @@ import java.util.ArrayList;
 
 public class ConvertCQLToFedoraConditions {
     
+
+    /**
+     * The main method of the class that is used to transform an cql query with 
+     * ANDs ORs and parantheses in it into a number of queries only containing ANDs
+     * that if the result from the are joined have the same result as the original query
+     * @param theQuery {@link Array} of {@link String} where each {@link String} is a part of the query
+     * @return {@link ArrayList} of {@link ArrayList} of {@code OpenSearchCondition} where each 
+     * {@link ArrayList} of {@code OpenSearchCondition} is a query to be executed against the 
+     * repository and joined with results of the other queries in the {@link ArrayList}
+     */
     public static ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
     {
         ArrayList< ArrayList< OpenSearchCondition > > queries = new ArrayList< ArrayList< OpenSearchCondition > >();
@@ -55,24 +65,10 @@ public class ConvertCQLToFedoraConditions {
 
                 //write all lists of conditions to all queries to get unique lists of conditions
                 queries = makeListPermutations( queries, currentConditionLists );
-                // System.out.println( "in AND" );
-                // for( ArrayList< OpenSearchCondition > list : queries )
-                // {
-                //     for( OpenSearchCondition cond: list )
-                //     {
-                //         System.out.println( cond.toString() );
-                //     }
-                // }
+             
                 //reset the list of list of conditions
                 currentConditionLists.clear();
-                // System.out.println( "in AND, after reset" );
-                // for( ArrayList< OpenSearchCondition > list : queries )
-                // {
-                //     for( OpenSearchCondition cond: list )
-                //     {
-                //         System.out.println( cond.toString() );
-                //     }
-                // }
+             
                 next++;
             }
 
@@ -131,43 +127,18 @@ public class ConvertCQLToFedoraConditions {
         {
             currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList( inHand ) );
         }
-
-        // System.out.println( "queries" );        
-        // for( ArrayList< OpenSearchCondition > list : queries )
-        // {
-
-        //     for( OpenSearchCondition cond: list )
-        //     {
-        //         System.out.println( cond.toString() );
-        //     }
-        // }
-        
-        // System.out.println( "currentConditionLists" );
-        // for( ArrayList< OpenSearchCondition > list : currentConditionLists )
-        // {
-            
-        //     for( OpenSearchCondition cond: list )
-        //     {
-        //         System.out.println( cond.toString() );
-        //     }
-        // }
         
         queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
-        
-        // System.out.println( "before return" );
-        // for( ArrayList< OpenSearchCondition > list : queries )
-        // {
-            
-        //     for( OpenSearchCondition cond: list )
-        //     {
-        //         System.out.println( cond.toString() );
-        //     }
-        // }
         
         return queries;
     }
 
-
+    /**
+     * Transforms a {@link String} containing a legal cql condition with = as its
+     * operator into a {@code OpenSearchCondition} in an {@link ArrayList}. The legal form is: field = value
+     * @param condition a {@link String} to be parsed and transformed
+     * @return {@link ArrayList} of {@code OpenSearchCondition} the container with transformed condition
+     */
     public static ArrayList< OpenSearchCondition >  transformConditionStringToConditionList( String condition ) {
         //the string contains three parts: first a field name, then
         //the = operator and the the value of the condition.
@@ -192,6 +163,9 @@ public class ConvertCQLToFedoraConditions {
     /**
      * Finds the query between parantheses
      * We start the search after the first left paranthese
+     * @param start {@link int} tells where the first left paranthese is found in the query
+     * @param query {@link String[]} the query to find the subquery in
+     * @rreturn {@link String[]} the subquery in the parantheses
      */
     public static String[] getQueryInParantheses( int start, String[] query )
     {
@@ -240,17 +214,17 @@ public class ConvertCQLToFedoraConditions {
     public static ArrayList< ArrayList < OpenSearchCondition > > makeListPermutations( ArrayList< ArrayList< OpenSearchCondition > > baseLists, ArrayList< ArrayList< OpenSearchCondition > > appendLists )
     {
 
-        //System.out.println( "baseLists size: " + baseLists.size() );
-        //System.out.println( "appendLists size: " + appendLists.size() );
+      
         //if there are no condition lists in queries return conditionLists
         if( baseLists.size() == 0 )
         {
             return new ArrayList< ArrayList< OpenSearchCondition > >( appendLists );
         }
 
+        //if there are no lists to append return the baselist
         if( appendLists.size() == 0 )
         {
-            return baseLists;
+            return new ArrayList< ArrayList < OpenSearchCondition> >( baseLists );
         }
 
 
