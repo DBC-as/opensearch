@@ -405,7 +405,7 @@ public class FcrepoUtilsTest
     public void setUp() throws Exception
     {
         setUpMocks( MockFedoraClient.class );
-        reader = new FcrepoReader( "Host", "Port" );
+        reader = new FcrepoReader( "Host", "Port", "User", "Pass" );
         modifier = new FcrepoModifier( "Host", "Port", "User", "Pass" );
     }
 

@@ -56,7 +56,7 @@ public class JSFcrepoStreamReader
         }
         catch( ObjectRepositoryException ex )
         {
-            log.error( "Unable to list datastreams for object " + pid );
+            log.error( "Unable to list datastreams for object " + pid, ex );
             return new String[] {};
         }
     }

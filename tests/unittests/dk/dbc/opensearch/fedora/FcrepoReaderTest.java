@@ -209,7 +209,7 @@ public class FcrepoReaderTest
     public void setUp() throws Exception
     {
         setUpMocks( MockFedoraClient.class );
-        instance = new FcrepoReader( "Host", "Port" );
+        instance = new FcrepoReader( "Host", "Port", "User", "Pass" );
     }
 
 
