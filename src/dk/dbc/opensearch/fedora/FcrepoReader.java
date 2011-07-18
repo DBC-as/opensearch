@@ -98,7 +98,7 @@ public class FcrepoReader
     }
 
 
-    private FedoraAPIA getAPIA() throws ServiceException
+    private FedoraAPIA getAPIA()
     {
         log.trace( "FcrepoReader getAPIA" );
         return fea;
@@ -360,11 +360,6 @@ public class FcrepoReader
             log.debug( String.format( "Result length of resultlist: %s", numberOfResults ) );
 
         }
-        catch( ServiceException ex )
-        {
-            String warn = String.format( "ServiceException -> Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
         catch( IOException ex )
         {
             String warn = String.format( "IOException -> Could not conduct query: %s", ex.getMessage() );
@@ -446,6 +441,26 @@ public class FcrepoReader
     }
 
 
+    public String[] listDatastreamIds( String pid ) throws ObjectRepositoryException
+    {
+        try
+        {
+            DatastreamDef[] streamDefs = this.getAPIA().listDatastreams( pid, null );
+            String ids[] = new String[streamDefs.length];
+            for (int i = 0 ; i < streamDefs.length ; i++)
+            {
+                ids[i] = streamDefs[i].getID();
+            }
+            return ids;
+        }
+        catch( RemoteException ex )
+        {
+            String error = String.format( "Failed to list datastreams from object with objectIdentifier '%s': %s", pid, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+    }
+
     public byte[] getDatastreamDissemination( String pid, String datastreamId ) throws ObjectRepositoryException
     {
         try
@@ -457,13 +472,6 @@ public class FcrepoReader
             return ds.getStream();
         }
         catch( RemoteException ex )
-        {
-            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s",
-                    datastreamId, pid, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( ServiceException ex )
         {
             String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s",
                     datastreamId, pid, ex.getMessage() );

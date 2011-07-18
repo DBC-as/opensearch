@@ -27,6 +27,7 @@ package dk.dbc.opensearch.javascript;
 
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
+import java.util.logging.Level;
 
 
 import org.apache.log4j.Logger;
@@ -47,6 +48,18 @@ public class JSFcrepoStreamReader
     }
 
 
+    public String[] listDatastreamIds( String pid )
+    {
+        try
+        {
+            return reader.listDatastreamIds( pid );
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            log.error( "Unable to list datastreams for object " + pid );
+            return new String[] {};
+        }
+    }
     public String getDatastream( String pid, String datastreamId )
     {
         try

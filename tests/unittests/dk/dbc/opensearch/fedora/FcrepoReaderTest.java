@@ -196,7 +196,7 @@ public class FcrepoReaderTest
     public static void generalSetup()
     {
         BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel( Level.OFF );
+        LogManager.getRootLogger().setLevel( Level.DEBUG );
 
         HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );
@@ -272,6 +272,16 @@ public class FcrepoReaderTest
         assertEquals( testPid, result.get( 1 ) );
     }
 
+    @Test
+    public void testListDatastreamIds() throws Exception
+    {
+        String identifier = "test:1";
+        String[] expected = { "Stream1", "Stream2"};
+
+        String[] result = instance.listDatastreamIds( identifier );
+
+        assertArrayEquals( expected , result );
+    }
 
     @Test
     public void testGetDatastreamDissemination() throws Exception
