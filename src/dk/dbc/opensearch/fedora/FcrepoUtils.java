@@ -128,7 +128,7 @@ public class FcrepoUtils
             log.debug( String.format( "checking relations for object: '%s'", otherObjectIdentifier ) );
             log.debug( String.format( "relationstring for '%s' is: '%s'", otherObjectIdentifier, relPredObjCSV ) );
             //splitting the string containing all the relations for the object found
-            if (relPredObjCSV != null && !relPredObjCSV.isEmpty())
+            if( relPredObjCSV != null && !relPredObjCSV.isEmpty() )
             {
                 for( String relPredObj : relPredObjCSV.split( "," ) )
                 {
