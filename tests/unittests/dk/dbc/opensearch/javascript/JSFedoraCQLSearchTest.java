@@ -44,8 +44,6 @@ public class JSFedoraCQLSearchTest
 {
     //The parsing and transformation of the queries are done in the 
     //helper class, so here we test how the results are treated
-
-    //@Mocked IObjectRepository repo;
     
     /*
      * Mock repository whos getIdentifiersByState method returns
