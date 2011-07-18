@@ -72,6 +72,14 @@ public class JSFedoraCQLSearch
         return mergeSearchResult( resultLists );
     }
 
+
+    /**
+     * merges strings from a list og lists into a {@code String} array 
+     * with unique members
+     * @param searchResult {@code ArrayList } of {@code List} of {@code String}, the 
+     * container to be merged to an array of unique lists
+     * @return {@code String[]} of unique Strings from the container
+     */
     private String[] mergeSearchResult( ArrayList< List< String > > searchResults )
     {
         HashSet< String > resultSet = new HashSet< String >();
@@ -88,6 +96,13 @@ public class JSFedoraCQLSearch
         return resultSet.toArray( a );
     }
     
+    /**
+     * searches the repository
+     * @param conditionList {@code ArrayList} of {@link OpenSearchCondition} 
+     * the conditions for the search
+     * @return {@code List} of {@code String} where each {@code String} is a pid 
+     * representing an object in the repository
+     */
     private List< String > doSearch( ArrayList< OpenSearchCondition > conditionList )
     {
         HashSet< String > states = new HashSet< String >();
