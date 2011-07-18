@@ -32,8 +32,12 @@ import mockit.Mocked;
 public class ConvertCQLToFedoraConditionsTest {
     
 
+    /*
+     * Tests that transformConditionStringToConditionList can convert 
+     * a cql query part into an OpensearchCondition contained in an ArrayList
+     */
     @Test
-    public void convertStringToCondition()
+    public void convertStringToConditionList()
     {
         String test = "title = hat";
         ArrayList< OpenSearchCondition > conditionList = ConvertCQLToFedoraConditions.transformConditionStringToConditionList( test );
@@ -43,6 +47,10 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( condition.getValue().equals( "hat" ) ); 
     }
     
+
+    /*
+     *The conversion of the empty String 
+     */
     @Test
     public void convertEmptyStringToCondition()
     {
@@ -51,6 +59,11 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( conditionList.isEmpty() );
     }
 
+
+    /*
+     * tests that the subquery contained in the parantheses is 
+     * returned without the endning right paranthese
+     */
     @Test
     public void getSubstringwithoutEndParanthese() throws Exception
     {
@@ -62,6 +75,11 @@ public class ConvertCQLToFedoraConditionsTest {
 
     }
 
+
+    /*
+     * tests that a subquery nested in parantheses are treated correctly 
+     * and not changed by the method
+     */
     @Test
     public void getSubstringWithNestedParatheses() throws Exception
     {
@@ -75,6 +93,10 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( result[ 3 ].equals( ")" ) ); 
     }
     
+
+    /*
+     * test that and empty string in parantheses returns an empty array
+     */
     @Test
     public void getEmptyString() throws Exception
     {
@@ -85,6 +107,9 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( result[ 0 ].isEmpty() );
     }
     
+    /*
+     * tests that we can append a baselist containing an empty list to a non-empty list
+     */
     @Test
     public void makeListPermutationsEmptyAndSingle()
     {
@@ -110,6 +135,11 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultCondition.getValue().equals( "test" ) ); 
     }
 
+    
+    /*
+     * test that the base list gets gets copied and gets 
+     * both the lists in the appendlist appended
+     */
     @Test
     public void makeListPermutationsOneAndTwo()
     {
@@ -136,6 +166,11 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultListList.get( 1 ).get( 1 ).getValue().equals( "test3" ) );
     }
 
+
+    /*
+     * tests that the baselist gets the appendlists appended correct 
+     * when they are of different length
+     */
     @Test
     public void makeListPermutationsOneAndOneTwo()
     {
@@ -164,6 +199,10 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultListList.get( 1 ).get( 2 ).getValue().equals( "test3" ) );
     }
     
+
+    /*
+     * tests that we return the appendlist when the baselist is empty
+     */
     @Test
     public void makeListPermutationsEmptyBaseList()
     {
@@ -179,6 +218,10 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultListList.get( 0 ).get( 0 ).getValue().equals( "test2" ) );
     } 
 
+
+    /*
+     * tests that we return the baselist if the appendlist is empty
+     */
     @Test
     public void makeListPermutationsEmptyAppendList()
     {
@@ -194,6 +237,12 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultListList.get( 0 ).get( 0 ).getValue().equals( "testBase" ) );
     }
     
+
+    /*
+     * tests that we can transform a string containing a legal cql query 
+     * of field, operator and value, where the operator is EQUALS into a list of list 
+     * of OpenSearchCondition
+     */
     @Test
     public void searchTransformerSimpleSearch()
     {
@@ -210,6 +259,10 @@ public class ConvertCQLToFedoraConditionsTest {
     
     } 
     
+
+    /*
+     *tests that we can treat the AND operator in the cql statement 
+     */
     @Test
     public void searchTransformerANDSearch()
     {
@@ -228,6 +281,10 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultCondition2.getValue().equals( "hat" ) ); 
     }    
     
+
+    /*
+     *tests that we can treat the OR operator   
+     */
     @Test
     public void searchTransformerORSearch()
     {
@@ -248,6 +305,9 @@ public class ConvertCQLToFedoraConditionsTest {
     }
 
 
+    /*
+     * tests the treatment of a query with both AND and OR
+     */
     @Test
     public void searchTransformerANDORSearch()
     {
@@ -276,6 +336,11 @@ public class ConvertCQLToFedoraConditionsTest {
         assertTrue( resultCondition11.getValue().equals( "ged" ) ); 
     }
 
+
+    /*
+     * tests treatment of parantheses in a query where AND is 
+     * right in front of the paranthese
+     */
     @Test
     public void searchTransformerANDparORparSearch()
     {
@@ -305,6 +370,10 @@ public class ConvertCQLToFedoraConditionsTest {
     }
 
     
+    /*
+     * tests the treatment of parantheses in the query when OR is the operator 
+     * in front of it
+     */
     @Test
     public void searchTransformerORparANDparSearch()
     {
@@ -330,6 +399,9 @@ public class ConvertCQLToFedoraConditionsTest {
     } 
     
     
+    /*
+     * tests that we treat queries where there is more conditions after a subquery in parantheses
+     */
     @Test
     public void searchTransformerCheckParentheses()
     {
