@@ -19,10 +19,8 @@
 
 /**
  * \file
- * \brief this class exposes functionality to javascripts that takes
- * a cql-search statement and transforms it into a number of searches in
- * the object repository and returns the joined members of the
- * searchresults to the script
+ * \brief functionality for javascripts to make cql-search 
+ * statements in searches
  */
 
 package dk.dbc.opensearch.javascript;
@@ -61,36 +59,42 @@ public class JSFedoraCQLSearch
      */
     public String[] search( String query )
     {
-        ArrayList< String[] > resultList = new ArrayList< String[] >();
+        ArrayList< List< String > > resultLists = new ArrayList< List< String > >();
         query = query.trim();
         String[] queryParts = query.split( " " );
         ArrayList< ArrayList< OpenSearchCondition > > queryList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
         
         for( ArrayList< OpenSearchCondition> condList : queryList )
         {
-            resultList.add( doSearch( condList ) );
+            resultLists.add( doSearch( condList ) );
         }
         
-        return mergeSearchResult( resultList );
+        return mergeSearchResult( resultLists );
     }
 
-    private String[] mergeSearchResult( ArrayList< String[] > searchResults )
+    private String[] mergeSearchResult( ArrayList< List< String > > searchResults )
     {
         HashSet< String > resultSet = new HashSet< String >();
 
-        for( String[] result : searchResults )
+        for( List< String > results : searchResults )
         {
-            for( String pid : result )
+            for( String pid : results )
             {
                 resultSet.add( pid );
             }
         }
         
-        return ( String[] )resultSet.toArray();
+        String[] a = {};
+        return resultSet.toArray( a );
     }
     
-    private String[] doSearch( ArrayList< OpenSearchCondition > conditionList )
+    private List< String > doSearch( ArrayList< OpenSearchCondition > conditionList )
     {
-        return null;
+        HashSet< String > states = new HashSet< String >();
+        //we dont wont delete marked objects in the result set, only actice and inactive
+        states.add( "I" );
+        states.add( "A" );
+        
+        return repository.getIdentifiersByState( conditionList, 10000, states ); 
     }
 }
