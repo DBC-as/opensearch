@@ -22,8 +22,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.fedora;
 
+import dk.dbc.opensearch.metadata.DBCBIB;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.DataStreamType;
+import java.io.ByteArrayInputStream;
 import org.fcrepo.server.types.gen.Datastream;
 
 import org.fcrepo.server.types.gen.FieldSearchQuery;
@@ -36,7 +38,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.rpc.ServiceException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import mockit.Expectations;
 
 
@@ -69,6 +76,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.InputSource;
 
 /**
  * \Todo testen dækker ikke alle metoder. Ret op på dette.
@@ -86,9 +94,35 @@ public class FcrepoModifierTest
 
     public static class MockFedoraAPIM implements FedoraAPIM
     {
-        public String ingest(byte[] objectXML, String format, String logMessage) throws java.rmi.RemoteException
+        public String ingest(byte[] objectXML, String format, String logMessage) throws RemoteException
         {
-            throw new UnsupportedOperationException( "Not supported yet." );
+            String newPid = "new:1";
+
+            NamespaceContext nsc = new FedoraNamespaceContext();
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            xpath.setNamespaceContext( nsc );
+            XPathExpression xPathExpression = null;
+            String xPathStr = "/foxml:digitalObject[1]/@PID";
+            InputSource dataInput = new InputSource( new ByteArrayInputStream( objectXML ) );
+            try
+            {
+                xPathExpression = xpath.compile( xPathStr );
+                String foundPid = xPathExpression.evaluate( dataInput );
+
+                if( foundPid.equals( samePid ) )
+                {
+                    return samePid;
+                }
+                else if( foundPid.equals( testPid ) )
+                {
+                    return testPid;
+                }
+                return newPid;
+            }
+            catch( XPathExpressionException e )
+            {
+                throw new RemoteException("Exception parsing XML", e);
+            }
         }
 
         public String modifyObject(String pid, String state, String label, String ownerId, String logMessage) throws RemoteException
@@ -115,7 +149,12 @@ public class FcrepoModifierTest
 
         public String purgeObject(String pid, String logMessage, boolean force) throws RemoteException
         {
-            throw new UnsupportedOperationException( "Not supported yet." );
+            if( pid.equals( samePid ) || pid.equals( testPid ) )
+            {
+                return "timestamp";
+            }
+
+            return null;
         }
 
         public String addDatastream(String pid, String dsID, String[] altIDs, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String dsState, String checksumType, String checksum, String logMessage) throws RemoteException
@@ -165,12 +204,16 @@ public class FcrepoModifierTest
 
         public String[] purgeDatastream(String pid, String dsID, String startDT, String endDT, String logMessage, boolean force) throws RemoteException
         {
-            throw new UnsupportedOperationException( "Not supported yet." );
+            if( pid.startsWith( "test" ) )
+            {
+                return new String[] { "timestamp" };
+            }
+            return new String[] { };
         }
 
-        public String[] getNextPID(org.apache.axis.types.NonNegativeInteger numPIDs, String pidNamespace) throws RemoteException
+        public String[] getNextPID(NonNegativeInteger numPIDs, String pidNamespace) throws RemoteException
         {
-            throw new UnsupportedOperationException( "Not supported yet." );
+            return new String[]{pidNamespace+":1"};
         }
 
         public RelationshipTuple[] getRelationships(String pid, String relationship) throws RemoteException
@@ -185,7 +228,15 @@ public class FcrepoModifierTest
 
         public boolean purgeRelationship(String pid, String relationship, String object, boolean isLiteral, String datatype) throws RemoteException
         {
-            throw new UnsupportedOperationException( "Not supported yet." );
+            if( !pid.startsWith( "object:" ) )
+            {
+                return false;
+            }
+            if( !pid.startsWith( "subject:" ) )
+            {
+                return false;
+            }
+            return true;
         }
 
         public Validation validate(String pid, String asOfDateTime) throws RemoteException
@@ -269,13 +320,81 @@ public class FcrepoModifierTest
     }
 
     @Test
-    public void testaddObjectRelationSelf() throws Exception
+    public void testaddObjectRelationToSelfFails() throws Exception
     {
         String identifier = "test:1";
 
         boolean res = instance.addUncheckedObjectRelation( identifier, "", identifier );
         // Adding relation to self is not allowed
         assertFalse( res);
+    }
+
+    @Test
+    public void testpurgeObjectRelation( ) throws Exception {
+        instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");
+    }
+
+
+    @Test
+    public void testStoreObject() throws Exception
+    {
+        CargoContainer cargo = new CargoContainer( );
+        cargo.setIdentifier( new PID("test:1") );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        // static final String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">æøå</dc:title>";
+        String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">test:1</dc:title>";
+        cargo.add( DataStreamType.DublinCoreData, "testFormat", "testSubmitter", "da", "text/xml", dublinCore.getBytes() );
+        String logmessage = "log";
+        String expResult = "test:1";
+        String result = instance.storeObject( cargo, logmessage, "test");
+        assertEquals( expResult, result );
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void testStoreObjectWithEmptyCargo() throws Exception
+    {
+        CargoContainer cargo = new CargoContainer();
+        // Throws exception on empty cargo object
+        String res = instance.storeObject( cargo, "logmessage", "defaultPidNamespace" );
+    }
+
+    @Test
+    public void testStoreObjectWithEmptyIdentifierFails() throws Exception
+    {
+        CargoContainer cargo = new CargoContainer();
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        // cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
+        String logmessage = "log";
+        String storeObject = instance.storeObject( cargo, logmessage, "test");
+        assertEquals( "test:1", storeObject );
+    }
+
+    @Test
+    public void testPurgeObject() throws Exception
+    {
+        String identifier = "test:1";
+        String logmessage = "log";
+
+        instance.purgeObject( identifier, logmessage );
+    }
+
+
+    @Test( expected = ObjectRepositoryException.class )
+    public void testPurgeObjectFailsWithNonExistingObject() throws Exception
+    {
+        String identifier = "idontexist";
+        String logmessage = "log";
+
+        instance.purgeObject( identifier, logmessage );
+    }
+
+    @Test
+    public void testPurgeDatastream() throws Exception
+    {
+        String identifier = "test:1";
+        String logmessage = "log";
+
+        instance.purgeDatastream( identifier, "RELS-EXT", null, null, logmessage, false );
     }
 
 

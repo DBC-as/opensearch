@@ -346,7 +346,7 @@ public class FcrepoModifier
      *
      * @throws ObjectRepositoryException if the object cannot be purged
      */
-    private String purgeObject( String identifier, String logmessage ) throws ObjectRepositoryException
+    public String purgeObject( String identifier, String logmessage ) throws ObjectRepositoryException
     {
         long timer = System.currentTimeMillis();
 
@@ -378,6 +378,7 @@ public class FcrepoModifier
      * @param cargo the data to store
      * @param logmessage message to log the operation with
      * @return the objectIdentifier of the stored object
+     * @throws IllegalStateException if the cargo is empty
      * @throws ObjectRepositoryException if the cargo could not be transformed
      * into foxml or the foxml could not be stored
      */

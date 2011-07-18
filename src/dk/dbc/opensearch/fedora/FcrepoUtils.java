@@ -64,7 +64,7 @@ public class FcrepoUtils
      * @throws ObjectRepositoryException when outbound relations could not be
      * removed
      */
-    public void removeOutboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
+    public static void removeOutboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
     {
         String[] purged = null;
         try
@@ -100,12 +100,14 @@ public class FcrepoUtils
      * @param modifier Interface to modify repository
      * @param objectIdentifier {@link String} identifier for the object to remove
      * inbound relations for
+     * @return The number of relations that were found and removed
      * @throws {@linkObjectRepositoryException} when inbound relation could not
      * be removed
      *
      */
-    public static void removeInboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
+    public static int removeInboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
     {
+        int count = 0;
         OpenSearchCondition cond = new OpenSearchCondition( FedoraObjectFields.RELOBJ, OpenSearchCondition.Operator.EQUALS, objectIdentifier );
 
         String[] resultFields =
@@ -126,18 +128,23 @@ public class FcrepoUtils
             log.debug( String.format( "checking relations for object: '%s'", otherObjectIdentifier ) );
             log.debug( String.format( "relationstring for '%s' is: '%s'", otherObjectIdentifier, relPredObjCSV ) );
             //splitting the string containing all the relations for the object found
-            for( String relPredObj : relPredObjCSV.split( "," ) )
+            if (relPredObjCSV != null && !relPredObjCSV.isEmpty())
             {
-                String[] predObjPair = relPredObj.split( "\\|" );
-                //splitting to get the predicate and the subject identifier seperated
-                log.debug( String.format( "found relation '%s' from obj '%s' to obj '%s'", predObjPair[0], otherObjectIdentifier, predObjPair[1] ) );
-                if( objectIdentifier.equals( predObjPair[1] ) )
+                for( String relPredObj : relPredObjCSV.split( "," ) )
                 {
-                    log.info( String.format( "removing relation from obj '%s'", otherObjectIdentifier ) );
-                    modifier.removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
+                    String[] predObjPair = relPredObj.split( "\\|" );
+                    //splitting to get the predicate and the subject identifier seperated
+                    log.debug( String.format( "found relation '%s' from obj '%s' to obj '%s'", predObjPair[0], otherObjectIdentifier, predObjPair[1] ) );
+                    if( objectIdentifier.equals( predObjPair[1] ) )
+                    {
+                        log.info( String.format( "removing relation from obj '%s'", otherObjectIdentifier ) );
+                        modifier.removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
+                        count++;
+                    }
                 }
             }
         }
+        return count;
     }
 
 
