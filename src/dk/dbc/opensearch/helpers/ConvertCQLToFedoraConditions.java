@@ -27,12 +27,11 @@ import java.util.ArrayList;
 
 public class ConvertCQLToFedoraConditions {
     
-    ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
+    public static ArrayList< ArrayList< OpenSearchCondition > > searchTransformer( String[] theQuery )
     {
         ArrayList< ArrayList< OpenSearchCondition > > queries = new ArrayList< ArrayList< OpenSearchCondition > >();
         ArrayList< ArrayList< OpenSearchCondition > > currentConditionLists = new ArrayList< ArrayList< OpenSearchCondition > >();
         ArrayList< OpenSearchCondition > tempConditionList = new ArrayList< OpenSearchCondition >();
-        //Array< String > currentConditionStrings = new ArrayList< String >();
         int queryCount = 0;
         int currentCount = 0;
         String inHand = null;
@@ -56,10 +55,24 @@ public class ConvertCQLToFedoraConditions {
 
                 //write all lists of conditions to all queries to get unique lists of conditions
                 queries = makeListPermutations( queries, currentConditionLists );
-
+                // System.out.println( "in AND" );
+                // for( ArrayList< OpenSearchCondition > list : queries )
+                // {
+                //     for( OpenSearchCondition cond: list )
+                //     {
+                //         System.out.println( cond.toString() );
+                //     }
+                // }
                 //reset the list of list of conditions
                 currentConditionLists.clear();
-
+                // System.out.println( "in AND, after reset" );
+                // for( ArrayList< OpenSearchCondition > list : queries )
+                // {
+                //     for( OpenSearchCondition cond: list )
+                //     {
+                //         System.out.println( cond.toString() );
+                //     }
+                // }
                 next++;
             }
 
@@ -80,8 +93,8 @@ public class ConvertCQLToFedoraConditions {
                 //call method that gets the subquery between the parantheses
                 String[] subQuery = getQueryInParantheses( next, theQuery );
 
-                //increase next with the length of subQuery + 1, we need to get past the right paranthese
-                next = next + subQuery.length + 1;
+                //increase next with the length of subQuery + 2, we need to get past the right paranthese
+                next = next + subQuery.length + 2;
 
                 //We transform the subquery to lists of conditions, by recursivly calling this method
                 ArrayList < ArrayList < OpenSearchCondition > > subQueries = searchTransformer( subQuery );
@@ -102,6 +115,7 @@ public class ConvertCQLToFedoraConditions {
                 {
                     //stat of new condition
                     inHand = part;
+                    //System.out.println( "part: " + part );
                 }
                 else
                 {
@@ -117,8 +131,39 @@ public class ConvertCQLToFedoraConditions {
         {
             currentConditionLists.add( ConvertCQLToFedoraConditions.transformConditionStringToConditionList( inHand ) );
         }
-        queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
 
+        // System.out.println( "queries" );        
+        // for( ArrayList< OpenSearchCondition > list : queries )
+        // {
+
+        //     for( OpenSearchCondition cond: list )
+        //     {
+        //         System.out.println( cond.toString() );
+        //     }
+        // }
+        
+        // System.out.println( "currentConditionLists" );
+        // for( ArrayList< OpenSearchCondition > list : currentConditionLists )
+        // {
+            
+        //     for( OpenSearchCondition cond: list )
+        //     {
+        //         System.out.println( cond.toString() );
+        //     }
+        // }
+        
+        queries = ConvertCQLToFedoraConditions.makeListPermutations( queries, currentConditionLists );
+        
+        // System.out.println( "before return" );
+        // for( ArrayList< OpenSearchCondition > list : queries )
+        // {
+            
+        //     for( OpenSearchCondition cond: list )
+        //     {
+        //         System.out.println( cond.toString() );
+        //     }
+        // }
+        
         return queries;
     }
 
@@ -195,12 +240,12 @@ public class ConvertCQLToFedoraConditions {
     public static ArrayList< ArrayList < OpenSearchCondition > > makeListPermutations( ArrayList< ArrayList< OpenSearchCondition > > baseLists, ArrayList< ArrayList< OpenSearchCondition > > appendLists )
     {
 
-        System.out.println( "baseLists size: " + baseLists.size() );
-        System.out.println( "appendLists size: " + appendLists.size() );
+        //System.out.println( "baseLists size: " + baseLists.size() );
+        //System.out.println( "appendLists size: " + appendLists.size() );
         //if there are no condition lists in queries return conditionLists
         if( baseLists.size() == 0 )
         {
-            return appendLists;
+            return new ArrayList< ArrayList< OpenSearchCondition > >( appendLists );
         }
 
         if( appendLists.size() == 0 )
@@ -219,16 +264,16 @@ public class ConvertCQLToFedoraConditions {
         for( int i = 0; i < appendListCount; i++ )
         {
             tempConditionList = appendLists.get( i );
-            System.out.println( "tempConditionList size: " + tempConditionList.size() );
+            //System.out.println( "tempConditionList size: " + tempConditionList.size() );
             for( int r = 0; r < baseCount; r++ )
             {
                 tempQueryList = new ArrayList< OpenSearchCondition > ( baseLists.get( r ) );
-                System.out.println( "tempQueryList size: " + tempQueryList.size() );
+                //System.out.println( "tempQueryList size: " + tempQueryList.size() );
                 for( OpenSearchCondition condition : tempConditionList )
                 {
                     tempQueryList.add( condition );
-                    System.out.println( "tempList size after add: " + tempQueryList.size() );
-                    System.out.println( "baseLists size after add: " + baseLists.size() );
+                    //System.out.println( "tempList size after add: " + tempQueryList.size() );
+                    //System.out.println( "baseLists size after add: " + baseLists.size() );
                 }
 
                 //returnListList.add( tempQueryList );

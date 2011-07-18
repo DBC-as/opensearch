@@ -65,7 +65,7 @@ public class ConvertCQLToFedoraConditionsTest {
     @Test
     public void getSubstringWithNestedParatheses() throws Exception
     {
-        String test = "( test ( test ) )";
+        String test = "( test ( test ) ) hest";
         String[] testArray = test.split( " " );
         String[] result = ConvertCQLToFedoraConditions.getQueryInParantheses( 0, testArray );
         assertTrue( result.length == 4 );
@@ -192,6 +192,174 @@ public class ConvertCQLToFedoraConditionsTest {
 
         assertTrue( resultListList.size() == 1 );
         assertTrue( resultListList.get( 0 ).get( 0 ).getValue().equals( "testBase" ) );
+    }
+    
+    @Test
+    public void searchTransformerSimpleSearch()
+    {
+        String query = "title = test";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 1 );
+        assertTrue( resultList.get( 0 ).size() == 1 );
+        OpenSearchCondition resultCondition = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition.getValue().equals( "test" ) ); 
+    
+    
+    } 
+    
+    @Test
+    public void searchTransformerANDSearch()
+    {
+        String query = "title = test AND creator = hat";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 1 );
+        assertTrue( resultList.get( 0 ).size() == 2 );
+        OpenSearchCondition resultCondition1 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition1.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition1.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition2 = resultList.get( 0 ).get( 1 );
+        assertTrue( resultCondition2.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition2.getValue().equals( "hat" ) ); 
+    }    
+    
+    @Test
+    public void searchTransformerORSearch()
+    {
+        String query = "title = test OR creator = hat";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 2 );
+        assertTrue( resultList.get( 0 ).size() == 1 );
+        assertTrue( resultList.get( 1 ).size() == 1 );
+        OpenSearchCondition resultCondition1 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition1.getField().fieldname().equals( "title" ) );        
+        assertTrue( resultCondition1.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition2 = resultList.get( 1 ).get( 0 );
+        assertTrue( resultCondition2.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition2.getValue().equals( "hat" ) ); 
+    }
+
+
+    @Test
+    public void searchTransformerANDORSearch()
+    {
+        String query = "title = test AND creator = hat OR creator = ged";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 2 );
+        assertTrue( resultList.get( 0 ).size() == 2 );
+        assertTrue( resultList.get( 1 ).size() == 2 );
+        
+        OpenSearchCondition resultCondition00 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition00.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition00.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition01 = resultList.get( 0 ).get( 1 );
+        assertTrue( resultCondition01.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition01.getValue().equals( "hat" ) ); 
+
+        OpenSearchCondition resultCondition10 = resultList.get( 1 ).get( 0 );
+        assertTrue( resultCondition10.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition10.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition11 = resultList.get( 1 ).get( 1 );
+        assertTrue( resultCondition11.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition11.getValue().equals( "ged" ) ); 
+    }
+
+    @Test
+    public void searchTransformerANDparORparSearch()
+    {
+        String query = "title = test AND ( creator = hat OR creator = ged )";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 2 );
+        assertTrue( resultList.get( 0 ).size() == 2 );
+        assertTrue( resultList.get( 1 ).size() == 2 );
+        
+        OpenSearchCondition resultCondition00 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition00.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition00.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition01 = resultList.get( 0 ).get( 1 );
+        assertTrue( resultCondition01.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition01.getValue().equals( "hat" ) ); 
+
+        OpenSearchCondition resultCondition10 = resultList.get( 1 ).get( 0 );
+        assertTrue( resultCondition10.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition10.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition11 = resultList.get( 1 ).get( 1 );
+        assertTrue( resultCondition11.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition11.getValue().equals( "ged" ) ); 
+    }
+
+    
+    @Test
+    public void searchTransformerORparANDparSearch()
+    {
+        String query = "title = test OR ( creator = hat AND creator = ged )";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 2 );
+        assertTrue( resultList.get( 0 ).size() == 1 );
+        assertTrue( resultList.get( 1 ).size() == 2 );
+        
+        OpenSearchCondition resultCondition00 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition00.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition00.getValue().equals( "test" ) ); 
+    
+        OpenSearchCondition resultCondition10 = resultList.get( 1 ).get( 0 );
+        assertTrue( resultCondition10.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition10.getValue().equals( "hat" ) ); 
+    
+        OpenSearchCondition resultCondition11 = resultList.get( 1 ).get( 1 );
+        assertTrue( resultCondition11.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition11.getValue().equals( "ged" ) ); 
+    } 
+    
+    
+    @Test
+    public void searchTransformerCheckParentheses()
+    {
+        String query = "title = test OR ( creator = hat AND creator = ged ) AND title = hat";
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > resultList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        assertTrue( resultList.size() == 2 );
+        assertTrue( resultList.get( 0 ).size() == 2 );
+        assertTrue( resultList.get( 1 ).size() == 3 );
+        
+        OpenSearchCondition resultCondition00 = resultList.get( 0 ).get( 0 );
+        assertTrue( resultCondition00.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition00.getValue().equals( "test" ) );   
+        
+        OpenSearchCondition resultCondition01 = resultList.get( 0 ).get( 1 );
+        assertTrue( resultCondition01.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition01.getValue().equals( "hat" ) ); 
+    
+        OpenSearchCondition resultCondition10 = resultList.get( 1 ).get( 0 );
+        assertTrue( resultCondition10.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition10.getValue().equals( "hat" ) ); 
+    
+        OpenSearchCondition resultCondition11 = resultList.get( 1 ).get( 1 );
+        assertTrue( resultCondition11.getField().fieldname().equals( "creator" ) );
+        assertTrue( resultCondition11.getValue().equals( "ged" ) ); 
+        
+        OpenSearchCondition resultCondition12 = resultList.get( 1 ).get( 2 );
+        assertTrue( resultCondition12.getField().fieldname().equals( "title" ) );
+        assertTrue( resultCondition12.getValue().equals( "hat" ) ); 
     }
 
 }

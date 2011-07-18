@@ -52,9 +52,45 @@ public class JSFedoraCQLSearch
         this.repository = repository;
     }
     
+    /**
+     * Method that takes a query in a subset of CQL (AND, OR and parantheses are allowed) 
+     * transforms it into a number of AND searches for the Fedora repository, executes 
+     * the searches and merges the results into a union.
+     * @param query {@code String} the cql query to be transformed and executed
+     * @return {@code String[]} the pids of the objects matching the search
+     */
     public String[] search( String query )
+    {
+        ArrayList< String[] > resultList = new ArrayList< String[] >();
+        query = query.trim();
+        String[] queryParts = query.split( " " );
+        ArrayList< ArrayList< OpenSearchCondition > > queryList = ConvertCQLToFedoraConditions.searchTransformer( queryParts );
+        
+        for( ArrayList< OpenSearchCondition> condList : queryList )
+        {
+            resultList.add( doSearch( condList ) );
+        }
+        
+        return mergeSearchResult( resultList );
+    }
+
+    private String[] mergeSearchResult( ArrayList< String[] > searchResults )
+    {
+        HashSet< String > resultSet = new HashSet< String >();
+
+        for( String[] result : searchResults )
+        {
+            for( String pid : result )
+            {
+                resultSet.add( pid );
+            }
+        }
+        
+        return ( String[] )resultSet.toArray();
+    }
+    
+    private String[] doSearch( ArrayList< OpenSearchCondition > conditionList )
     {
         return null;
     }
-
 }
