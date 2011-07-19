@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 public class JSFedoraCQLSearch
 {
 
-    private Logger log = Logger.getLogger( JSFedoraCQLSearch.class );
+    private final static Logger log = Logger.getLogger( JSFedoraCQLSearch.class );
     private IObjectRepository repository;
 
     public JSFedoraCQLSearch( IObjectRepository repository )

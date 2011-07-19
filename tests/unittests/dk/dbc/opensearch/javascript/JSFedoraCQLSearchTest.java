@@ -20,6 +20,10 @@
 
 package dk.dbc.opensearch.javascript;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Level;
+import org.apache.log4j.BasicConfigurator;
+import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
@@ -67,6 +71,13 @@ public class JSFedoraCQLSearchTest
             
             return results;
         }
+    }
+
+    @BeforeClass
+    public static void generalSetup()
+    {
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel( Level.OFF );
     }
 
     @Before
@@ -137,5 +148,21 @@ public class JSFedoraCQLSearchTest
         assertTrue( result.length == 2 );
         assertEquals( result[ 0 ], "test" );
         assertEquals( result[ 1 ], "test2" );
-    } 
+    }
+
+    /*
+     * Testing a query wih parentheses
+     */
+    @Test
+    public void parenthesesTest() throws ObjectRepositoryException
+    {
+        String query = " ( title = test OR title = test2 ) AND type = bog";
+
+        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+
+        String[] result = cqlSearcher.search( query );
+        String[] expected = { "test", "bog", "test2" };
+        assertArrayEquals( expected, result );
+    }
 }
