@@ -59,8 +59,8 @@ package dk.dbc.opensearch.pluginframework;
  * 
  */
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.Map;
@@ -85,13 +85,14 @@ public interface IPluggable
      * 
      * Notice, that an environment created by one plugin is not guaranteed to be used by another plugin.
      *
-     * @param repository Used by the plugin to communicate with the Object Repository.
+     * @param reader Used by the plugin to read from the Object Repository.
+     * @param modifier Used by the plugin to modify in the Object Repository.
      * @param argsMap ??
      * @param scriptPath The path to where the javascripts can be found - if needed.
      * 
      * @return a IPluginEnviroment specific for this plugin.
      */
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > argsMap, String scriptPath ) throws PluginException;
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > argsMap, String scriptPath ) throws PluginException;
 
 
 }

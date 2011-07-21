@@ -26,12 +26,13 @@ package dk.dbc.opensearch.plugins;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import dk.dbc.opensearch.fedora.FcrepoUtils;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import java.util.HashMap;
 import java.util.List;
 import dk.dbc.commons.types.Pair;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
@@ -47,7 +48,6 @@ import static org.junit.Assert.*;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
-import org.w3c.dom.Document;
 import static mockit.Mockit.setUpMocks;
 import static mockit.Mockit.tearDownMocks;
 
@@ -62,42 +62,80 @@ public class StoreTest
     String testString = "testStringUsedToGenerateBytes";
     byte[] dataBytes = testString.getBytes();
     IObjectIdentifier objectIdentifier;
-    @Mocked IObjectRepository mockedRepository;
     @Mocked Map<String, String> mockArgsMap; 
 
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockFedoraObjectRepository
+    @MockClass( realClass = FcrepoReader.class )
+    public static class MockReaderHasNoObject
     {
         @Mock public void $init( String host, String port, String user, String passwd ) 
-	{
-	}
+        {
+        }
 
         @Mock
-        public static boolean hasObject( IObjectIdentifier objectIdentifier )
+        public boolean hasObject( String objectIdentifier )
         {
             return false;
         }
+    }
+
+
+    @MockClass( realClass = FcrepoReader.class )
+    public static class MockReaderHasObject
+    {
+        @Mock public void $init( String host, String port, String user, String passwd )
+        {
+        }
+
+        @Mock
+        public boolean hasObject( String objectIdentifier )
+        {
+            return true;
+        }
+    }
+
+
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockModifier
+    {
+        @Mock public void $init( String host, String port, String user, String passwd )
+        {
+        }
+
+        @Mock
+        public String purgeObject( String identifier, String logmessage)
+        {
+            return "";
+        }
 
         @Mock( invocations = 1 )
-        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
         {
             return "stored";
         }
 
-    } 
+    }
 
 
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockFedoraObjectRepositoryMarkDeleted
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockModifierStore
+    {
+        @Mock public void $init( String host, String port, String user, String passwd )
+        {
+        }
+
+        @Mock( invocations = 1 )
+        public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        {
+            return "stored";
+        }
+    }
+
+
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockModifierMarkDeleted
     {
         @Mock public void $init( String host, String port, String user, String passwd ) 
-	{
-	}
-
-        @Mock
-        public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
-            return true;
         }
 
         @Mock( invocations = 1 )
@@ -106,21 +144,16 @@ public class StoreTest
         }
     }
 
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockFedoraObjectRepositoryMarkDeletedException
+
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockModifierMarkDeletedException
     {
         @Mock public void $init( String host, String port, String user, String passwd ) 
-	{
-	}
-
-        @Mock
-        public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
-            return true;
         }
 
         @Mock( invocations = 0 )
-        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
         {
             return "stored";
         }
@@ -133,57 +166,46 @@ public class StoreTest
     }
 
 
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockFedoraObjectRepositoryHasObject
+    @MockClass( realClass = FcrepoReader.class )
+    public static class MockReaderException
     {
-        @Mock public void $init( String host, String port, String user, String passwd ) 
-	{
-	}
-
-        @Mock
-        public static boolean hasObject( IObjectIdentifier objectIdentifier )
+        @Mock public void $init( String host, String port, String user, String passwd )
         {
-            return true;
         }
 
         @Mock
-        public static void purgeObject( String identifier, String logmessage)
-        {
-        }
-        
-        @Mock 
-        public static void removeInboundRelations( String objectIdentifier )
-        {
-        }
-
-        @Mock( invocations = 1 )
-        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
-        {
-            return "stored";
-        }
-
-    } 
-
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockFedoraObjectRepositoryException
-    {
-        @Mock public void $init( String host, String port, String user, String passwd ) 
-	{
-	}
-
-        @Mock 
-        public static boolean hasObject( IObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
+        public boolean hasObject( String objectIdentifier ) throws ObjectRepositoryException
         {
             throw new ObjectRepositoryException( "test" );
         }
-
-        @Mock
-        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException
-        {
-            throw new ObjectRepositoryException( "test" );
-        }
-
     }
+
+
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockModifierException
+    {
+        @Mock public void $init( String host, String port, String user, String passwd )
+        {
+        }
+
+        @Mock
+        public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException
+        {
+            throw new ObjectRepositoryException( "test" );
+        }
+    }
+
+
+    @MockClass( realClass = FcrepoUtils.class )
+    public static class MockUtils
+    {
+        @Mock( invocations = 1 )
+        public static int removeInboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
+        {
+            return 0;
+        }
+    }
+
 
     /**
      * mocks the constructor called in the environment
@@ -206,6 +228,7 @@ public class StoreTest
             return true;
         }
     }
+
 
     @Before
     public void setUp() throws Exception
@@ -235,14 +258,15 @@ public class StoreTest
     @Test
     public void storeCargoContainerHappyPathTest() throws Exception
     {
-        setUpMocks( MockFedoraObjectRepository.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockReaderHasNoObject.class, MockModifier.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
-	returnCargo = storePlugin.runPlugin( env, cargo );
+        IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
+        returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -254,14 +278,15 @@ public class StoreTest
     @Test
     public void storeCargoContainerHappyPathDeleteTest() throws Exception
     {
-        setUpMocks( MockFedoraObjectRepositoryHasObject.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockReaderHasObject.class, MockModifier.class, MockUtils.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
-	returnCargo = storePlugin.runPlugin( env, cargo );
+        IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
+        returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
     }
 
@@ -273,17 +298,17 @@ public class StoreTest
     @Test 
     public void storeCargoContainerHappyPathNoIdentifierTest() throws Exception
     {
-         setUpMocks( MockFedoraObjectRepository.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockReaderHasNoObject.class, MockModifier.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         //cargo.setIdentifier( null );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
-	returnCargo = storePlugin.runPlugin( env, cargo );
-       
+        IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
+        returnCargo = storePlugin.runPlugin( env, cargo );
+
         assertEquals( returnCargo.getIdentifierAsString(), "" );
-        
     }
 
     /**
@@ -292,15 +317,16 @@ public class StoreTest
     @Test( expected = ObjectRepositoryException.class )
     public void testObjectRepositoryException() throws Throwable
     {
-        setUpMocks( MockFedoraObjectRepositoryException.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockReaderException.class, MockModifierException.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
 
         try
         {
-	    IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
-	    returnCargo = storePlugin.runPlugin( env, cargo );
+            IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
+            returnCargo = storePlugin.runPlugin( env, cargo );
         }
         catch( PluginException pe )
         {
@@ -315,16 +341,17 @@ public class StoreTest
     @Test
     public void storeCargoContainerMarkDeleted() throws Exception
     {
-        setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeleted.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeleted.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
         Map< String, String > args = new HashMap< String, String >();
         args.put("javascript", "test");
         args.put("entryfunction", "test");
 
-        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args, null );
+        IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, args, null );
         returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
     }
@@ -336,16 +363,17 @@ public class StoreTest
     @Test( expected = PluginException.class )
     public void storeCargoContainerMarkDeletedException() throws Exception
     {
-        setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeletedException.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
+        setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeletedException.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store();
         Map< String, String > args = new HashMap< String, String >();
         args.put("javascript", "test");
         args.put("entryfunction", "test");
 
-        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args, null );
+        IPluginEnvironment env = storePlugin.createEnvironment( reader, modifier, args, null );
         returnCargo = storePlugin.runPlugin( env, cargo );
     }
 }

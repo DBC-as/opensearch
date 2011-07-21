@@ -19,19 +19,14 @@
 
 package dk.dbc.opensearch.pluginframework;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -41,9 +36,7 @@ import org.apache.log4j.Logger;
 public class PluginResolver implements IPluginResolver
 {
     private static Logger log = Logger.getLogger( PluginResolver.class );
-    private IObjectRepository repository;
     private final PluginLoader pLoader;
-    private static boolean constructed = false;
 
     private static final Map< String, IPluggable > pluginInstanceCache = Collections.synchronizedMap( new HashMap< String , IPluggable> () );
 
@@ -51,9 +44,8 @@ public class PluginResolver implements IPluginResolver
      * The constructor sets up the class loader for the plugins and initiates
      * the plugin loader
      */
-    public PluginResolver( IObjectRepository repository )
+    public PluginResolver()
     {     
-        this.repository = repository;
         this.pLoader = new PluginLoader();
 
         log.trace( "PluginResolver constructed" );
@@ -74,11 +66,11 @@ public class PluginResolver implements IPluginResolver
     {  
         if (!pluginInstanceCache.containsKey( className ))
         {
-            IPluggable plugin = pLoader.getPlugin( className, repository );
-            this.pluginInstanceCache.put( className, plugin );
+            IPluggable plugin = pLoader.getPlugin( className );
+            pluginInstanceCache.put( className, plugin );
             log.info( String.format("Plugin: '%s' created", className ) );
         }
-        return this.pluginInstanceCache.get( className );
+        return pluginInstanceCache.get( className );
     }
 
     /**
@@ -87,7 +79,7 @@ public class PluginResolver implements IPluginResolver
      * for loading classes from a specified class name (see the PluginFinder class
      * and the .plugin files.)
      */
-    private class PluginLoader
+    private static class PluginLoader
     {
         private Logger log = Logger.getLogger( PluginLoader.class );
 
@@ -102,16 +94,16 @@ public class PluginResolver implements IPluginResolver
          * @throws IllegalAccessException if the wanted plugin cant be accessed
          * @throws ClassNotFoundException if the specified class cannot found
          */
-        public IPluggable getPlugin( String pluginClassName, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
+        public IPluggable getPlugin( String pluginClassName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
         {
             try
             {
-		Class[] parameterTypes = new Class[] { IObjectRepository.class };
+                Class[] parameterTypes = new Class[] { };
 
-		log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName ) );       
-		Class loadedClass = Class.forName( pluginClassName );
-		Constructor pluginConstructor = loadedClass.getConstructor( parameterTypes );
-		IPluggable thePlugin = ( IPluggable )pluginConstructor.newInstance( new Object[]{ repository });
+                log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName ) );
+                Class loadedClass = Class.forName( pluginClassName );
+                Constructor pluginConstructor = loadedClass.getConstructor( parameterTypes );
+                IPluggable thePlugin = (IPluggable) pluginConstructor.newInstance( new Object[] { } );
 
                 return thePlugin;
             }
@@ -121,18 +113,18 @@ public class PluginResolver implements IPluginResolver
                 log.error( error, cnfe );
                 throw new ClassNotFoundException( error, cnfe );
             }
-	    catch( NoSuchMethodException nsme )
-	    {
-		String error = String.format( "the class: '%s' lacks a constructor with IObjectRepository", pluginClassName );
-		log.error( error, nsme );
-		throw new PluginException( error, nsme );
-	    }
-	    catch( InvocationTargetException ite )
-	    {
-		String error = String.format( "couldnt invoke class: '%s'", pluginClassName );
-		log.error( error, ite );
-		throw new InvocationTargetException( ite, error );
-	    }
+            catch( NoSuchMethodException nsme )
+            {
+                String error = String.format( "the class: '%s' lacks a default constructor", pluginClassName );
+                log.error( error, nsme );
+                throw new PluginException( error, nsme );
+            }
+            catch( InvocationTargetException ite )
+            {
+                String error = String.format( "couldnt invoke class: '%s'", pluginClassName );
+                log.error( error, ite );
+                throw new InvocationTargetException( ite, error );
+            }
         }
     }
 }

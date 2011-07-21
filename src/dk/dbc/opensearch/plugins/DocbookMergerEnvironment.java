@@ -26,8 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
@@ -53,7 +51,7 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
 
     private static Logger log = Logger.getLogger( DocbookMergerEnvironment.class );
 
-    public DocbookMergerEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
+    public DocbookMergerEnvironment( Map<String, String> args ) throws PluginException
     {
     }
     /**

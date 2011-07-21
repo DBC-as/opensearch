@@ -25,13 +25,13 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -40,15 +40,10 @@ import org.apache.log4j.Logger;
 public class ForceFedoraPid implements IPluggable
 {
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
-    // private IObjectRepository repository;
-
-    // private ForceFedoraPidEnvironment env = null;
 
 
-    public ForceFedoraPid( IObjectRepository repository ) throws PluginException
+    public ForceFedoraPid() throws PluginException
     {
-	// Map< String, String > tmpMap = new HashMap< String, String >();
-	// env = (ForceFedoraPidEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -70,10 +65,10 @@ public class ForceFedoraPid implements IPluggable
 
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-	// scriptPath is unused.
-    	return new ForceFedoraPidEnvironment( repository, args );
+	    // reader, modifier and scriptPath are unused.
+    	return new ForceFedoraPidEnvironment( args );
     }
 
 

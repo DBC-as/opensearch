@@ -25,8 +25,8 @@
 package dk.dbc.opensearch.javascript;
 
 
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.types.ITargetField;
 
@@ -42,12 +42,12 @@ public class JSFedoraPIDSearch
 {
     public static final int MAX_SEARCH_RESULTS = 10000;
     private Logger log = Logger.getLogger( JSFedoraPIDSearch.class );
-    private IObjectRepository repository;
+    private FcrepoReader reader;
 
 
-    public JSFedoraPIDSearch( IObjectRepository repository ) 
+    public JSFedoraPIDSearch( FcrepoReader reader )
     {
-        this.repository = repository;
+        this.reader = reader;
     }
 
 
@@ -88,7 +88,7 @@ public class JSFedoraPIDSearch
         states.add( "I" );
         states.add( "A" );
         states.add( "D" );
-        List < String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , states);
+        List < String > resultList = reader.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , states);
 	
         // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
         String[] sa = new String[resultList.size()];
@@ -107,102 +107,140 @@ public class JSFedoraPIDSearch
     public String[] ownerid( String searchValue )
     {
         log.info( String.format( "OWNERID called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.OWNERID, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.OWNERID, searchValue );
     }
+
+
     public String[] cdate( String searchValue )
     {
         log.info( String.format( "CDATE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.CDATE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.CDATE, searchValue );
     }
+
+
     public String[] mdate( String searchValue )
     {
         log.info( String.format( "MDATE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.MDATE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.MDATE, searchValue );
     }
+
+
     public String[] title( String searchValue )
     {
         log.info( String.format( "TITLE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.TITLE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.TITLE, searchValue );
     }
+
+
     public String[] creator( String searchValue )
     {
         log.info( String.format( "CREATOR called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.CREATOR, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.CREATOR, searchValue );
     }
+
+
     public String[] subject( String searchValue )
     {
         log.info( String.format( "SUBJECT called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.SUBJECT, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.SUBJECT, searchValue );
     }
+
+
     public String[] description( String searchValue )
     {
         log.info( String.format( "DESCRIPTION called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.DESCRIPTION, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.DESCRIPTION, searchValue );
     }
+
+
     public String[] publisher( String searchValue )
     {
         log.info( String.format( "PUBLISHER called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.PUBLISHER, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.PUBLISHER, searchValue );
     }
+
+
     public String[] contributor( String searchValue )
     {
         log.info( String.format( "CONTRIBUTOR called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.CONTRIBUTOR, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.CONTRIBUTOR, searchValue );
     }
+
+
     public String[] date( String searchValue )
     {
         log.info( String.format( "DATE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.DATE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.DATE, searchValue );
     }
+
+
     public String[] type( String searchValue )
     {
         log.info( String.format( "TYPE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.TYPE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.TYPE, searchValue );
     }
+
+
     public String[] format( String searchValue )
     {
         log.info( String.format( "FORMAT called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.FORMAT, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.FORMAT, searchValue );
     }
+
+
     public String[] identifier( String searchValue )
     {
         log.info( String.format( "IDENTIFIER called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.IDENTIFIER, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.IDENTIFIER, searchValue );
     }
+
+
     public String[] source( String searchValue )
     {
         log.info( String.format( "SOURCE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.SOURCE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.SOURCE, searchValue );
     }
+
+
     public String[] language( String searchValue )
     {
         log.info( String.format( "LANGUAGE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.LANGUAGE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.LANGUAGE, searchValue );
     }
+
+
     public String[] relation( String searchValue )
     {
         log.info( String.format( "RELATION called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.RELATION, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.RELATION, searchValue );
     }
+
+
     public String[] coverage( String searchValue )
     {
         log.info( String.format( "COVERAGE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.COVERAGE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.COVERAGE, searchValue );
     }
+
+
     public String[] rights( String searchValue )
     {
         log.info( String.format( "RIGHTS called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.RIGHTS, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.RIGHTS, searchValue );
     }
+
+
     public String[] dcmdate( String searchValue )
     {
         log.info( String.format( "DCMDATE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.DCMDATE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.DCMDATE, searchValue );
     }
-    public String[] dctype( String searchValue)
+
+
+    public String[] dctype( String searchValue )
     {
         log.info( String.format( "DCTYPE called with: %s ", searchValue ) );
-        return single_field_search( (ITargetField)FedoraObjectFields.DCTYPE, searchValue );
+        return single_field_search( (ITargetField) FedoraObjectFields.DCTYPE, searchValue );
     }
 
 
@@ -230,7 +268,7 @@ public class JSFedoraPIDSearch
             conditions.add( condition );
         }
 
-        List< String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , undeletedStates);
+        List< String > resultList = reader.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , undeletedStates);
 
         // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
         String[] sa = new String[resultList.size()];
@@ -256,7 +294,7 @@ public class JSFedoraPIDSearch
      *
      *  @return An array of {@link String}s containg PIDs matching the search-query.
      */
-    private String[] single_field_search( ITargetField targetField, OpenSearchCondition.Operator operator,  String searchValue)
+    private String[] single_field_search( ITargetField targetField, OpenSearchCondition.Operator operator, String searchValue )
     {
         log.info( String.format( "Entering with targetfield=[%s] operator=[%s] value=[%s]", targetField, operator, searchValue ) );
 	
@@ -271,7 +309,7 @@ public class JSFedoraPIDSearch
         undeletedStates.add("A");
 
         // \note: 10000 below is a hardcodet estimate on max amount of results:
-        List< String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS, undeletedStates);
+        List< String > resultList = reader.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS, undeletedStates);
 
         // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
         String[] sa = new String[resultList.size()];
@@ -292,8 +330,8 @@ public class JSFedoraPIDSearch
      */
     private String[] single_field_search( ITargetField targetField, String searchValue )
     {
-	// Add default operator EQUALS:
-	return single_field_search( targetField, OpenSearchCondition.Operator.EQUALS, searchValue );
+        // Add default operator EQUALS:
+        return single_field_search( targetField, OpenSearchCondition.Operator.EQUALS, searchValue );
     }
 
 

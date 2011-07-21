@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -407,7 +408,7 @@ public class FcrepoReader
      * less than one, since neither a negative number of results or
      * zero results makes any sense.
      */
-    public List<String> getIdentifiersByState( List<OpenSearchCondition> conditions, int maximumResults, List<String> states ) throws IllegalArgumentException
+    public List<String> getIdentifiersByState( List<OpenSearchCondition> conditions, int maximumResults, Set<String> states ) throws IllegalArgumentException
     {
         if( maximumResults < 1 )
         {

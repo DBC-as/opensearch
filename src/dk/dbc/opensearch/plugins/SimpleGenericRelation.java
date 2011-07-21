@@ -25,13 +25,13 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -48,7 +48,7 @@ public class SimpleGenericRelation implements IPluggable
     /**
      * Constructor for the SimpleGenericRelation plugin.
      */
-    public SimpleGenericRelation( IObjectRepository repository ) throws PluginException
+    public SimpleGenericRelation() throws PluginException
     {
     }
 
@@ -84,9 +84,9 @@ public class SimpleGenericRelation implements IPluggable
 
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-    	return new SimpleGenericRelationEnvironment( repository, args, scriptPath );
+    	return new SimpleGenericRelationEnvironment( reader, modifier, args, scriptPath );
     }
 
 }

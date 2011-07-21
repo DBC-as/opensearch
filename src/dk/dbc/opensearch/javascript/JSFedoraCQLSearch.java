@@ -25,16 +25,13 @@
 
 package dk.dbc.opensearch.javascript;
 
-import dk.dbc.opensearch.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.helpers.ConvertCQLToFedoraConditions;
-import dk.dbc.opensearch.types.ITargetField;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -43,11 +40,11 @@ public class JSFedoraCQLSearch
 {
 
     private final static Logger log = Logger.getLogger( JSFedoraCQLSearch.class );
-    private IObjectRepository repository;
+    private final FcrepoReader reader;
 
-    public JSFedoraCQLSearch( IObjectRepository repository )
+    public JSFedoraCQLSearch( FcrepoReader reader )
     {
-        this.repository = repository;
+        this.reader = reader;
     }
     
     /**
@@ -110,6 +107,6 @@ public class JSFedoraCQLSearch
         states.add( "I" );
         states.add( "A" );
         
-        return repository.getIdentifiersByState( conditionList, 10000, states ); 
+        return reader.getIdentifiersByState( conditionList, 10000, states );
     }
 }

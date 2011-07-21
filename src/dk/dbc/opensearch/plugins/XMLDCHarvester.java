@@ -25,13 +25,13 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -53,30 +53,30 @@ public class XMLDCHarvester implements IPluggable
 {
     private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
-    public XMLDCHarvester( IObjectRepository repository ) throws PluginException
+    public XMLDCHarvester() throws PluginException
     {
     }
 
     @Override
     public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-	if ( !( ienv instanceof XMLDCHarvesterEnvironment) )
-	{
-	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "XMLDCHarvesterEnvironment", ienv.getClass().getName() );
-	    log.error( errMsg );
-	    throw new PluginException( errMsg );
-	}
+        if( !(ienv instanceof XMLDCHarvesterEnvironment) )
+        {
+            String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "XMLDCHarvesterEnvironment", ienv.getClass().getName() );
+            log.error( errMsg );
+            throw new PluginException( errMsg );
+        }
 
-	XMLDCHarvesterEnvironment env = (XMLDCHarvesterEnvironment)ienv;
+        XMLDCHarvesterEnvironment env = (XMLDCHarvesterEnvironment) ienv;
 
-	return env.myRun( cargo );
+        return env.myRun( cargo );
 
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-    	return new XMLDCHarvesterEnvironment( repository, args, scriptPath );
+    	return new XMLDCHarvesterEnvironment( args, scriptPath );
     }
 
 }

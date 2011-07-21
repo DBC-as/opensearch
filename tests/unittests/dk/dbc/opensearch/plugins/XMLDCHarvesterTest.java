@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
@@ -47,7 +46,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.*;
-import static org.junit.Assert.*;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
@@ -77,7 +75,6 @@ public class XMLDCHarvesterTest
     static final byte[] noDataBytes = noData.getBytes();
 
     @Mocked IIdentifier mockIdentifier;
-    @Mocked IObjectRepository mockRepository;
     @Mocked XMLDCHarvesterEnvironment mockEnv;
     @Mocked IPluginEnvironment wrongEnvInstance;
     @Mocked CargoContainer mockCargo;
@@ -147,7 +144,7 @@ public class XMLDCHarvesterTest
     @Test
     public void testConstructor() throws Exception
     {
-        dcPlugin = new XMLDCHarvester( mockRepository );
+        dcPlugin = new XMLDCHarvester();
     }
 
     /**
@@ -162,7 +159,7 @@ public class XMLDCHarvesterTest
             mockEnv.myRun( mockCargo );returns( mockCargo );
         }};
 
-        dcPlugin = new XMLDCHarvester( mockRepository );
+        dcPlugin = new XMLDCHarvester();
         dcPlugin.runPlugin( mockEnv, mockCargo );
     }
  
@@ -173,7 +170,7 @@ public class XMLDCHarvesterTest
     @Test( expected = PluginException.class )
     public void testRunPlugin() throws Exception
     {
-        dcPlugin = new XMLDCHarvester( mockRepository );
+        dcPlugin = new XMLDCHarvester();
         dcPlugin.runPlugin( wrongEnvInstance, mockCargo );
     }
 

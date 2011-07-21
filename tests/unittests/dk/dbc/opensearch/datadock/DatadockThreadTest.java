@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.datadock;
 
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.harvest.ESHarvest;
@@ -35,7 +34,6 @@ import dk.dbc.opensearch.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
-import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.plugins.ForceFedoraPid;
@@ -49,16 +47,12 @@ import dk.dbc.opensearch.types.TaskInfo;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
 import mockit.Mock;
 import mockit.MockClass;
@@ -67,9 +61,6 @@ import mockit.Mockit;
 import mockit.NonStrictExpectations;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.junit.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -88,7 +79,6 @@ public class DatadockThreadTest
     @Mocked Map<String, List<PluginTask>> mockFlowmap;
     @Mocked ESHarvest mockHarvester;
     @Mocked IIdentifier mockIdentifier;
-    @Mocked IObjectRepository mockObjectRepository;
     @Mocked Map<String, String> mockArgsMap;
     PluginResolver mockPluginResolver;
     static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" language=\"da\"/></referencedata>";
@@ -207,7 +197,7 @@ public class DatadockThreadTest
      */
     @Before public void SetUp() throws Exception
     {
-        mockPluginResolver = new PluginResolver( mockObjectRepository );
+        mockPluginResolver = new PluginResolver();
         Mockit.setUpMocks( MockDBHarvest.class );
         Mockit.setUpMocks( MockRelation.class );
         Mockit.setUpMocks( MockStore.class );

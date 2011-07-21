@@ -1,9 +1,8 @@
 package dk.dbc.opensearch.pluginframework;
 
-import dk.dbc.commons.javascript.SimpleRhinoWrapper; 
 import dk.dbc.commons.os.FileHandler;
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.pluginframework.PluginResolver;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.File;
@@ -11,10 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -50,7 +47,8 @@ public class FlowMapCreatorTest
     String argValue1 = "argValue1";
     String argValue2 = "argValue2";
 
-    @Mocked IObjectRepository repository; 
+    @Mocked FcrepoReader reader;
+    @Mocked FcrepoModifier modifier;
     @Mocked static IPluginEnvironment mockIPluginEnvironment;
     @Mocked static CargoContainer mockCargoContainer;
 
@@ -77,7 +75,7 @@ public class FlowMapCreatorTest
 	}
 
 	@Override
-        public IPluginEnvironment createEnvironment( IObjectRepository repos , Map< String, String > args, String scriptPath )
+        public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath )
 	{
 	    return mockIPluginEnvironment;
 	}
@@ -92,7 +90,7 @@ public class FlowMapCreatorTest
     public static class MockPluginResolver
     {
         @Mock
-        public void $init ( IObjectRepository repository )
+        public void $init ()
         {}
         
         @Mock
@@ -141,7 +139,7 @@ public class FlowMapCreatorTest
         Mockit.setUpMocks( MockPluginResolver.class );
 
         fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );
-        flowMap = fmc.createMap( new PluginResolver( repository ), repository, null );
+        flowMap = fmc.createMap( new PluginResolver(), reader, modifier, null );
         assertTrue( validateMap1( flowMap ) );
     }
 

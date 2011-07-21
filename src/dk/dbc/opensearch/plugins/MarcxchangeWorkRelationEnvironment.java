@@ -29,8 +29,9 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.commons.types.Pair;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.fedora.PID;
@@ -55,8 +56,8 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 {
 
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelationEnvironment.class );
-
-    private IObjectRepository objectRepository;
+    private final FcrepoReader reader;
+    private final FcrepoModifier modifier;
     private SimpleRhinoWrapper rhinoWrapper;
 
     private final String searchFunc;
@@ -71,23 +72,24 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 
 
-    public MarcxchangeWorkRelationEnvironment( IObjectRepository repository, 
+    public MarcxchangeWorkRelationEnvironment( FcrepoReader reader, FcrepoModifier modifier,
 					       Map<String, String> args,
 					       String scriptPath ) throws PluginException
     {
-        this.objectRepository = repository;
+        this.reader = reader;
+        this.modifier = modifier;
 
         // Creates a list of objects to be used in the js-scope
-        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-        objectList.add( new Pair< String, Object >( "Log", log ) );
+        List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
+        objectList.add( new Pair<String, Object>( "Log", log ) );
 
-	this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
-	
-	this.searchFunc       = args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr );
-	this.matchFunc        = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
-	this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
+        this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
 
-	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList, scriptPath );
+        this.searchFunc = args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr );
+        this.matchFunc = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
+        this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
+
+        this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList, scriptPath );
     }
 
 
@@ -106,37 +108,36 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     public CargoContainer run( CargoContainer cargo, List< Pair< ITargetField, String > > searchPairs ) throws PluginException
     {
 
-	long gwl_timer = System.currentTimeMillis();
-        List< PID > pidList = getWorkList( searchPairs );
-	gwl_timer = System.currentTimeMillis() - gwl_timer;
-	log.info( String.format( "KULMULE getWorkList Timing: time: %s", gwl_timer ) );  
+        long gwl_timer = System.currentTimeMillis();
+        List<PID> pidList = getWorkList( searchPairs );
+        gwl_timer = System.currentTimeMillis() - gwl_timer;
+        log.info( String.format( "KULMULE getWorkList Timing: time: %s", gwl_timer ) );
 
         log.debug( String.format( "length of pidList: %s", pidList.size() ) );
 
-	long cm_timer = System.currentTimeMillis();
+        long cm_timer = System.currentTimeMillis();
         PID workPid = checkMatch( cargo, pidList );
-	cm_timer = System.currentTimeMillis() - cm_timer;
-	log.info( String.format( "KULMULE checkMatch Timing: time: %s", cm_timer ) );  
+        cm_timer = System.currentTimeMillis() - cm_timer;
+        log.info( String.format( "KULMULE checkMatch Timing: time: %s", cm_timer ) );
 
         if( workPid == null )
         {
             log.info( "no matching work found creating and storing one" );
-	    long casw_timer = System.currentTimeMillis();
+            long casw_timer = System.currentTimeMillis();
             workPid = createAndStoreWorkobject( cargo );
-	    casw_timer = System.currentTimeMillis() - casw_timer;
-	    log.info( String.format( "KULMULE createAndStoreWorkobject Timing: time: %s", casw_timer ) );  
+            casw_timer = System.currentTimeMillis() - casw_timer;
+            log.info( String.format( "KULMULE createAndStoreWorkobject Timing: time: %s", casw_timer ) );
         }
 
-        log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
-        log.debug( "work pid: "+ workPid.getIdentifier() );
-        log.debug( "Relating object and work");
-	long rpaw_timer = System.currentTimeMillis();
-        relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
-	rpaw_timer = System.currentTimeMillis() - rpaw_timer;
-	log.info( String.format( "KULMULE relatePostAndWork Timing: time: %s", rpaw_timer ) );  
+        log.debug( "cargo pid: " + cargo.getIdentifier().getIdentifier() );
+        log.debug( "work pid: " + workPid.getIdentifier() );
+        log.debug( "Relating object and work" );
+        long rpaw_timer = System.currentTimeMillis();
+        relatePostAndWork( (PID) cargo.getIdentifier(), workPid );
+        rpaw_timer = System.currentTimeMillis() - rpaw_timer;
+        log.info( String.format( "KULMULE relatePostAndWork Timing: time: %s", rpaw_timer ) );
 
         return cargo;
-
     }
 
 
@@ -206,28 +207,28 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List<String> pidStringList = new ArrayList<String>();
         List<String> searchResultList = new ArrayList<String>();
 
-        for ( Pair< ITargetField, String > pair : searchList )
+        for( Pair<ITargetField, String> pair : searchList )
         {
             num++;
 
-	    List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >( 2 );
-	    // Add the search Condition:
-	    conditions.add( new OpenSearchCondition( pair.getFirst(), OpenSearchCondition.Operator.EQUALS, pair.getSecond() ) );
-	    // Add the default Namespace-condition:
-	    conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, "work:*" ) );
+            List<OpenSearchCondition> conditions = new ArrayList<OpenSearchCondition>( 2 );
+            // Add the search Condition:
+            conditions.add( new OpenSearchCondition( pair.getFirst(), OpenSearchCondition.Operator.EQUALS, pair.getSecond() ) );
+            // Add the default Namespace-condition:
+            conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, "work:*" ) );
 
-            Set< String > undeletedStates = new HashSet< String >();
-            undeletedStates.add("I");
-            undeletedStates.add("A");
+            Set<String> undeletedStates = new HashSet<String>();
+            undeletedStates.add( "I" );
+            undeletedStates.add( "A" );
 
-            searchResultList = objectRepository.getIdentifiersByState( conditions, 10000, undeletedStates );
+            searchResultList = reader.getIdentifiersByState( conditions, 10000, undeletedStates );
 
-            log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
+            log.debug( String.format( "searchResultList: %s at search number: %s", searchResultList, num ) );
 
             //loop to not add duplets
             for( String result : searchResultList )
             {
-                if( !(pidStringList.contains( result) ) )
+                if( !(pidStringList.contains( result )) )
                 {
                     pidStringList.add( result );
                 }
@@ -279,7 +280,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
                 /**
                  * \Todo: Improvement,Get only the DC-stream instead of the whole object
                  */
-                tempCargo = objectRepository.getObject( pid.getIdentifier() );
+                tempCargo = reader.getObject( pid.getIdentifier() );
             }
             catch( ObjectRepositoryException ore )
             {
@@ -363,7 +364,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         //store it in the objectrepository
         try
         {
-            this.objectRepository.storeObject( workCargo, "internal", "work");
+            this.modifier.storeObject( workCargo, "internal", "work");
         }
         catch ( ObjectRepositoryException ore)
         {
@@ -388,7 +389,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
         try
         {
-            this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION, cargoPid.getIdentifier() );
+            this.modifier.addObjectRelation( workPid.getIdentifier(), DBCBIB.HAS_MANIFESTATION, cargoPid.getIdentifier() );
 
         }
         catch( ObjectRepositoryException ore )
@@ -400,7 +401,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         }
 
         try{
-            this.objectRepository.addObjectRelation( cargoPid, DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
+            this.modifier.addObjectRelation( cargoPid.getIdentifier(), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
         }
         catch( ObjectRepositoryException ore )
         {

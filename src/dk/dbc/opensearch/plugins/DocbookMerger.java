@@ -18,7 +18,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
@@ -27,11 +26,11 @@ import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.DataStreamType;
 import dk.dbc.commons.xml.XMLUtils;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -55,7 +54,7 @@ public class DocbookMerger implements IPluggable
 
     private NamespaceContext nsc;
 
-    public DocbookMerger( IObjectRepository repository ) throws PluginException
+    public DocbookMerger() throws PluginException
     {
         log.debug( "Entered DocbookMerger()" );
 
@@ -200,10 +199,10 @@ public class DocbookMerger implements IPluggable
 
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-	// scriptPath is unused.
-    	return new DocbookMergerEnvironment( repository, args );
+	    // reader, modifier and scriptPath are unused.
+    	return new DocbookMergerEnvironment( args );
     }
 
 }

@@ -19,19 +19,16 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.metadata.IMetaData;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
-import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.DataStreamType;
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import java.io.ByteArrayInputStream;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
 import org.custommonkey.xmlunit.XMLUnit;
 
 import java.util.HashMap;
@@ -49,10 +46,9 @@ public class DocbookMergerTest {
     static final String originalData  = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><stuff xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:ISO639-2=\"http://lcweb.loc.gov/standards/iso639-2/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dkabm:record>æøå</dkabm:record></stuff>";
     static final String happyPathData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><ting:container xmlns:ting=\"http://www.dbc.dk/ting/\"><dc:title xmlns:dc=\"hej\">æøå</dc:title><stuff xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:ISO639-2=\"http://lcweb.loc.gov/standards/iso639-2/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dkabm:record>æøå</dkabm:record></stuff></ting:container>";
     private CargoContainer cargo;
-    @Mocked IObjectRepository mockIObjectRepository;
+    @Mocked FcrepoReader reader;
+    @Mocked FcrepoModifier modifier;
     @Mocked Map<String, String> mockArgsMap;
-    public DocbookMergerTest() {
-    }
 
     @BeforeClass
     public static void setUpClass() throws Exception
@@ -87,10 +83,10 @@ public class DocbookMergerTest {
     @Ignore @Test
     public void testRunPlugin() throws Exception
     {
-	// I am ignoring this test since this is not the intended use of a plugin in PTI
-        DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
-	Map< String, String > emptyMap = new HashMap< String, String >();
-	IPluginEnvironment env = instance.createEnvironment( mockIObjectRepository, emptyMap, null );
+        // I am ignoring this test since this is not the intended use of a plugin in PTI
+        DocbookMerger instance = new DocbookMerger();
+        Map<String, String> emptyMap = new HashMap<String, String>();
+        IPluginEnvironment env = instance.createEnvironment( reader, modifier, emptyMap, null );
         CargoContainer result = instance.runPlugin( env, cargo );
         XMLUnit.compareXML( happyPathData, new String( result.getCargoObject( DataStreamType.OriginalData ).getBytes() ) );
     }

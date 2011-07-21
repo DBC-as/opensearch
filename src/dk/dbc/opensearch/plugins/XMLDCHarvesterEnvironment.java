@@ -28,7 +28,6 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.pluginframework.PluginException;
@@ -55,8 +54,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
     private static final String entryFuncStr  = "entryfunction";
     private final String entryFunc;
 
-    public XMLDCHarvesterEnvironment( IObjectRepository repository, 
-				      Map<String, String> args,
+    public XMLDCHarvesterEnvironment(Map<String, String> args,
 				      String scriptPath ) throws PluginException
     {
         log.trace( "Constructor called" );

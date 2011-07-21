@@ -23,10 +23,8 @@
 package dk.dbc.opensearch.javascript;
 
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.fedora.PID;
-import dk.dbc.opensearch.types.IObjectIdentifier;
 
 import org.apache.log4j.Logger;
 
@@ -35,12 +33,12 @@ public class JSRelationFunctions
 {
     private Logger log = Logger.getLogger( JSRelationFunctions.class );
 
-    private IObjectRepository repository;
+    private FcrepoModifier modifier;
 
 
-    public JSRelationFunctions( IObjectRepository repository ) 
+    public JSRelationFunctions( FcrepoModifier modifier )
     {
-        this.repository = repository;
+        this.modifier = modifier;
     }
 
 
@@ -55,17 +53,15 @@ public class JSRelationFunctions
      */
     public boolean createRelation( String subject, String relation, String object)
     {
-
-        IObjectIdentifier subjectPID = new PID( subject );
         try
         {
-            repository.addUncheckedObjectRelation( subjectPID, relation, object );
+            modifier.addUncheckedObjectRelation( subject, relation, object );
         }
         catch( ObjectRepositoryException ore )
         {
             return false;
         }
 
-       return true;
+        return true;
     }
 }

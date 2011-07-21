@@ -33,8 +33,8 @@ import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.fedora.FedoraObjectRepository;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.harvest.ESHarvest;
 import dk.dbc.opensearch.harvest.FileHarvest;
@@ -84,9 +84,9 @@ public class DatadockMain
      */
     private enum HarvestType
     {
-	ESHarvest,
-	FileHarvest,
-	FileHarvestLight;
+        ESHarvest,
+        FileHarvest,
+        FileHarvestLight;
     }
 
     private final static Logger log = Logger.getLogger( DatadockMain.class );
@@ -427,15 +427,16 @@ public class DatadockMain
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
         log.trace( "Initializing plugin resolver" );
-	String host = FedoraConfig.getHost();
-	String port = FedoraConfig.getPort();
-	String user = FedoraConfig.getUser();
-	String pass = FedoraConfig.getPassPhrase();
-        IObjectRepository repository = new FedoraObjectRepository( host, port, user, pass );
-        PluginResolver pluginResolver = new PluginResolver( repository );
-	String javascriptPath = FileSystemConfig.getScriptPath();
+        String host = FedoraConfig.getHost();
+        String port = FedoraConfig.getPort();
+        String user = FedoraConfig.getUser();
+        String pass = FedoraConfig.getPassPhrase();
+        FcrepoReader reader = new FcrepoReader( host, port, user, pass );
+        FcrepoModifier modifier = new FcrepoModifier( host, port, user, pass );
+        PluginResolver pluginResolver = new PluginResolver();
+        String javascriptPath = FileSystemConfig.getScriptPath();
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
-        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository, javascriptPath );
+        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, reader, modifier, javascriptPath );
 
         log.trace( "Initializing harvester" );
         IHarvest harvester = this.initializeHarvester();

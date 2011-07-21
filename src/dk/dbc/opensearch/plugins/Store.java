@@ -22,13 +22,13 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.commons.types.StringLock;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -45,10 +45,10 @@ public class Store implements IPluggable
 
     StringLock strlock = null;
 
-    public Store( IObjectRepository repository ) throws PluginException
+    public Store() throws PluginException
     {
-	strlock = new StringLock();
-    }    
+        strlock = new StringLock();
+    }
 
     /*
      * This funtion is synchronized in the case the rare event happens that two records with identical ID's,
@@ -84,9 +84,9 @@ public class Store implements IPluggable
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-    	return new StoreEnvironment( repository, args, scriptPath );
+    	return new StoreEnvironment( reader, modifier, args, scriptPath );
     }
 
 }

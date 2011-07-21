@@ -28,10 +28,11 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
+import dk.dbc.opensearch.fedora.FcrepoUtils;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
-import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
@@ -42,7 +43,6 @@ import dk.dbc.opensearch.types.IObjectIdentifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
 
@@ -51,7 +51,8 @@ public class StoreEnvironment implements IPluginEnvironment
 
     private static Logger log = Logger.getLogger( StoreEnvironment.class );
 
-    private final IObjectRepository objectRepository;
+    private final FcrepoReader reader;
+    private final FcrepoModifier modifier;
     private final SimpleRhinoWrapper jsWrapper;
 
     // For validation:
@@ -61,10 +62,11 @@ public class StoreEnvironment implements IPluginEnvironment
     private final String entryPointFunc;
     private final String javascript;
 
-    public StoreEnvironment( IObjectRepository repository, Map<String, String> args, 
-			     String scriptPath ) throws PluginException
+    public StoreEnvironment( FcrepoReader reader, FcrepoModifier modifier,
+            Map<String, String> args, String scriptPath ) throws PluginException
     {
-        this.objectRepository = repository;
+        this.reader = reader;
+        this.modifier = modifier;
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
@@ -101,8 +103,7 @@ public class StoreEnvironment implements IPluginEnvironment
         String format = co.getFormat();
         String language = co.getLang();
         String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
-        IObjectIdentifier pid = cargo.getIdentifier(); // get the pid of the cargocontainer
-        String pidStr = cargo.getIdentifierAsString();
+        String pidStr = cargo.getIdentifierAsString();// get the pid of the cargocontainer
         boolean hasObject = false;
         // Let javascript decide if post should be deleted or stored
         boolean deleteRecord = false;
@@ -118,83 +119,74 @@ public class StoreEnvironment implements IPluginEnvironment
         }
        
         //determining whether we have the object or not
-        try
-        {
-            hasObject = objectRepository.hasObject( pid );
-            log.debug( String.format( "hasObject( %s ) returned %b",pidStr, hasObject ) );
-        }
-        catch( ObjectRepositoryException e )
-        {
-            String error = String.format( "exception caught when calling hasObject for object: '%s'", pidStr  );
-            log.error( error, e );
-            throw new PluginException( error, e );
-        }
+        hasObject = reader.hasObject( pidStr );
+        log.debug( String.format( "hasObject( %s ) returned %b",pidStr, hasObject ) );
 
-	//
-	// We check whether the given record is marked deleted or not and whether the object is currently in the repository.
-	// We use deletedRecord in the outer if-statement because that is our "control"-boolean, that is, the most import thing
-	// to check.
         //
-	if ( deleteRecord )
-	{
-	    if ( !hasObject )
-	    {
-		// Delete-record for an object that is not in the repository
-		// Note: We cannot delete an unexisting record!
-		String warning = String.format( "Cannot delete nonexisting object from repository: [%s]", pidStr );
-		log.warn( warning );
-		throw new PluginException( warning );
-	    }
-	    else
-	    { // hasObject
-		log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
-		try
-		{                    
-		    String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
-		    objectRepository.removeInboundRelations( pidStr );
-		    objectRepository.deleteObject( pidStr, logm );
-		    objectRepository.removeOutboundRelations( pidStr );
-		    cargo.setIsDeleteRecord( deleteRecord );
-		}
-		catch( ObjectRepositoryException e )
-		{
-		    String error = String.format( "Failed to mark CargoContainer as deleted and/or remove relations. Pid: [%s], submitter: [%s] and format: [%s]", pidStr, submitter, format );
-		    log.error( error, e );
-		    throw new PluginException( error, e );
-		}
-	    }
-	}
-	else
-	{ // !deleteRecord
-	    if ( hasObject )
-	    {
-		log.info( String.format( "Purging object: [%s]", pidStr ) );
-		try
-		{
-		    objectRepository.removeInboundRelations( pidStr );
-		    objectRepository.purgeObject( pidStr, "purge before store hack" );
-		}
-		catch( ObjectRepositoryException e )
-		{
-		    String error = String.format( "exception caught when trying to remove inbound relations and/or purge object: [%s]", pidStr  );
-		    log.error( error, e );
-		    throw new PluginException( error, e );
-		}
-	    }
-
-	    // Ingesting object
-	    try
+        // We check whether the given record is marked deleted or not and whether the object is currently in the repository.
+        // We use deletedRecord in the outer if-statement because that is our "control"-boolean, that is, the most import thing
+        // to check.
+        //
+        if( deleteRecord )
+        {
+            if( !hasObject )
             {
-		String logm = String.format( "Datadock: [%s] inserted with pid [%s]", format, pidStr );
-		objectRepository.storeObject( cargo, logm, "auto" ); 
-	    }
-	    catch( ObjectRepositoryException e )
-	    {
-		String error = String.format( "exception caught when trying to store object: [%s]", pidStr  );
-		log.error( error, e );
-		throw new PluginException( error, e );
-	    }
-	}
+                // Delete-record for an object that is not in the repository
+                // Note: We cannot delete an unexisting record!
+                String warning = String.format( "Cannot delete nonexisting object from repository: [%s]", pidStr );
+                log.warn( warning );
+                throw new PluginException( warning );
+            }
+            else
+            { // hasObject
+                log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
+                try
+                {
+                    String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
+                    FcrepoUtils.removeInboundRelations( reader, modifier, pidStr );
+                    modifier.deleteObject( pidStr, logm );
+                    FcrepoUtils.removeOutboundRelations( reader, modifier, pidStr );
+                    cargo.setIsDeleteRecord( deleteRecord );
+                }
+                catch( ObjectRepositoryException e )
+                {
+                    String error = String.format( "Failed to mark CargoContainer as deleted and/or remove relations. Pid: [%s], submitter: [%s] and format: [%s]", pidStr, submitter, format );
+                    log.error( error, e );
+                    throw new PluginException( error, e );
+                }
+            }
+        }
+        else
+        { // !deleteRecord
+            if( hasObject )
+            {
+                log.info( String.format( "Purging object: [%s]", pidStr ) );
+                try
+                {
+                    FcrepoUtils.removeInboundRelations( reader, modifier, pidStr );
+                    modifier.purgeObject( pidStr, "purge before store hack" );
+                }
+                catch( ObjectRepositoryException e )
+                {
+                    String error = String.format( "exception caught when trying to remove inbound relations and/or purge object: [%s]", pidStr );
+                    log.error( error, e );
+                    throw new PluginException( error, e );
+                }
+            }
+
+            // Ingesting object
+            try
+            {
+                String logm = String.format( "Datadock: [%s] inserted with pid [%s]", format, pidStr );
+                modifier.storeObject( cargo, logm, "auto" );
+            }
+            catch( ObjectRepositoryException e )
+            {
+                String error = String.format( "exception caught when trying to store object: [%s]", pidStr );
+                log.error( error, e );
+                throw new PluginException( error, e );
+            }
+        }
 
         return cargo;
     }

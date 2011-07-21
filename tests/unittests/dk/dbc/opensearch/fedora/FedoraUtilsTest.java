@@ -81,7 +81,7 @@ public class FedoraUtilsTest// extends XMLTestCase
         String adminXml = "<admin-stream><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
         AdministrationStream adminstream = new AdministrationStream( new ByteArrayInputStream( adminXml.getBytes() ), true );
         cargo.addMetaData( adminstream );
-        byte[] b = FedoraUtils.CargoContainerToFoxml( cargo );
+        byte[] b = FcrepoUtils.CargoContainerToFoxml( cargo );
         generatedFoxml = new String( b );
     }
 

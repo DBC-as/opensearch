@@ -27,21 +27,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.pluginframework.PluginResolver;
-import dk.dbc.opensearch.pluginframework.IPluggable;
-import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.junit.Assert.*;
@@ -51,8 +43,6 @@ import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import mockit.Mockit;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mocked;
 
 /**
@@ -64,26 +54,10 @@ public class PluginResolverTest
 
     static String staticString = "staticString";
     static TestPlugin mockPlugin = createMock( TestPlugin.class );    
-    @Mocked IObjectRepository repository;
      
-    
-    /**
-     * The class to mock the PluginLoader
-     */
-    // @MockClass(realClass = PluginLoader.class)
-    // public static class ReplacePluginLoader
-    // {        
-    //     @Mock public static IPluggable getPlugin( String className, String script, IObjectRepository repository )
-    //     {
-    //         return (IPluggable)mockPlugin;
-    //     } 
-    // }
-    
     
     @Before public void setUp() throws Exception 
     {
-        // Mockit.setUpMocks( ReplacePluginLoader.class );
-        //Mockit.setUpMocks( ReplacePluginFinder.class );
     } 
     
     
@@ -99,8 +73,8 @@ public class PluginResolverTest
     @Ignore @Test 
     public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, ParserConfigurationException, IOException, ConfigurationException
     {
-        PR = new PluginResolver( repository );
-        PluginResolver PR2 = new PluginResolver( repository );
+        PR = new PluginResolver();
+        PluginResolver PR2 = new PluginResolver();
     }
 
     
@@ -109,7 +83,7 @@ public class PluginResolverTest
      */
     @Ignore @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, ConfigurationException, InvocationTargetException, PluginException 
     {
-        PR = new PluginResolver( repository );
+        PR = new PluginResolver();
 
         IPluggable test = PR.getPlugin( "task" );
         

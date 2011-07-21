@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.fedora.PID;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
@@ -50,22 +49,17 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
     
     private static Logger log = Logger.getLogger( ForceFedoraPidEnvironment.class );
 
-    private IObjectRepository repository;
-
     // Create lock-object to guarantee sequential access to XPathFactory.
     // It is static to ensure that all instances of ForceFedoraPidEnvironment can access it.
     // It is private to ensure only we - inside this class can access it - thereby noone else locks on it and slows us down.
     private static final Object XPathFactoryLock = new Object();
 
-    ForceFedoraPidEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    ForceFedoraPidEnvironment( Map< String, String > args ) throws PluginException
     {
-	this.repository = repository;
     }
 
 
-
-
-    private String getDCIdentifierFromOriginal( CargoContainer cargo, String xpathStr ) throws PluginException
+    private static String getDCIdentifierFromOriginal( CargoContainer cargo, String xpathStr ) throws PluginException
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -80,27 +74,27 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 
         byte[] b = co.getBytes();
 
-	// BUG 11838:
-	log.trace( String.format( "BUG#11838: Retrieved the following data from the CargoContainer ( size: %s ):\n%s", b.length, new String( b ) ) );
+        // BUG 11838:
+        log.trace( String.format( "BUG#11838: Retrieved the following data from the CargoContainer ( size: %s ):\n%s", b.length, new String( b ) ) );
 
-	// BUG 11838:
-	// This is very ugly and probably not safe!
-	// The main problem here is, that XPathFactory is not thread-safe, and must not be invoked
-	// from more than one thread at once - throughout the application. It is the programmers responsibility to ensure this, which in my opinion
-	// is pretty much impossible. Assume You use some third party software which uses XPathFactory in another thread and 
-	// you at the same time invoke XPathFactory from your thread - then we have a race-condition - one you have no way to avoid what so ever :(
-	// 
-	// I have moved the XPathFactory invocation into a synchronized-block in order to prevent a race-condition in this class.
-	// I have created an object XPathFactoryLock which is private to all instanceses of ForceFedoraPidEnvironment,
-	// in order to have a safe object to synchronize on. For more information see bug 11838.
-	//
-	// I have checked the Datadock-code, and found another invocation of XPathFactory in FoxmlDocument.java.
-	// There is therefore an off chance that these two invocations happen simultaniously.
+        // BUG 11838:
+        // This is very ugly and probably not safe!
+        // The main problem here is, that XPathFactory is not thread-safe, and must not be invoked
+        // from more than one thread at once - throughout the application. It is the programmers responsibility to ensure this, which in my opinion
+        // is pretty much impossible. Assume You use some third party software which uses XPathFactory in another thread and
+        // you at the same time invoke XPathFactory from your thread - then we have a race-condition - one you have no way to avoid what so ever :(
+        //
+        // I have moved the XPathFactory invocation into a synchronized-block in order to prevent a race-condition in this class.
+        // I have created an object XPathFactoryLock which is private to all instanceses of ForceFedoraPidEnvironment,
+        // in order to have a safe object to synchronize on. For more information see bug 11838.
+        //
+        // I have checked the Datadock-code, and found another invocation of XPathFactory in FoxmlDocument.java.
+        // There is therefore an off chance that these two invocations happen simultaniously.
         XPath xpath = null;
-	synchronized( this.XPathFactoryLock )
-	{
-	    xpath = XPathFactory.newInstance().newXPath();
-	}
+        synchronized( XPathFactoryLock )
+        {
+            xpath = XPathFactory.newInstance().newXPath();
+        }
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
 
@@ -165,19 +159,18 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
-	
-	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
-	if ( s == null )
-	{
-	    // We did not find anything in the above xpath.
-	    // Lets try this one:
-	    // This is a PG WebService ThemaObject search: (see bug#10085)
-	    s = getDCIdentifierFromOriginal( cargo, "/ting:container/dkabm:record/ac:identifier" );
-	    if( s == null )
-	    {
-		throw new PluginException( "could not create valid identifier from data" );
-	    }
-	}
+        String s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
+        if( s == null )
+        {
+            // We did not find anything in the above xpath.
+            // Lets try this one:
+            // This is a PG WebService ThemaObject search: (see bug#10085)
+            s = getDCIdentifierFromOriginal( cargo, "/ting:container/dkabm:record/ac:identifier" );
+            if( s == null )
+            {
+                throw new PluginException( "could not create valid identifier from data" );
+            }
+        }
 
         log.info( String.format( "Forcing Store ID to %s", s ) );
         cargo.setIdentifier( new PID( s ));

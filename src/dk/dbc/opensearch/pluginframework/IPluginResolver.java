@@ -20,11 +20,8 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
                                    
 import java.io.FileNotFoundException;
-import java.lang.IllegalAccessException;
-import java.lang.InstantiationException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.xml.parsers.ParserConfigurationException;

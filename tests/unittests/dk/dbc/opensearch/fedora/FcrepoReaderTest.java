@@ -34,7 +34,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.xml.rpc.ServiceException;
 
 
@@ -259,10 +261,9 @@ public class FcrepoReaderTest
     @Test
     public void testGetIdentifiersByState() throws Exception
     {
-        List x = Arrays.asList( new String[]
-                {
-                    "A", "I"
-                } );
+        Set< String > x = new HashSet< String >();
+        x.add( "A" );
+        x.add( "I" );
         List<OpenSearchCondition> conditions = new ArrayList<OpenSearchCondition>();
         conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.EQUALS, "*" ) );
 

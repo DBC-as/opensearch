@@ -20,8 +20,8 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.pluginframework.IPluggable;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.InputStream;
@@ -35,7 +35,7 @@ import java.util.Map;
 public class TestPlugin implements IPluggable
 {
 
-    public TestPlugin( String script, IObjectRepository repository ){}
+    public TestPlugin( String script ){}
 
     @Override
     public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException
@@ -44,9 +44,9 @@ public class TestPlugin implements IPluggable
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repos, Map<String, String> argsMap, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map<String, String> argsMap, String scriptPath ) throws PluginException
     {
-	return null;
+        return null;
     }
 
 }

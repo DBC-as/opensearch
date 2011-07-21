@@ -26,7 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
@@ -53,12 +54,8 @@ public class PurgeRelations implements IPluggable
     /**
      * Constructor for the PurgeRelation plugin.
      */
-    public PurgeRelations( IObjectRepository repository ) throws PluginException
+    public PurgeRelations() throws PluginException
     {
-        // log.trace( "PurgeRelations constructor called" );
-
-        // Map< String, String> tmpMap = new HashMap< String, String >();
-        // env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -152,17 +149,11 @@ public class PurgeRelations implements IPluggable
         return cargo;
     }
 
-
-    private boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
-    }
-
-
+    
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-	// stringPath is unused.
-    	return new PurgeRelationsEnvironment( repository, args );
+        // stringPath is unused.
+    	return new PurgeRelationsEnvironment( reader, modifier, args );
     }
 }

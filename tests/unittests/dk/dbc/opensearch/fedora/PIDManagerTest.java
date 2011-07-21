@@ -38,8 +38,8 @@ import static mockit.Mockit.tearDownMocks;
 public class PIDManagerTest
 {
 
-    @MockClass( realClass = FedoraHandle.class )
-    public static class MockFedoraHandle
+    @MockClass( realClass = FcrepoModifier.class )
+    public static class MockFcrepoModifier
     {
         @Mock public void $init( String host, String port, String user, String passwd ) {}
 
@@ -56,12 +56,11 @@ public class PIDManagerTest
                     };
         }
     }
-    private FedoraHandle fedoraHandle;
 
     @Before
     public void setUp() throws Exception
     {
-        setUpMocks( MockFedoraHandle.class );
+        setUpMocks( MockFcrepoModifier.class );
     }
 
     @After
@@ -73,15 +72,15 @@ public class PIDManagerTest
     @Test ( expected=IllegalStateException.class )
     public void testPrefixMustBeSpecified() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
     {
-        FedoraHandle fedoraHandle = new FedoraHandle( "Host", "Port", "User", "Password" );
-        String[] pid = fedoraHandle.getNextPID( 1,  "" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
+        String[] pid = modifier.getNextPID( 1,  "" );
     }
 
 
     @Test //( expected=IllegalStateException.class )
     public void testFedoraConnectionMustBePresent() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
     {
-        FedoraHandle fedoraHandle = new FedoraHandle( "Host", "Port", "User", "Password" );
-        fedoraHandle.getNextPID( 1,  "a" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
+        modifier.getNextPID( 1,  "a" );
     }
 }

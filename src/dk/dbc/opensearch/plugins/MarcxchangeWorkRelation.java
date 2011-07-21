@@ -26,14 +26,14 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.ITargetField;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,51 +52,46 @@ public class MarcxchangeWorkRelation implements IPluggable
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
 
 
-    public MarcxchangeWorkRelation( IObjectRepository repository ) throws PluginException
+    public MarcxchangeWorkRelation() throws PluginException
     {
-
-	// Map< String, String > tmpMap = new HashMap< String, String >();
-	// env = (MarcxchangeWorkRelationEnvironment)this.createEnvironment( repository, tmpMap );
-
     }
 
 
     @Override
     public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {   
+        if( !(ienv instanceof MarcxchangeWorkRelationEnvironment) )
+        {
+            String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "MarcxchangeWorkRelationEnvironment", ienv.getClass().getName() );
+            log.error( errMsg );
+            throw new PluginException( errMsg );
+        }
 
-	if ( !( ienv instanceof MarcxchangeWorkRelationEnvironment) )
-	{
-	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "MarcxchangeWorkRelationEnvironment", ienv.getClass().getName() );
-	    log.error( errMsg );
-	    throw new PluginException( errMsg );
-	}
+        MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment) ienv;
 
-	MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment)ienv;
-
-	long sp_timer = System.currentTimeMillis();
-	List< Pair< ITargetField, String > > searchPairs = env.getSearchPairs( cargo );
-	sp_timer = System.currentTimeMillis() - sp_timer;
-	log.info( String.format( "searchPairs Timing: time: %s", sp_timer ) );  
+        long sp_timer = System.currentTimeMillis();
+        List<Pair<ITargetField, String>> searchPairs = env.getSearchPairs( cargo );
+        sp_timer = System.currentTimeMillis() - sp_timer;
+        log.info( String.format( "searchPairs Timing: time: %s", sp_timer ) );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
 
-	long run_timer = System.currentTimeMillis();
-	CargoContainer returnCargo = null;
-	synchronized (this )
-	{
-	    returnCargo = env.run( cargo, searchPairs );
-	}
+        long run_timer = System.currentTimeMillis();
+        CargoContainer returnCargo = null;
+        synchronized( this )
+        {
+            returnCargo = env.run( cargo, searchPairs );
+        }
         run_timer = System.currentTimeMillis() - run_timer;
-	log.info( String.format( "run Timing: time: %s", run_timer ) );  
+        log.info( String.format( "run Timing: time: %s", run_timer ) );
 
-	return returnCargo;
+        return returnCargo;
     }
 
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
+    public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-    	return new MarcxchangeWorkRelationEnvironment( repository, args, scriptPath );
+    	return new MarcxchangeWorkRelationEnvironment( reader, modifier, args, scriptPath );
     }
 
 }

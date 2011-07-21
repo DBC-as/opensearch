@@ -28,7 +28,8 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.javascript.JSFedoraPIDSearch;
 import dk.dbc.opensearch.javascript.JSRelationFunctions;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
@@ -51,7 +52,6 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     private static Logger log = Logger.getLogger( SimpleGenericRelationEnvironment.class );
 
     private SimpleRhinoWrapper jsWrapper = null;
-    private IObjectRepository objectRepository;
 
     private final String entryPointFunc;
 
@@ -62,13 +62,11 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
     /**
      */
-    public SimpleGenericRelationEnvironment( IObjectRepository repository, Map<String, String> args, String scriptPath ) throws PluginException
+    public SimpleGenericRelationEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map<String, String> args, String scriptPath ) throws PluginException
     {
-        this.objectRepository = repository;
-
         // Setting the objectlist.
-        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( this.objectRepository );
-        JSRelationFunctions relationFunctions = new JSRelationFunctions( this.objectRepository );
+        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( reader );
+        JSRelationFunctions relationFunctions = new JSRelationFunctions( modifier );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );

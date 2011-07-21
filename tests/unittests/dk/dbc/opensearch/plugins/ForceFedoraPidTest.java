@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.fedora.PID;
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
@@ -37,16 +37,13 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mocked;
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
 
 
 public class ForceFedoraPidTest {
 
-    @Mocked IObjectRepository mockIObjectRepository;
+    @Mocked FcrepoReader reader;
+    @Mocked FcrepoModifier modifier;
     @Mocked Map<String, String> mockArgsMap;
 
     ForceFedoraPid forcePlugin = null;
@@ -69,7 +66,7 @@ public class ForceFedoraPidTest {
    
     @Before public void SetUp() throws PluginException 
     {
-	forcePlugin = new ForceFedoraPid( mockIObjectRepository );
+        forcePlugin = new ForceFedoraPid();
     }
 
   
@@ -101,7 +98,7 @@ public class ForceFedoraPidTest {
                    databytes );
 
         //      cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
-	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap, null );
+        IPluginEnvironment env = forcePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
         returnCargo = forcePlugin.runPlugin( env, cargo );
      
         
@@ -126,7 +123,7 @@ public class ForceFedoraPidTest {
                    databytes );
         //   cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
 
-	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap, null );
+	IPluginEnvironment env = forcePlugin.createEnvironment( reader, modifier, mockArgsMap, null );
         forcePlugin.runPlugin( env, cargo );
     }
 

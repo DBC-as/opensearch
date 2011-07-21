@@ -28,6 +28,8 @@ package dk.dbc.opensearch.datadock;
 
 
 
+import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.commons.db.IDBConnection;
 import dk.dbc.commons.db.PostgresqlDBConnection;
 
@@ -35,8 +37,6 @@ import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
-import dk.dbc.opensearch.fedora.FedoraObjectRepository;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.harvest.FileHarvest;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;
@@ -57,12 +57,6 @@ import mockit.Expectations;
 import mockit.NonStrictExpectations;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
 import static org.junit.Assert.assertFalse;
@@ -141,7 +135,8 @@ public class DatadockMainTest
         setConfigExpectations();
         DatadockMain datadock = new DatadockMain();
         Mockit.setUpMock( PostgresqlDBConnection.class, MockDBConnection.class );
-        Mockit.setUpMock( FedoraObjectRepository.class, MockRepository.class );
+        Mockit.setUpMock( FcrepoReader.class, MockReader.class );
+        Mockit.setUpMock( FcrepoModifier.class, MockModifier.class );
         Mockit.setUpMock( FlowMapCreator.class, MockMapCreator.class );
         Mockit.setUpMock( FileHarvest.class, MockHarvest.class );
         Mockit.setUpMock( DatadockManager.class, MockManager.class );
@@ -158,8 +153,13 @@ public class DatadockMainTest
         @Mock public void $init( String userId, String passwd, String url, String driver ){}
     }
 
-    @MockClass( realClass=FedoraObjectRepository.class )
-    public static class MockRepository{
+    @MockClass( realClass=FcrepoReader.class )
+    public static class MockReader{
+        @Mock public void $init( String host, String port, String user, String passwd ){}
+    }
+
+    @MockClass( realClass=FcrepoModifier.class )
+    public static class MockModifier{
         @Mock public void $init( String host, String port, String user, String passwd ){}
     }
 
@@ -167,7 +167,7 @@ public class DatadockMainTest
     public static class MockMapCreator{
         @Mock public void $init( File a, File b ){}
         @Mock
-        public Map<String, List<PluginTask>> createMap( PluginResolver a, IObjectRepository b, String c )
+        public Map<String, List<PluginTask>> createMap( PluginResolver a, FcrepoReader b, FcrepoModifier c, String d )
         {
             return new HashMap<String,List<PluginTask>>();
         }

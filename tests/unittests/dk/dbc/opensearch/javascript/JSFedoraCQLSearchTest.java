@@ -20,15 +20,12 @@
 
 package dk.dbc.opensearch.javascript;
 
+import dk.dbc.opensearch.fedora.FcrepoReader;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Level;
 import org.apache.log4j.BasicConfigurator;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.fedora.FedoraObjectRepository;
-import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
-import dk.dbc.opensearch.types.ITargetField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +34,6 @@ import java.util.Set;
 import org.junit.*;
 import mockit.Mock;
 import mockit.MockClass;
-import mockit.Mocked;
 
 
 import static mockit.Mockit.setUpMocks;
@@ -53,8 +49,8 @@ public class JSFedoraCQLSearchTest
      * Mock repository whos getIdentifiersByState method returns
      * a String array containing the values of each search condition
      */
-    @MockClass( realClass = FedoraObjectRepository.class )
-    public static class MockRep
+    @MockClass( realClass = FcrepoReader.class )
+    public static class MockReader
     {
         @Mock 
         public void $init( String host, String port, String user, String pass )
@@ -83,7 +79,7 @@ public class JSFedoraCQLSearchTest
     @Before
     public void setUp() throws Exception
     {
-        setUpMocks( MockRep.class );
+        setUpMocks( MockReader.class );
     }
     
     @After
@@ -95,9 +91,9 @@ public class JSFedoraCQLSearchTest
     @Test
     public void constructorTest() throws Exception
     {
-        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
         
-        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
     }
 
     /*
@@ -107,9 +103,9 @@ public class JSFedoraCQLSearchTest
     public void testSearchResultReturnedAsString() throws Exception
     {
         String query = "title = test";
-        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
         
-        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
         assertEquals( result[ 0 ], "test" );
     }
@@ -122,9 +118,9 @@ public class JSFedoraCQLSearchTest
     public void queryWithOr() throws Exception
     {
         String query = "title = test OR title = test2";
-        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
         
-        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
         assertEquals( result[ 0 ], "test" );
         assertEquals( result[ 1 ], "test2" );
@@ -141,9 +137,9 @@ public class JSFedoraCQLSearchTest
     public void duplicateResultTest() throws Exception
     {
         String query = "title = test OR title = test2 AND title = test";
-        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
         
-        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
         assertTrue( result.length == 2 );
         assertEquals( result[ 0 ], "test" );
@@ -158,8 +154,8 @@ public class JSFedoraCQLSearchTest
     {
         String query = " ( title = test OR title = test2 ) AND type = bog";
 
-        FedoraObjectRepository repo = new FedoraObjectRepository( "test", "test", "test", "test" );
-        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( repo );
+        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
 
         String[] result = cqlSearcher.search( query );
         String[] expected = { "test", "bog", "test2" };

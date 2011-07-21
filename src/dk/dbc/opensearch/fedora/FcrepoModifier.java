@@ -163,7 +163,7 @@ public class FcrepoModifier
     }
 
 
-    private String[] getNextPID( int numberOfPids, String prefix ) throws RemoteException
+    String[] getNextPID( int numberOfPids, String prefix ) throws RemoteException
     {
         long timer = System.currentTimeMillis();
 

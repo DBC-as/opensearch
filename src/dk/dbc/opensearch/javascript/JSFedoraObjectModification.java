@@ -22,21 +22,19 @@
  */
 package dk.dbc.opensearch.javascript;
 
-import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.fedora.PID;
-import dk.dbc.opensearch.types.IObjectIdentifier;
 
 import org.apache.log4j.Logger;
 
 public class JSFedoraObjectModification
 {
     private Logger log = Logger.getLogger( JSFedoraObjectModification.class );
-    private IObjectRepository repository;
+    private final FcrepoModifier modifier;
     
-    public JSFedoraObjectModification( IObjectRepository repository )
+    public JSFedoraObjectModification( FcrepoModifier modifier )
     {
-        this.repository = repository;
+        this.modifier = modifier;
     }
     
     /**
@@ -51,7 +49,7 @@ public class JSFedoraObjectModification
         
         try
         {
-        repository.deleteObject( pid, logmessage);
+            modifier.deleteObject( pid, logmessage );
         }
         catch( ObjectRepositoryException e )
         {
