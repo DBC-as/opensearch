@@ -197,8 +197,8 @@ public class FcrepoReaderTest
     @BeforeClass
     public static void generalSetup()
     {
-        BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel( Level.DEBUG );
+//        BasicConfigurator.configure();
+//        LogManager.getRootLogger().setLevel( Level.OFF );
 
         HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );
