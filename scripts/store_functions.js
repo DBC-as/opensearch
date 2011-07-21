@@ -13,7 +13,7 @@ function isDeleteObjectMarc( submitter, format, language, xml, pid ) {
 }
 
 function isDeleteObjectDkabm( submitter, format, language, xml, pid ) {
-  var result = DeleteObjects.checkDeleteObjectMarc( xml );
+  var result = DeleteObjects.checkDeleteObjectDkabm( xml );
 	return result;
 }
 
