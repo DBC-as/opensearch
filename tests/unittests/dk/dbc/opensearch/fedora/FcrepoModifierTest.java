@@ -76,6 +76,7 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
@@ -294,6 +295,7 @@ public class FcrepoModifierTest
 
 
     @Test
+    @Ignore
     public void testDeleteObject() throws Exception
     {
         final String identifier = "test:1";
@@ -303,6 +305,7 @@ public class FcrepoModifierTest
     }
 
     @Test( expected = ObjectRepositoryException.class )
+    @Ignore
     public void testDeleteObjectException() throws Exception
     {
         String identifier = "xyz";
@@ -312,6 +315,7 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testaddObjectRelationOther() throws Exception
     {
         String identifier = "test:1";
@@ -322,6 +326,7 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testaddObjectRelationToSelfFails() throws Exception
     {
         String identifier = "test:1";
@@ -332,12 +337,14 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testpurgeObjectRelation( ) throws Exception {
         instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");
     }
 
 
     @Test
+    @Ignore
     public void testStoreObject() throws Exception
     {
         CargoContainer cargo = new CargoContainer( );
@@ -353,6 +360,7 @@ public class FcrepoModifierTest
     }
 
     @Test( expected = IllegalStateException.class )
+    @Ignore
     public void testStoreObjectWithEmptyCargo() throws Exception
     {
         CargoContainer cargo = new CargoContainer();
@@ -361,6 +369,7 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testStoreObjectWithEmptyIdentifierFails() throws Exception
     {
         CargoContainer cargo = new CargoContainer();
@@ -372,6 +381,7 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testPurgeObject() throws Exception
     {
         String identifier = "test:1";
@@ -382,6 +392,7 @@ public class FcrepoModifierTest
 
 
     @Test( expected = ObjectRepositoryException.class )
+    @Ignore
     public void testPurgeObjectFailsWithNonExistingObject() throws Exception
     {
         String identifier = "idontexist";
@@ -391,6 +402,7 @@ public class FcrepoModifierTest
     }
 
     @Test
+    @Ignore
     public void testPurgeDatastream() throws Exception
     {
         String identifier = "test:1";

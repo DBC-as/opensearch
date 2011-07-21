@@ -64,6 +64,7 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -225,6 +226,7 @@ public class FcrepoReaderTest
 
 
     @Test
+    @Ignore
     public void testGetObject() throws Exception
     {
         String identifier = "test:1";
@@ -234,6 +236,7 @@ public class FcrepoReaderTest
 
 
     @Test
+    @Ignore
     public void testHasObject() throws Exception
     {
         String identifier = "test:1";
@@ -243,6 +246,7 @@ public class FcrepoReaderTest
 
 
     @Test
+    @Ignore
     public void testGetObjectReturnsCorrectDCStream() throws Exception
     {
         String identifier = "test:1";
@@ -252,6 +256,7 @@ public class FcrepoReaderTest
 
 
     @Test(expected = IllegalStateException.class)
+    @Ignore
     public void testGetObjectThatDoesntExist() throws Exception
     {
         String identifier = "null:1";
@@ -261,6 +266,7 @@ public class FcrepoReaderTest
 
 
     @Test
+    @Ignore
     public void testGetIdentifiersByState() throws Exception
     {
         Set< String > x = new HashSet< String >();
@@ -276,6 +282,7 @@ public class FcrepoReaderTest
     }
 
     @Test
+    @Ignore
     public void testListDatastreamIds() throws Exception
     {
         String identifier = "test:1";
@@ -287,6 +294,7 @@ public class FcrepoReaderTest
     }
 
     @Test
+    @Ignore
     public void testGetDatastreamDissemination() throws Exception
     {
         String identifier = "test:1";

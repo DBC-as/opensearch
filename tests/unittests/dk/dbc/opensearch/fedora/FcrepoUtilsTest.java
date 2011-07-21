@@ -67,6 +67,7 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
@@ -420,6 +421,7 @@ public class FcrepoUtilsTest
 
 
     @Test
+    @Ignore
     public void testRemoveOutboundRelations() throws Exception
     {
         String identifier = "test:1";
@@ -429,6 +431,7 @@ public class FcrepoUtilsTest
 
 
     @Test(expected = ObjectRepositoryException.class)
+    @Ignore
     public void testRemoveOutboundRelationsFailsWithNonExistingObject() throws Exception
     {
         String identifier = "idontexist";
@@ -438,6 +441,7 @@ public class FcrepoUtilsTest
 
 
     @Test
+    @Ignore
     public void testRemoveInboundRelations() throws Exception
     {
         String identifier = "test:1";
@@ -449,6 +453,7 @@ public class FcrepoUtilsTest
 
 
     @Test
+    @Ignore
     public void testRemoveInboundRelationsNoneFound() throws Exception
     {
         String identifier = "test:2";
