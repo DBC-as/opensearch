@@ -55,8 +55,8 @@ import org.xml.sax.SAXException;
  */
 public class FcrepoModifier
 {
-    private static final Logger log = Logger.getLogger( FcrepoModifier.class );
-    private static final String DeletedState = "D";
+    private final static Logger log = Logger.getLogger( FcrepoModifier.class );
+    private final static String DeletedState = "D";
     private final FedoraAPIM fem;
     private final FedoraClient fc;
     private final String fedora_base_url;

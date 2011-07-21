@@ -56,6 +56,7 @@ import static mockit.Mockit.tearDownMocks;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -266,8 +267,9 @@ public class FcrepoModifierTest
     @BeforeClass
     public static void generalSetup()
     {
-//        BasicConfigurator.configure();
-//        LogManager.getRootLogger().setLevel( Level.OFF );
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().addAppender( new ConsoleAppender());
+        LogManager.getRootLogger().setLevel( Level.OFF );
 
         HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );

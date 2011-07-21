@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 
 public class FcrepoReader
 {
-    private static Logger log = Logger.getLogger( FcrepoReader.class );
+    private final static Logger log = Logger.getLogger( FcrepoReader.class );
     private final FedoraAPIA fea;
     private final String fedora_base_url;
 
