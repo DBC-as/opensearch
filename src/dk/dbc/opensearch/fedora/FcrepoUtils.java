@@ -80,12 +80,9 @@ public class FcrepoUtils
             throw new ObjectRepositoryException( error, ex );
         }
 
-        if( purged == null || purged.length == 0 )
-        {
-            String error = String.format( "Could not remove outbound relations from object referenced by pid '%s'", objectIdentifier );
-            log.error( error );
-            throw new ObjectRepositoryException( error );
-        }
+        int relNumber = (purged == null) ? 0 : purged.length;
+        String message = String.format( "%d stream(s) were removed from object referenced by pid '%s'", relNumber, objectIdentifier );
+        log.info( message );
     }
 
 

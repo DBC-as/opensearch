@@ -66,7 +66,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     {
         // Setting the objectlist.
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( reader );
-        JSRelationFunctions relationFunctions = new JSRelationFunctions( modifier );
+        JSRelationFunctions relationFunctions = new JSRelationFunctions( reader, modifier );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );

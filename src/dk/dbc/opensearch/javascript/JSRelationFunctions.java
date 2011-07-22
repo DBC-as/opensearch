@@ -24,6 +24,8 @@ package dk.dbc.opensearch.javascript;
 
 
 import dk.dbc.opensearch.fedora.FcrepoModifier;
+import dk.dbc.opensearch.fedora.FcrepoReader;
+import dk.dbc.opensearch.fedora.FcrepoUtils;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 
 import org.apache.log4j.Logger;
@@ -33,11 +35,13 @@ public class JSRelationFunctions
 {
     private Logger log = Logger.getLogger( JSRelationFunctions.class );
 
+    private FcrepoReader reader;
     private FcrepoModifier modifier;
 
 
-    public JSRelationFunctions( FcrepoModifier modifier )
+    public JSRelationFunctions( FcrepoReader reader, FcrepoModifier modifier )
     {
+        this.reader = reader;
         this.modifier = modifier;
     }
 
@@ -59,9 +63,25 @@ public class JSRelationFunctions
         }
         catch( ObjectRepositoryException ore )
         {
+            // Error has already been logged in addUncheckedObjectRelation, so just discard it here
             return false;
         }
 
         return true;
+    }
+
+    public boolean removeOutboundRelations( String pid )
+    {
+        try
+        {
+            FcrepoUtils.removeOutboundRelations( reader, modifier, pid );
+            return true;
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            log.error( "Unable to remove outbound relations from " + pid, ex);
+            return false;
+        }
+
     }
 }

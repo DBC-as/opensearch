@@ -227,7 +227,7 @@ public class FcrepoModifier
         }
         catch( RemoteException e )
         {
-            String error = "Failed to add Relation to fedora Object";
+            String error = String.format( "Failed to add Relation to fedora Object %s - %s -> %s", objectIdentifier, relationString, subject );
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
         }
