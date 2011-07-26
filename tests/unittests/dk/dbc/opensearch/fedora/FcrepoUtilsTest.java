@@ -50,7 +50,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.fcrepo.client.FedoraClient;
@@ -77,7 +76,6 @@ import org.xml.sax.InputSource;
  */
 public class FcrepoUtilsTest
 {
-    public static final Logger log = Logger.getLogger( FcrepoUtilsTest.class );
     FcrepoReader reader;
     FcrepoModifier modifier;
     static FedoraAPIA apiaInstance = new MockFedoraAPIA();
@@ -423,6 +421,7 @@ public class FcrepoUtilsTest
 
 
     @Test
+    @Ignore
     public void testRemoveOutboundRelations() throws Exception
     {
         String identifier = "test:1";
