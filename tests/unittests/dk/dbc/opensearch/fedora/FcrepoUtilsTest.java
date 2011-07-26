@@ -393,9 +393,9 @@ public class FcrepoUtilsTest
     @BeforeClass
     public static void generalSetup()
     {
-        BasicConfigurator.configure();
-        LogManager.getRootLogger().addAppender( new ConsoleAppender());
-        LogManager.getRootLogger().setLevel( Level.OFF );
+//        BasicConfigurator.configure();
+//        LogManager.getRootLogger().addAppender( new ConsoleAppender());
+//        LogManager.getRootLogger().setLevel( Level.OFF );
 
         HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );
@@ -421,7 +421,7 @@ public class FcrepoUtilsTest
 
 
     @Test
-    @Ignore
+//    @Ignore
     public void testRemoveOutboundRelations() throws Exception
     {
         String identifier = "test:1";
