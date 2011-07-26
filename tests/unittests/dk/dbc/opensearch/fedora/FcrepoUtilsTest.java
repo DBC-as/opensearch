@@ -421,7 +421,7 @@ public class FcrepoUtilsTest
 
 
     @Test
-//    @Ignore
+    @Ignore
     public void testRemoveOutboundRelations() throws Exception
     {
         String identifier = "test:1";
