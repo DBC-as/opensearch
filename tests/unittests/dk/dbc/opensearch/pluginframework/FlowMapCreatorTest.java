@@ -9,9 +9,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import java.util.Map;
 import java.util.List;
+import javax.xml.rpc.ServiceException;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -26,6 +28,9 @@ import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
 import mockit.Mockit;
+import org.fcrepo.client.FedoraClient;
+import org.fcrepo.server.access.FedoraAPIA;
+import org.fcrepo.server.management.FedoraAPIM;
 
 public class FlowMapCreatorTest
 {
@@ -47,8 +52,9 @@ public class FlowMapCreatorTest
     String argValue1 = "argValue1";
     String argValue2 = "argValue2";
 
-    @Mocked FcrepoReader reader;
-    @Mocked FcrepoModifier modifier;
+    @Mocked static FedoraAPIA apiaInstance;
+    @Mocked static FedoraAPIM apimInstance;
+
     @Mocked static IPluginEnvironment mockIPluginEnvironment;
     @Mocked static CargoContainer mockCargoContainer;
 
@@ -60,6 +66,30 @@ public class FlowMapCreatorTest
         }
 
     }
+
+    @MockClass(realClass = FedoraClient.class)
+    public static class MockFedoraClient
+    {
+        @Mock
+        public void $init( String url, String user, String passwd )
+        {
+        }
+
+
+        @Mock
+        public FedoraAPIM getAPIM() throws ServiceException, IOException
+        {
+            return apimInstance;
+        }
+
+
+        @Mock
+        public FedoraAPIA getAPIA() throws ServiceException, IOException
+        {
+            return apiaInstance;
+        }
+    }
+
 
     /**
      * Dummy implementation of the IPluggable interface.
@@ -136,7 +166,9 @@ public class FlowMapCreatorTest
      */
     @Test public void createMapTest() throws Exception
     {
-        Mockit.setUpMocks( MockPluginResolver.class );
+        Mockit.setUpMocks( MockPluginResolver.class, MockFedoraClient.class );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Pass" );
+        FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Pass" );
 
         fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );
         flowMap = fmc.createMap( new PluginResolver(), reader, modifier, null );

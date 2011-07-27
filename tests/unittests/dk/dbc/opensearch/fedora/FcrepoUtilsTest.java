@@ -319,9 +319,7 @@ public class FcrepoUtilsTest
                             "timestamp"
                         };
             }
-            return new String[]
-                    {
-                    };
+            throw new RemoteException(String.format( "Object '%s' not found in repository", pid ) );
         }
 
 
@@ -421,7 +419,6 @@ public class FcrepoUtilsTest
 
 
     @Test
-    @Ignore
     public void testRemoveOutboundRelations() throws Exception
     {
         String identifier = "test:1";
@@ -430,8 +427,7 @@ public class FcrepoUtilsTest
     }
 
 
-    @Test(expected = ObjectRepositoryException.class)
-    @Ignore
+    @Test( expected = ObjectRepositoryException.class )
     public void testRemoveOutboundRelationsFailsWithNonExistingObject() throws Exception
     {
         String identifier = "idontexist";
@@ -441,7 +437,6 @@ public class FcrepoUtilsTest
 
 
     @Test
-    @Ignore
     public void testRemoveInboundRelations() throws Exception
     {
         String identifier = "test:1";
@@ -453,7 +448,6 @@ public class FcrepoUtilsTest
 
 
     @Test
-    @Ignore
     public void testRemoveInboundRelationsNoneFound() throws Exception
     {
         String identifier = "test:2";
