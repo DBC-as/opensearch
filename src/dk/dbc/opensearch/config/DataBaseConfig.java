@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.config;
 
 
+import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -105,13 +106,15 @@ public class DataBaseConfig extends Config
     }
     
     /* ORACLE_DATABASE_NAME */
-    private String getDatabaseOracleDataBaseName()
+    private List< String > getDatabaseOracleDataBaseName()
     {
-        String ret = config.getString( "database.oracle_database_name" );
+        // Returns list of names since the oracle_database_name element
+        // is repeatable in the config.
+        List< String > ret = config.getList( "database.oracle_database_name" );
         return ret;
     }
 
-    public static String getOracleDataBaseName() throws ConfigurationException
+    public static List< String > getOracleDataBaseNames() throws ConfigurationException
     {
         DataBaseConfig dbc = new DataBaseConfig();
         return dbc.getDatabaseOracleDataBaseName();

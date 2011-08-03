@@ -368,7 +368,7 @@ public class DatadockMain
 
     private IHarvest selectESHarvester() throws ConfigurationException, SQLException, HarvesterIOException
     {
-        String dataBaseName = DataBaseConfig.getOracleDataBaseName();
+        List< String > dataBaseNames = DataBaseConfig.getOracleDataBaseNames();
         String oracleCacheName = DataBaseConfig.getOracleCacheName();
         String oracleUrl = DataBaseConfig.getOracleUrl();
         String oracleUser = DataBaseConfig.getOracleUserID();
@@ -419,7 +419,7 @@ public class DatadockMain
 
         OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
-        return new ESHarvest( connectionPool, dataBaseName, usePriorityFlag );
+        return new ESHarvest( connectionPool, dataBaseNames, usePriorityFlag );
 
     }
 

@@ -65,7 +65,7 @@ public final class ESHarvest implements IHarvest
 
 
     private final OracleDBPooledConnection connectionPool; // The connectionPool, given through the constuctor
-    private final String databasename; // The ES-base databasename - given through the constructor
+    private final List< String > databasenames; // The ES-base database names - given through the constructor
     private final boolean usePriorityFlag; // Use priority flag when querying for new jobs
 
     
@@ -76,10 +76,10 @@ public final class ESHarvest implements IHarvest
      *   Creates a new ES-Harvester.
      *   The Harvester 
      */
-    public ESHarvest( OracleDBPooledConnection connectionPool, String databasename, boolean usePriorityFlag) throws HarvesterIOException
+    public ESHarvest( OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag) throws HarvesterIOException
     {
         this.connectionPool = connectionPool;
-        this.databasename = databasename;
+        this.databasenames = databasenames;
         this.usePriorityFlag = usePriorityFlag;
     }
 
@@ -139,14 +139,28 @@ public final class ESHarvest implements IHarvest
             //
             // Find the next targetreference:
             //
-            PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference " +
-                                     "FROM updatepackages " +
-                                     "WHERE taskstatus = ? " +
-                                     "AND databasename = ? " +
-                                     ( this.usePriorityFlag ? "AND rownum < 2 " : "" ) +
-                                     "ORDER BY update_priority , creationdate , targetreference" );
-            pstmt.setInt( 1, 0 ); // taskstatus
-            pstmt.setString( 2, databasename );
+            StringBuilder targetrefSelect = new StringBuilder();
+            targetrefSelect.append( "SELECT targetreference " );
+            targetrefSelect.append( "FROM updatepackages " );
+            targetrefSelect.append( "WHERE ( databasename = ? " );
+            for ( int i = 1; i < databasenames.size(); i++ )
+            {
+                targetrefSelect.append( "OR databasename = ? " );
+            }
+            targetrefSelect.append( ") AND taskstatus = 0 " );
+            if ( this.usePriorityFlag ) {
+                targetrefSelect.append( "AND rownum < 2 " );
+            }
+            targetrefSelect.append( "ORDER BY update_priority , creationdate , targetreference" );
+
+            log.info( String.format( "PREPARED_STATEMENT %s", targetrefSelect.toString() ) );
+
+            PreparedStatement pstmt = conn.prepareStatement( targetrefSelect.toString() );
+
+            int parameterIndex = 1;
+            for (String name : databasenames ) {
+                pstmt.setString( parameterIndex++, name );
+            }
 
             ResultSet rs1 = pstmt.executeQuery ( );
             if ( rs1.next() )

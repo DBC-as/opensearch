@@ -149,7 +149,7 @@ public class DatadockManagerTest
         static List<TaskInfo> list;
 
         @Mock
-        public void $init( OracleDBPooledConnection connectionPool, String databasename, boolean usePriorityFlag )
+        public void $init( OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag )
         {
             list = new ArrayList<TaskInfo>();
         }
