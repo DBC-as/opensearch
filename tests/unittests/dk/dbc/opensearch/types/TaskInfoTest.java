@@ -43,7 +43,7 @@ public class TaskInfoTest {
     static final String referenceDataNoMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"se\"/></referencedata>";
     static final String referenceDataEmptyMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"se\" mimetype=\"\"/></referencedata>";
     static final String referenceDataIllegalAttribute = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"dk\" illegalattribute=\"illegal\"/></referencedata>";
-    @Mocked IIdentifier mockIdentifier;
+    IIdentifier mockIdentifier = new IIdentifier (){};
     private Document xmldataComplete;
     private Document xmldataNoInfoElement;
     private Document xmldataNoReferenceElement;
