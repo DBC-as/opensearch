@@ -23,7 +23,8 @@ package dk.dbc.opensearch.types;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class CargoObject
 {
-    private Logger log = Logger.getLogger( CargoObject.class );
+    private Logger log = LoggerFactory.getLogger( CargoObject.class );
 
     
     private final byte[] data;

@@ -28,7 +28,8 @@
 package dk.dbc.opensearch.types;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -46,7 +47,7 @@ public enum CargoMimeType
     TEXT_XML( "text/xml", "XML Document" ),
     APPLICATION_PDF( "application/pdf", "PDF Document" ),
     APPLICATION_RDF( "application/rdf+xml", "RDF Document" );
-    static Logger log = Logger.getLogger( CargoMimeType.class );
+    static Logger log = LoggerFactory.getLogger( CargoMimeType.class );
     private final String mimetype;
     private final String description;
 

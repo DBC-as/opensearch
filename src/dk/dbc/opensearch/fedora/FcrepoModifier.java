@@ -46,7 +46,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.axis.types.NonNegativeInteger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.fcrepo.common.Constants;
 import org.xml.sax.SAXException;
 
@@ -55,7 +56,7 @@ import org.xml.sax.SAXException;
  */
 public class FcrepoModifier
 {
-    private final static Logger log = Logger.getLogger( FcrepoModifier.class );
+    private final static Logger log = LoggerFactory.getLogger( FcrepoModifier.class );
     private final static String DeletedState = "D";
     private final FedoraAPIM fem;
     private final FedoraClient fc;

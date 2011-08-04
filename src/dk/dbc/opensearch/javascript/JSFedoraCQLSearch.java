@@ -33,13 +33,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JSFedoraCQLSearch
 {
 
-    private final static Logger log = Logger.getLogger( JSFedoraCQLSearch.class );
+    private final static Logger log = LoggerFactory.getLogger( JSFedoraCQLSearch.class );
     private final FcrepoReader reader;
 
     public JSFedoraCQLSearch( FcrepoReader reader )

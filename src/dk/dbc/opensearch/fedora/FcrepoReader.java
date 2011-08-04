@@ -49,7 +49,8 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axis.types.NonNegativeInteger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.fcrepo.server.types.gen.Condition;
 
 import org.fcrepo.server.types.gen.ComparisonOperator;
@@ -59,7 +60,7 @@ import org.xml.sax.SAXException;
 
 public class FcrepoReader
 {
-    private final static Logger log = Logger.getLogger( FcrepoReader.class );
+    private final static Logger log = LoggerFactory.getLogger( FcrepoReader.class );
     private final FedoraAPIA fea;
     private final String fedora_base_url;
 

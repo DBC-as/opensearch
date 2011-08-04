@@ -27,7 +27,8 @@ package dk.dbc.opensearch.types;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
  */
 public class CargoObjectInfo
 {
-    private static final Logger log = Logger.getLogger( CargoObjectInfo.class );
+    private static final Logger log = LoggerFactory.getLogger( CargoObjectInfo.class );
 
     /**
      * Property naming type of data stream.

@@ -30,13 +30,14 @@ import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import java.util.logging.Level;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JSFcrepoStreamReader
 {
     public static final int MAX_SEARCH_RESULTS = 10000;
-    private Logger log = Logger.getLogger( JSFcrepoStreamReader.class );
+    private Logger log = LoggerFactory.getLogger( JSFcrepoStreamReader.class );
 
 
     private final FcrepoReader reader;

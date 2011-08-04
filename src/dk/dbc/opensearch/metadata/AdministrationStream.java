@@ -52,7 +52,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 
@@ -79,7 +80,7 @@ public class AdministrationStream implements IMetaData
      */
     public static final DataStreamType type = DataStreamType.AdminData;
 
-    private static Logger log = Logger.getLogger( AdministrationStream.class );
+    private static Logger log = LoggerFactory.getLogger( AdministrationStream.class );
 
 
     /**

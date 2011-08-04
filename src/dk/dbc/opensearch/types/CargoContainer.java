@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -53,7 +54,7 @@ import org.apache.log4j.Logger;
  */
 public class CargoContainer
 {
-    Logger log = Logger.getLogger( CargoContainer.class );
+    Logger log = LoggerFactory.getLogger( CargoContainer.class );
 
 
     /** The internal representation of the data contained in the CargoContainer*/
@@ -206,32 +207,32 @@ public class CargoContainer
     {
         if( dataStreamName == null )
         {
-            log.fatal( "dataStreamName cannot be null" );
+            log.error( "dataStreamName cannot be null" );
             throw new IllegalArgumentException( "dataStreamName cannot be null" );
         }
         else if( (mimetype == null) || ( "".equals( mimetype.trim() ) ) )
         {
-            log.fatal( "mimetype must be specified" );
+            log.error( "mimetype must be specified" );
             throw new IllegalArgumentException( "mimetype must be specified" );
         }
         else if( (language == null) || ( "".equals( language.trim() ) ) )
         {
-            log.fatal( "language must be specified" );
+            log.error( "language must be specified" );
             throw new IllegalArgumentException( "language must be specified" );
         }
         else if( (submitter == null) || ( "".equals( submitter.trim() ) ) )
         {
-            log.fatal( "submitter must be specified" );
+            log.error( "submitter must be specified" );
             throw new IllegalArgumentException( "submitter must be specified" );
         }
         else if( (format == null) || ( "".equals( format.trim() ) ) )
         {
-            log.fatal( "format must be specified" );
+            log.error( "format must be specified" );
             throw new IllegalArgumentException( "format must be specified" );
         }
         else if( (data == null) || (data.length <= 0) )
         {
-            log.fatal( "data must be present " );
+            log.error( "data must be present " );
             throw new IllegalArgumentException( "data must be present " );
         }
 

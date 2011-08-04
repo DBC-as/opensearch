@@ -48,7 +48,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -61,7 +62,7 @@ import org.xml.sax.SAXException;
  */
 public final class ESHarvest implements IHarvest
 {
-    Logger log = Logger.getLogger( ESHarvest.class );
+    Logger log = LoggerFactory.getLogger( ESHarvest.class );
 
 
     private final OracleDBPooledConnection connectionPool; // The connectionPool, given through the constuctor
@@ -122,7 +123,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String(  "Error when closing the Oracle pooled connection" );
-            log.fatal( errorMsg , sqle );
+            log.error( errorMsg , sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
     }
@@ -188,8 +189,8 @@ public final class ESHarvest implements IHarvest
                 conn.rollback();
                 // stmt.close();
                 String errorMsg = String.format( "Error: updated %s row(s). 1 row was expected", res );
-                log.fatal( errorMsg );
-		releaseConnection( conn );
+                log.error( errorMsg );
+                releaseConnection( conn );
                 throw new HarvesterIOException( errorMsg );
             }
 
@@ -218,8 +219,8 @@ public final class ESHarvest implements IHarvest
         catch ( SQLException sqle )
         {
             String errorMsg = new String( "An SQL error occured while trying to retrieve job candidates" );
-            log.fatal( errorMsg, sqle );
-	    releaseConnection( conn );
+            log.error( errorMsg, sqle );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -258,7 +259,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String( "An sql exception was caught" );
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
@@ -335,7 +336,7 @@ public final class ESHarvest implements IHarvest
         catch ( SQLException sqle )
         {
             String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -373,8 +374,8 @@ public final class ESHarvest implements IHarvest
             catch( SQLException sqle )
             {
                 String errorMsg = new String( "An SQL error occured while trying to change recordstatus" );
-                log.fatal( errorMsg, sqle );
-		releaseConnection( conn );
+                log.error( errorMsg, sqle );
+                releaseConnection( conn );
                 throw new HarvesterIOException( errorMsg, sqle );
             }
 
@@ -442,7 +443,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String( "A database error occured " );
-            log.fatal(  errorMsg, sqle );
+            log.error(  errorMsg, sqle );
 	    releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
@@ -465,7 +466,7 @@ public final class ESHarvest implements IHarvest
         catch ( SQLException sqle )
         {
             String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 	
@@ -480,7 +481,7 @@ public final class ESHarvest implements IHarvest
         log.info( "data: " + dataString );
 
         log.debug( "Creating CargoContainer" );
-	CargoContainer cargo = new CargoContainer();
+        CargoContainer cargo = new CargoContainer();
 
         try
         {
@@ -489,16 +490,16 @@ public final class ESHarvest implements IHarvest
         catch ( IOException ioe )
         {
             String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
-            log.fatal( errorMsg, ioe );
+            log.error( errorMsg, ioe );
 	    releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, ioe );
         }
-	catch ( RuntimeException e )
-	{
-            log.fatal( "Unknown Exception caught", e );
-	    releaseConnection( conn );
-	    throw e;
-	}
+        catch( RuntimeException e )
+        {
+            log.error( "Unknown Exception caught", e );
+            releaseConnection( conn );
+            throw e;
+        }
 
         releaseConnection( conn );
         return cargo;
@@ -528,7 +529,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -587,7 +588,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = String.format( "An SQL error occured while releasing job: %s", id.toString() );
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
 	}
 	finally
@@ -615,7 +616,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -628,8 +629,8 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = String.format( "Could not set failureDiagnostic on Id: %s", EsId );
-            log.fatal( errorMsg, sqle );
-	    releaseConnection( conn );
+            log.error( errorMsg, sqle );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -650,7 +651,7 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -762,8 +763,8 @@ public final class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-            log.fatal( "A database error occured", sqle );
-	    releaseConnection( conn );
+            log.error( "A database error occured", sqle );
+            releaseConnection( conn );
             throw new HarvesterIOException( "A database error occured", sqle );
         }
     }
@@ -795,12 +796,12 @@ public final class ESHarvest implements IHarvest
         if (res1 != 1)
         {
             // Something went wrong - we did not lock a single row for update
-            log.fatal( "Error: Result from select for update was " + res1 + ". Not 1." );
+            log.error( "Error: Result from select for update was " + res1 + ". Not 1." );
             String errorMsg = String.format( "RecordStatus was allready set in ES-base for %s", ESJobId );
-            log.fatal( errorMsg );
+            log.error( errorMsg );
             pstmt.close();
             conn.rollback();
-	    releaseConnection( conn );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg );
         }
 
@@ -1117,10 +1118,10 @@ public final class ESHarvest implements IHarvest
             if ( !rs.next() )
             {
                 String errorMsg = String.format( "Could not create a unique identifier for diagIdSeq in the ES base for ESId: %s.", Id );
-                log.fatal( errorMsg );
+                log.error( errorMsg );
         		pstmt.close();
                 conn.rollback();
-		releaseConnection( conn );
+                releaseConnection( conn );
                 throw new HarvesterIOException( errorMsg );
             }
 
@@ -1129,10 +1130,10 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = String.format( "A database error occured when trying to retrive unique id from diagIdSeq in ES base for ESId: %s.", Id );
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             pstmt.close();
             conn.rollback();
-	    releaseConnection( conn );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -1160,10 +1161,10 @@ public final class ESHarvest implements IHarvest
         catch( SQLException sqle )
         {
             String errorMsg = new String( "Could not insert diagnostic with id: " + diagnosticId );
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             conn.rollback();
             pstmt2.close();
-	    releaseConnection( conn );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
@@ -1215,10 +1216,10 @@ public final class ESHarvest implements IHarvest
         catch ( SQLException sqle )
         {
             String errorMsg = String.format( "Could not attach diagnostic (Id: %s) to taskpackagerecordstructure (Id: %s) with text: [%s]", diagnosticId, Id, failureDiagnostic );
-            log.fatal( errorMsg, sqle );
+            log.error( errorMsg, sqle );
             pstmt3.close();
             conn.rollback();
-	    releaseConnection( conn );
+            releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, sqle );
         }
     }
@@ -1291,27 +1292,27 @@ public final class ESHarvest implements IHarvest
     private void releaseConnection( Connection conn ) // throws HarvesterIOException
     {
         // Close the connection:
-	log.trace( "Trying to Release Connection");
+        log.trace( "Trying to Release Connection" );
 
         try
         {
-            if ( !conn.isClosed() )
+            if( !conn.isClosed() )
             {
                 conn.close();
-		log.debug( "Connection closed" );
+                log.debug( "Connection closed" );
             }
-	    else 
-	    {
-		log.debug( "Connection was already closed" );
-	    }
+            else
+            {
+                log.debug( "Connection was already closed" );
+            }
         }
         catch( SQLException sqle )
         {
 
-	    log.debug( "An Exception occured when trying to release the connection" );
+            log.debug( "An Exception occured when trying to release the connection" );
 
             String errorMsg = new String( "Could not release the database connection" );
-            log.fatal(  errorMsg, sqle );
+            log.error( errorMsg, sqle );
             // throw new HarvesterIOException( errorMsg, sqle );
         }
     }

@@ -52,7 +52,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -89,7 +90,7 @@ import org.xml.sax.SAXException;
  */
 public final class FileHarvest implements IHarvest
 {
-    static Logger log = Logger.getLogger( FileHarvest.class );
+    static Logger log = LoggerFactory.getLogger( FileHarvest.class );
 
 
     private ArrayList<File> submitters;
@@ -468,7 +469,7 @@ public final class FileHarvest implements IHarvest
         catch ( IOException ioe )
         {
             String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
-            log.fatal( errorMsg, ioe );
+            log.error( errorMsg, ioe );
             throw new HarvesterIOException( errorMsg, ioe );
         }
         return returnCargo;

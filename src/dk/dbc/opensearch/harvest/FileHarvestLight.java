@@ -61,7 +61,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -80,7 +81,7 @@ import org.xml.sax.SAXException;
  */
 public final class FileHarvestLight implements IHarvest
 {
-    static Logger log = Logger.getLogger( FileHarvestLight.class );
+    static Logger log = LoggerFactory.getLogger( FileHarvestLight.class );
 
     
     private List<String> FileList;
@@ -126,7 +127,7 @@ public final class FileHarvestLight implements IHarvest
         if ( ! dataFile.exists() )
         {
             String errMsg = String.format( "Harvest folder %s does not exist!", dataFile );
-            log.fatal( "FileHarvestLight: " + errMsg );
+            log.error( "FileHarvestLight: " + errMsg );
             throw new HarvesterIOException( errMsg );
         }
 
@@ -282,7 +283,7 @@ public final class FileHarvestLight implements IHarvest
         catch ( IOException ioe )
         {
             String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
-            log.fatal( errorMsg, ioe );
+            log.error( errorMsg, ioe );
             throw new HarvesterIOException( errorMsg, ioe );
         }
         

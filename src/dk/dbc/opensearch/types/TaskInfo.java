@@ -30,7 +30,8 @@ import dk.dbc.opensearch.types.IIdentifier;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -56,7 +57,7 @@ import org.w3c.dom.NodeList;
  */
 public final class TaskInfo
 {
-    private Logger log = Logger.getLogger( TaskInfo.class );
+    private Logger log = LoggerFactory.getLogger( TaskInfo.class );
 
     private static final String DEFAULT_LANGUAGE_CODE = "da";
     private static final String DEFAULT_MIMETYPE_CODE = "text/xml";

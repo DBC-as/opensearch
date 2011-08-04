@@ -35,13 +35,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JSFedoraPIDSearch
 {
     public static final int MAX_SEARCH_RESULTS = 10000;
-    private Logger log = Logger.getLogger( JSFedoraPIDSearch.class );
+    private Logger log = LoggerFactory.getLogger( JSFedoraPIDSearch.class );
     private FcrepoReader reader;
 
 

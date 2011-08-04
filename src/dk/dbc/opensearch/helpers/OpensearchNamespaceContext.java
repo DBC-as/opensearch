@@ -32,7 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.NamespaceContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -40,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public final class OpensearchNamespaceContext implements NamespaceContext
 {
-    private static Logger log = Logger.getLogger( OpensearchNamespaceContext.class );
+    private static Logger log = LoggerFactory.getLogger( OpensearchNamespaceContext.class );
 
 
     enum OpenSearchNamespace

@@ -43,7 +43,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -67,7 +68,7 @@ public class FedoraRelsExt implements IMetaData
     private static FedoraNamespace dc = new FedoraNamespaceContext().getNamespace( "dc" );
     private static FedoraNamespace rels = new FedoraNamespaceContext().getNamespace( "rel" );
 
-    private static Logger log = Logger.getLogger( FedoraRelsExt.class );
+    private static Logger log = LoggerFactory.getLogger( FedoraRelsExt.class );
 
     /**
      * Constructs an empty RELS-EXT document. {@code id} is used as

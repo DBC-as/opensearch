@@ -29,7 +29,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.config.FileSystemConfig;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 
 
@@ -38,7 +39,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  */
 public class Log4jConfiguration
 {
-    static Logger log = Logger.getLogger( Log4jConfiguration.class );
+    static Logger log = LoggerFactory.getLogger( Log4jConfiguration.class );
 
     
     public static void configure( String configFile ) throws ConfigurationException

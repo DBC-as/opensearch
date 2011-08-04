@@ -25,11 +25,12 @@ package dk.dbc.opensearch.javascript;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSFedoraObjectModification
 {
-    private Logger log = Logger.getLogger( JSFedoraObjectModification.class );
+    private Logger log = LoggerFactory.getLogger( JSFedoraObjectModification.class );
     private final FcrepoModifier modifier;
     
     public JSFedoraObjectModification( FcrepoModifier modifier )

@@ -36,7 +36,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.fcrepo.server.types.gen.ObjectFields;
 import org.xml.sax.SAXException;
 
@@ -46,7 +47,7 @@ import org.xml.sax.SAXException;
  */
 public class FcrepoUtils
 {
-    private final static Logger log = Logger.getLogger( FcrepoUtils.class );
+    private final static Logger log = LoggerFactory.getLogger( FcrepoUtils.class );
 
 
     /**

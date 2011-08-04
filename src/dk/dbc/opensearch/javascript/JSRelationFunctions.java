@@ -28,12 +28,13 @@ import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.FcrepoUtils;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JSRelationFunctions
 {
-    private Logger log = Logger.getLogger( JSRelationFunctions.class );
+    private Logger log = LoggerFactory.getLogger( JSRelationFunctions.class );
 
     private FcrepoReader reader;
     private FcrepoModifier modifier;

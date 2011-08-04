@@ -25,7 +25,8 @@ import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,7 +35,7 @@ import org.apache.log4j.Logger;
 public final class FedoraNamespaceContext implements NamespaceContext
 {
 
-    private static Logger log = Logger.getLogger( OpensearchNamespaceContext.class );
+    private static Logger log = LoggerFactory.getLogger( OpensearchNamespaceContext.class );
 
     public enum FedoraNamespace
     {

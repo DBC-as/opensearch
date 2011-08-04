@@ -57,7 +57,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -75,7 +76,7 @@ import org.xml.sax.SAXException;
  */
 public final class FoxmlDocument
 {
-    static Logger log = Logger.getLogger( FoxmlDocument.class );
+    static Logger log = LoggerFactory.getLogger( FoxmlDocument.class );
 
 
     /**
