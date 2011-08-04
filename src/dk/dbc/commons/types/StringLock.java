@@ -25,7 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class enables locking based on identifiers. Currently the
@@ -78,7 +79,7 @@ public class StringLock
       order to ensure correctness of the overall algorithm.
     */
 
-    private static Logger log = Logger.getLogger( StringLock.class );
+    private static Logger log = LoggerFactory.getLogger( StringLock.class );
     private Map< String, Pair< ReentrantLock, Integer > > lockMap;
 
     /**

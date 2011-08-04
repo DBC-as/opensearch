@@ -28,12 +28,13 @@ package dk.dbc.commons.javascript;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class  E4XXMLHeaderStripper 
 {
-    private static Logger log = Logger.getLogger( E4XXMLHeaderStripper.class );
+    private static Logger log = LoggerFactory.getLogger( E4XXMLHeaderStripper.class );
     
     private static final Pattern p = Pattern.compile( "<[?]xml[^>]*[?]>\\s*" );
 

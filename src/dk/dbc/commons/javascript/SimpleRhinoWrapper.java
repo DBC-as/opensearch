@@ -34,7 +34,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.mozilla.javascript.*;
 
 
@@ -54,7 +55,7 @@ import org.mozilla.javascript.*;
  */
 public class SimpleRhinoWrapper
 {
-    private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
+    private static Logger log = LoggerFactory.getLogger( SimpleRhinoWrapper.class );
 
     
     private final ScriptableObject scope;
@@ -91,7 +92,7 @@ public class SimpleRhinoWrapper
             {
                 // This should never happen!
                 String errorMsg = "An error occured when initializing standard objects for javascript";
-                log.fatal( errorMsg );
+                log.error( errorMsg );
                 throw new IllegalStateException( errorMsg );
             }
 
@@ -182,7 +183,7 @@ public class SimpleRhinoWrapper
             if ( !( fObj instanceof Function ) )
             {
                 String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
-                log.fatal( errorMsg );
+                log.error( errorMsg );
                 throw new IllegalStateException( errorMsg );
             }
             else

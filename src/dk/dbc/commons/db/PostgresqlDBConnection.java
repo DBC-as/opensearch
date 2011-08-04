@@ -32,7 +32,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,7 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class PostgresqlDBConnection implements IDBConnection
 {    
-	static Logger log = Logger.getLogger( PostgresqlDBConnection.class );
+	static Logger log = LoggerFactory.getLogger( PostgresqlDBConnection.class );
 	
 	
     /**

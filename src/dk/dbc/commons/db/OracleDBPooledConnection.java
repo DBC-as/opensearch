@@ -30,7 +30,8 @@ import java.util.Properties;
 
 import oracle.jdbc.pool.OracleDataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import oracle.jdbc.pool.OracleConnectionCacheManager;
 
@@ -42,7 +43,7 @@ import oracle.jdbc.pool.OracleConnectionCacheManager;
  */
 public class OracleDBPooledConnection
 {
-    private static Logger log = Logger.getLogger( OracleDBPooledConnection.class );
+    private static Logger log = LoggerFactory.getLogger( OracleDBPooledConnection.class );
     private String CACHE_NAME; // intended use: if a function for watching the pool is implemented
     private OracleDataSource ods = null;
 

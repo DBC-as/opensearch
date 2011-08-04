@@ -29,14 +29,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains methods for string manipulation
  */
 public class StringUtils
 {
-    static Logger log = Logger.getLogger(StringUtils.class);
+    static Logger log = LoggerFactory.getLogger(StringUtils.class);
 
     /**
      * Tests whether one of the String keys form the replaceMap is contained in the String str

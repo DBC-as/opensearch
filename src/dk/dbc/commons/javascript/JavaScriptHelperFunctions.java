@@ -34,15 +34,16 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JavaScriptHelperFunctions // extends ScriptableObject
 {
     private static Map< Scriptable, Set< String > > loadedScripts = new HashMap< Scriptable, Set< String > >();
 
-    private static Logger log = Logger.getLogger( JavaScriptHelperFunctions.class );
+    private static Logger log = LoggerFactory.getLogger( JavaScriptHelperFunctions.class );
 
 
     // This function is taken from rhinos examplecode,

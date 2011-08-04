@@ -36,7 +36,8 @@ import java.lang.NullPointerException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -45,7 +46,7 @@ import org.apache.log4j.Logger;
  */
 public class FileHandler 
 {
-    static Logger log = Logger.getLogger( FileHandler.class );
+    static Logger log = LoggerFactory.getLogger( FileHandler.class );
 
     /**
      * The empty FileHandler constructor
