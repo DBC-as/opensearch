@@ -153,8 +153,6 @@ public final class ESHarvest implements IHarvest
             }
             targetrefSelect.append( "ORDER BY update_priority , creationdate , targetreference" );
 
-            log.info( String.format( "PREPARED_STATEMENT %s", targetrefSelect.toString() ) );
-
             PreparedStatement pstmt = conn.prepareStatement( targetrefSelect.toString() );
 
             int parameterIndex = 1;
