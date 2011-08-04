@@ -167,7 +167,7 @@ public class FlowMapCreatorTest
     @Test public void createMapTest() throws Exception
     {
         Mockit.setUpMocks( MockPluginResolver.class, MockFedoraClient.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Pass" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Pass" );
 
         fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );

@@ -155,7 +155,7 @@ public class DatadockMainTest
 
     @MockClass( realClass=FcrepoReader.class )
     public static class MockReader{
-        @Mock public void $init( String host, String port, String user, String passwd ){}
+        @Mock public void $init( String host, String port ){}
     }
 
     @MockClass( realClass=FcrepoModifier.class )

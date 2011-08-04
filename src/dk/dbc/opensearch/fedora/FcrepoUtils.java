@@ -104,6 +104,7 @@ public class FcrepoUtils
      */
     public static int removeInboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
     {
+        log.debug( String.format( "Searching for objects with relations to: '%s'", objectIdentifier ));
         int count = 0;
         OpenSearchCondition cond = new OpenSearchCondition( FedoraObjectFields.RELOBJ, OpenSearchCondition.Operator.EQUALS, objectIdentifier );
 

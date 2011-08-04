@@ -53,7 +53,7 @@ public class JSFedoraCQLSearchTest
     public static class MockReader
     {
         @Mock 
-        public void $init( String host, String port, String user, String pass )
+        public void $init( String host, String port )
         {}
         
         @Mock
@@ -91,7 +91,7 @@ public class JSFedoraCQLSearchTest
     @Test
     public void constructorTest() throws Exception
     {
-        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test" );
         
         JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
     }
@@ -103,7 +103,7 @@ public class JSFedoraCQLSearchTest
     public void testSearchResultReturnedAsString() throws Exception
     {
         String query = "title = test";
-        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test" );
         
         JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
@@ -118,7 +118,7 @@ public class JSFedoraCQLSearchTest
     public void queryWithOr() throws Exception
     {
         String query = "title = test OR title = test2";
-        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test" );
         
         JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
@@ -137,7 +137,7 @@ public class JSFedoraCQLSearchTest
     public void duplicateResultTest() throws Exception
     {
         String query = "title = test OR title = test2 AND title = test";
-        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test" );
         
         JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
         String[] result = cqlSearcher.search( query );
@@ -154,7 +154,7 @@ public class JSFedoraCQLSearchTest
     {
         String query = " ( title = test OR title = test2 ) AND type = bog";
 
-        FcrepoReader reader = new FcrepoReader( "test", "test", "test", "test" );
+        FcrepoReader reader = new FcrepoReader( "test", "test" );
         JSFedoraCQLSearch cqlSearcher = new JSFedoraCQLSearch( reader );
 
         String[] result = cqlSearcher.search( query );

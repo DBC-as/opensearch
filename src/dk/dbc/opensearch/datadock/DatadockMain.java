@@ -431,7 +431,7 @@ public class DatadockMain
         String port = FedoraConfig.getPort();
         String user = FedoraConfig.getUser();
         String pass = FedoraConfig.getPassPhrase();
-        FcrepoReader reader = new FcrepoReader( host, port, user, pass );
+        FcrepoReader reader = new FcrepoReader( host, port );
         FcrepoModifier modifier = new FcrepoModifier( host, port, user, pass );
         PluginResolver pluginResolver = new PluginResolver();
         String javascriptPath = FileSystemConfig.getScriptPath();

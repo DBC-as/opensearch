@@ -67,7 +67,7 @@ public class StoreTest
     @MockClass( realClass = FcrepoReader.class )
     public static class MockReaderHasNoObject
     {
-        @Mock public void $init( String host, String port, String user, String passwd ) 
+        @Mock public void $init( String host, String port ) 
         {
         }
 
@@ -82,7 +82,7 @@ public class StoreTest
     @MockClass( realClass = FcrepoReader.class )
     public static class MockReaderHasObject
     {
-        @Mock public void $init( String host, String port, String user, String passwd )
+        @Mock public void $init( String host, String port )
         {
         }
 
@@ -169,7 +169,7 @@ public class StoreTest
     @MockClass( realClass = FcrepoReader.class )
     public static class MockReaderException
     {
-        @Mock public void $init( String host, String port, String user, String passwd )
+        @Mock public void $init( String host, String port )
         {
         }
 
@@ -259,7 +259,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathTest() throws Exception
     {
         setUpMocks( MockReaderHasNoObject.class, MockModifier.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
@@ -279,7 +279,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathDeleteTest() throws Exception
     {
         setUpMocks( MockReaderHasObject.class, MockModifier.class, MockUtils.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
@@ -299,7 +299,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathNoIdentifierTest() throws Exception
     {
         setUpMocks( MockReaderHasNoObject.class, MockModifier.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         //cargo.setIdentifier( null );        
         CargoContainer returnCargo;
@@ -318,7 +318,7 @@ public class StoreTest
     public void testObjectRepositoryException() throws Throwable
     {
         setUpMocks( MockReaderException.class, MockModifierException.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         CargoContainer returnCargo;
         storePlugin = new Store();
@@ -342,7 +342,7 @@ public class StoreTest
     public void storeCargoContainerMarkDeleted() throws Exception
     {
         setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeleted.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
@@ -364,7 +364,7 @@ public class StoreTest
     public void storeCargoContainerMarkDeletedException() throws Exception
     {
         setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeletedException.class );
-        FcrepoReader reader = new FcrepoReader( "Host", "Port", "User", "Password" );
+        FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
