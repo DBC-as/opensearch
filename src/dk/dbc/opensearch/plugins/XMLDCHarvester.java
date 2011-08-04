@@ -34,7 +34,8 @@ import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * \Todo: There are hardcoded values in the constructor
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
  */
 public class XMLDCHarvester implements IPluggable
 {
-    private static Logger log = Logger.getLogger( XMLDCHarvester.class );
+    private static Logger log = LoggerFactory.getLogger( XMLDCHarvester.class );
 
     public XMLDCHarvester() throws PluginException
     {

@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class PluginResolver implements IPluginResolver
 {
-    private static Logger log = Logger.getLogger( PluginResolver.class );
+    private static Logger log = LoggerFactory.getLogger( PluginResolver.class );
     private final PluginLoader pLoader;
 
     private static final Map< String, IPluggable > pluginInstanceCache = Collections.synchronizedMap( new HashMap< String , IPluggable> () );
@@ -81,7 +82,7 @@ public class PluginResolver implements IPluginResolver
      */
     private static class PluginLoader
     {
-        private Logger log = Logger.getLogger( PluginLoader.class );
+        private Logger log = LoggerFactory.getLogger( PluginLoader.class );
 
 
         /**

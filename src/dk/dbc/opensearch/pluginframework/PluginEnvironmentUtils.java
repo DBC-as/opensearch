@@ -34,12 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public final class PluginEnvironmentUtils
 {
-    private static Logger log = Logger.getLogger( PluginEnvironmentUtils.class );
+    private static Logger log = LoggerFactory.getLogger( PluginEnvironmentUtils.class );
 
     
     /**

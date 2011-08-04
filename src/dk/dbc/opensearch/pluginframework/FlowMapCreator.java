@@ -50,7 +50,8 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The FlowMapCreator is a class for creating specific flowmaps from an XML-file.
@@ -65,7 +66,7 @@ import org.apache.log4j.Logger;
  */
 public class FlowMapCreator
 {
-    static Logger log = Logger.getLogger( FlowMapCreator.class );
+    static Logger log = LoggerFactory.getLogger( FlowMapCreator.class );
 
 
     static Map<String, List<PluginTask>> flowMap;
@@ -84,13 +85,13 @@ public class FlowMapCreator
         catch( IOException ioe )
         {
              String error = "IOException while trying to validate workflow file";
-            log.fatal( error, ioe );
+            log.error( error, ioe );
             throw new IllegalStateException( error, ioe );
         }
         catch( SAXException se )
         {
-         String error = "SAXException while trying to validate workflow file";
-            log.fatal( error, se );
+            String error = "SAXException while trying to validate workflow file";
+            log.error( error, se );
             throw new IllegalStateException( error, se );
         }
 
@@ -102,7 +103,7 @@ public class FlowMapCreator
         catch( FileNotFoundException fnfe )
         {
             String error = "Could not open workflow file";
-            log.fatal( error, fnfe );
+            log.error( error, fnfe );
             throw new IllegalStateException( error, fnfe );
         }
 
@@ -196,27 +197,27 @@ public class FlowMapCreator
                             }
                             catch( InstantiationException ie )
                             {
-                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                log.error( String.format( "An error occured while creating plugin: %s", pluginclass) );
                                 throw ie;
                             }
                             catch( IllegalAccessException iae )
                                 {
-                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                log.error( String.format( "An error occured while creating plugin: %s", pluginclass) );
                                 throw iae;
                             }
                             catch( ClassNotFoundException cnfe )
                             {
-                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                log.error( String.format( "An error occured while creating plugin: %s", pluginclass) );
                                 throw cnfe;
                             }
                             catch( InvocationTargetException ite )
                             {
-                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                log.error( String.format( "An error occured while creating plugin: %s", pluginclass) );
                                 throw ite;
                             }
                             catch( PluginException pe )
                                 {
-                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                log.error( String.format( "An error occured while creating plugin: %s", pluginclass) );
                                 throw pe;
                             }
                         
@@ -239,7 +240,7 @@ public class FlowMapCreator
         catch( XMLStreamException xse )
         {
             String error = "could not create XMLEventReader";
-            log.fatal( error, xse );
+            log.error( error, xse );
             throw new IllegalStateException( error, xse );
         }
 
@@ -262,7 +263,7 @@ public class FlowMapCreator
         catch( SAXException se )
         {
             String error = "Could not validate workflows xml file";
-            log.fatal( error, se );
+            log.error( error, se );
             throw se;
         }
     }

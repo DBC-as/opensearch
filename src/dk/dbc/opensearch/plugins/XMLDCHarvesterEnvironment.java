@@ -40,13 +40,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 {
 
-    private static Logger log = Logger.getLogger( XMLDCHarvesterEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( XMLDCHarvesterEnvironment.class );
 
     private SimpleRhinoWrapper jsWrapper = null;
 

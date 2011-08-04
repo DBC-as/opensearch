@@ -27,7 +27,8 @@ import dk.dbc.opensearch.pluginframework.IPluggable;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The PluginTask is a container for objects which needs to be grouped together

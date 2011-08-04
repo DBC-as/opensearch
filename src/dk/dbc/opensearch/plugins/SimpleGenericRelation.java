@@ -34,7 +34,8 @@ import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
  */
 public class SimpleGenericRelation implements IPluggable
 {
-    private static Logger log = Logger.getLogger( SimpleGenericRelation.class );
+    private static Logger log = LoggerFactory.getLogger( SimpleGenericRelation.class );
 
 
     /**

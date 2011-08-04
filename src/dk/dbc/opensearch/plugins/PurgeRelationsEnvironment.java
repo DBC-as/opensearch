@@ -44,13 +44,14 @@ import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PurgeRelationsEnvironment implements IPluginEnvironment
 {
 
-    private static Logger log = Logger.getLogger( PurgeRelationsEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( PurgeRelationsEnvironment.class );
 
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;

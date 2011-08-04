@@ -44,12 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StoreEnvironment implements IPluginEnvironment
 {
 
-    private static Logger log = Logger.getLogger( StoreEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( StoreEnvironment.class );
 
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;

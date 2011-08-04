@@ -41,13 +41,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 public class ForceFedoraPidEnvironment implements IPluginEnvironment
 {
     
-    private static Logger log = Logger.getLogger( ForceFedoraPidEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( ForceFedoraPidEnvironment.class );
 
     // Create lock-object to guarantee sequential access to XPathFactory.
     // It is static to ensure that all instances of ForceFedoraPidEnvironment can access it.

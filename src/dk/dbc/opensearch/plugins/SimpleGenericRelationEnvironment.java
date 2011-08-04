@@ -43,13 +43,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 {
 
-    private static Logger log = Logger.getLogger( SimpleGenericRelationEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( SimpleGenericRelationEnvironment.class );
 
     private SimpleRhinoWrapper jsWrapper = null;
 

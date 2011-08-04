@@ -34,12 +34,13 @@ import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ForceFedoraPid implements IPluggable
 {
-    static Logger log = Logger.getLogger( ForceFedoraPid.class );
+    static Logger log = LoggerFactory.getLogger( ForceFedoraPid.class );
 
 
     public ForceFedoraPid() throws PluginException

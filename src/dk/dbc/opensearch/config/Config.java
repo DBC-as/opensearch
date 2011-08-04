@@ -30,7 +30,8 @@ import java.net.URL;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -59,7 +60,7 @@ import org.apache.log4j.Logger;
  */
 public class Config 
 {
-    Logger log = Logger.getLogger( Config.class );
+    Logger log = LoggerFactory.getLogger( Config.class );
 	
 	
     URL cfgURL = getClass().getResource( "/config.xml" );
@@ -81,7 +82,7 @@ public class Config
         catch ( ConfigurationException e ) 
         {
             /** \todo: it's sort of an anti-exception pattern to log and rethrow. Should we wrap this?*/
-            log.fatal( String.format( "ConfigurationException caught in class Config: %s", e.getMessage() ) );
+            log.error( String.format( "ConfigurationException caught in class Config: %s", e.getMessage() ) );
             throw e;
         }
     }

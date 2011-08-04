@@ -50,12 +50,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 {
 
-    private static Logger log = Logger.getLogger( MarcxchangeWorkRelationEnvironment.class );
+    private static Logger log = LoggerFactory.getLogger( MarcxchangeWorkRelationEnvironment.class );
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;
     private SimpleRhinoWrapper rhinoWrapper;
@@ -285,7 +286,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             catch( ObjectRepositoryException ore )
             {
                 String errorMsg = String.format( "Couldnt get object with PID : %s from Fedora", pid.getIdentifier() );
-                log.fatal( errorMsg );
+                log.error( errorMsg );
                 throw new PluginException( errorMsg, ore );
             }
             strippedTempDC =  E4XXMLHeaderStripper.strip( tempCargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes() );
