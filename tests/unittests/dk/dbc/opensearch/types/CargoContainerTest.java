@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -43,7 +44,7 @@ import static org.junit.Assert.assertNull;
 public class CargoContainerTest
 {
 
-    Logger log = Logger.getLogger("CargoContainerTest");
+    Logger log = LoggerFactory.getLogger("CargoContainerTest");
 
     CargoContainer cargo;
     String format;
