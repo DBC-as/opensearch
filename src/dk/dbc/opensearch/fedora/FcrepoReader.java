@@ -72,7 +72,7 @@ public class FcrepoReader
         FedoraClient fc;
         try
         {
-            fc = new FedoraClient( fedora_base_url, "", "" );
+            fc = new FedoraClient( fedora_base_url, "FcrepoReader", "" );
         }
         catch( MalformedURLException ex )
         {
