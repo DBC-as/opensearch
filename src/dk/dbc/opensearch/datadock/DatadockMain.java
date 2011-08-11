@@ -28,11 +28,11 @@ package dk.dbc.opensearch.datadock;
 
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.os.FileHandler;
-import dk.dbc.opensearch.config.DataBaseConfig;
-import dk.dbc.opensearch.config.DatadockConfig;
-import dk.dbc.opensearch.config.FileSystemConfig;
-import dk.dbc.opensearch.config.FedoraConfig;
-import dk.dbc.opensearch.config.HarvesterConfig;
+//import dk.dbc.opensearch.config.DataBaseConfig;
+//import dk.dbc.opensearch.config.DatadockConfig;
+//import dk.dbc.opensearch.config.FileSystemConfig;
+//import dk.dbc.opensearch.config.FedoraConfig;
+//import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
@@ -46,14 +46,15 @@ import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.pluginframework.PluginTask;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Map;
 import java.util.List;
@@ -61,7 +62,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import oracle.jdbc.pool.OracleDataSource;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -96,6 +99,7 @@ public class DatadockMain
     private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
 
     private static final String logConfiguration = "log4j_datadock.xml";
+    private static final String propFileName = "datadock.properties";
 
     protected boolean shutdownRequested = false;
     
@@ -114,16 +118,57 @@ public class DatadockMain
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
     private boolean terminateOnZeroSubmitted = false;
+
     private final int maxToHarvest;
+    boolean usePriorityFlag = false; // HarvesterConfig.getPriorityFlag();
+
+    List< String > dataBaseNames = null; // config.getOracleDataBaseNames();
+    String oracleCacheName = ""; // DataBaseConfig.getOracleCacheName();
+    String oracleUrl = ""; // DataBaseConfig.getOracleUrl();
+    String oracleUser = ""; // DataBaseConfig.getOracleUserID();
+    String oraclePassWd = ""; // DataBaseConfig.getOraclePassWd();
+    String minLimit = ""; // DataBaseConfig.getOracleMinLimit();
+    String maxLimit = ""; // DataBaseConfig.getOracleMaxLimit();
+    String initialLimit = ""; // DataBaseConfig.getOracleInitialLimit();
+    String connectionWaitTimeout = ""; // DataBaseConfig.getOracleConnectionWaitTimeout();
+    
+    String host = ""; // FedoraConfig.getHost();
+    String port = ""; //FedoraConfig.getPort();
+    String user = ""; //FedoraConfig.getUser();
+    String pass = ""; //FedoraConfig.getPassPhrase();
+
+    private String javascriptPath = ""; // FileSystemConfig.getScriptPath();
 
     
     public DatadockMain()  throws ConfigurationException
     {
-        pollTime = DatadockConfig.getMainPollTime();
-        queueSize = DatadockConfig.getQueueSize();
-        corePoolSize = DatadockConfig.getCorePoolSize();
-        maxPoolSize = DatadockConfig.getMaxPoolSize();
-        keepAliveTime = DatadockConfig.getKeepAliveTime();
+        // Read args for config file!
+        String configFile = System.getProperty( "configfile" );
+        log.debug( String.format( "Config file read", configFile ) );
+        
+        
+        Configuration config = null;
+        try
+        {
+            config = new PropertiesConfiguration( "config/" + propFileName );
+        }
+        catch( ConfigurationException e )
+        {
+            String errMsg = String.format( "Could not load properties file '%s'", propFileName );
+            log.error( errMsg );
+            throw e;
+        }
+
+//        pollTime = DatadockConfig.getMainPollTime();
+//        queueSize = DatadockConfig.getQueueSize();
+//        corePoolSize = DatadockConfig.getCorePoolSize();
+//        maxPoolSize = DatadockConfig.getMaxPoolSize();
+//        keepAliveTime = DatadockConfig.getKeepAliveTime();
+        pollTime = config.getInt( "MainPollTime" );
+        queueSize = config.getInt( "QueueSize" );
+        corePoolSize = config.getInt( "CorePoolSize" );
+        maxPoolSize = config.getInt( "MaxPoolSize" );
+        keepAliveTime  = config.getInt( "KeepAliveTime" );
 
         log.debug(  String.format( "Starting Datadock with pollTime = %s", pollTime ) );
         log.debug(  String.format( "Starting Datadock with queueSize = %s", queueSize ) );
@@ -131,8 +176,10 @@ public class DatadockMain
         log.debug(  String.format( "Starting Datadock with maxPoolSize = %s", maxPoolSize ) );
         log.debug(  String.format( "Starting Datadock with keepAliveTime = %s", keepAliveTime ) );
 
-        pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
-        pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
+//        pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
+//        pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
+        pluginFlowXmlPath = new File( config.getString( "PluginFlowXmlPath" ) );
+        pluginFlowXsdPath = new File( config.getString( "PluginFlowXsdPath" ) );
         if( null == pluginFlowXmlPath || null == pluginFlowXsdPath )
         {
             throw new ConfigurationException( "Failed to initialize configuration values for File objects properly (pluginFlowXmlPath or pluginFlowXsdPath)" );
@@ -140,7 +187,28 @@ public class DatadockMain
         log.debug(  String.format( "Starting Datadock with pluginFlowXmlPath = %s", pluginFlowXmlPath ) );
         log.debug(  String.format( "Starting Datadock with pluginFlowXsdPath = %s", pluginFlowXsdPath) );
 
-	maxToHarvest = HarvesterConfig.getMaxToHarvest();
+	//maxToHarvest = HarvesterConfig.getMaxToHarvest();
+        maxToHarvest = config.getInt( "MaxToHarvest" );
+
+        dataBaseNames = new ArrayList< String >();
+        dataBaseNames.add( config.getString( "OracleDataBaseNames" ) );
+        oracleCacheName = config.getString( "OracleCacheName" );
+        oracleUrl = config.getString( "OracleUrl" );
+        oracleUser = config.getString( "OracleUserID" );
+        oraclePassWd = config.getString ( "OraclePassWd" );
+        minLimit = config.getString( "OracleMinLimit" );
+        maxLimit = config.getString( "OracleMaxLimit" );
+        initialLimit = config.getString( "OracleInitialLimit" );
+        connectionWaitTimeout = config.getString( "OracleConnectionWaitTimeout" );
+
+        usePriorityFlag = config.getBoolean( "UsePriorityField" );
+
+        host = config.getString( "Host" );
+        port = config.getString( "Port" );
+        user = config.getString( "User" );
+        pass = config.getString( "PassPhrase" );
+
+        javascriptPath = config.getString( "ScriptPath" );
     }
 
 
@@ -170,7 +238,7 @@ public class DatadockMain
 
             if ( harvestType == null )
             {
-            throw new IllegalArgumentException( String.format( "Unknown harvestType: %s", harvestTypeFromCmdLine ) );
+                throw new IllegalArgumentException( String.format( "Unknown harvestType: %s", harvestTypeFromCmdLine ) );
             }
         }
 	
@@ -366,19 +434,20 @@ public class DatadockMain
         return harvester;
     }
 
+
     private IHarvest selectESHarvester() throws ConfigurationException, SQLException, HarvesterIOException
     {
-        List< String > dataBaseNames = DataBaseConfig.getOracleDataBaseNames();
-        String oracleCacheName = DataBaseConfig.getOracleCacheName();
-        String oracleUrl = DataBaseConfig.getOracleUrl();
-        String oracleUser = DataBaseConfig.getOracleUserID();
-        String oraclePassWd = DataBaseConfig.getOraclePassWd();
-        String minLimit = DataBaseConfig.getOracleMinLimit();
-        String maxLimit = DataBaseConfig.getOracleMaxLimit();
-        String initialLimit = DataBaseConfig.getOracleInitialLimit();
-        String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
-
-        boolean usePriorityFlag = HarvesterConfig.getPriorityFlag();
+//        List< String > dataBaseNames = DataBaseConfig.getOracleDataBaseNames();
+//        String oracleCacheName = DataBaseConfig.getOracleCacheName();
+//        String oracleUrl = DataBaseConfig.getOracleUrl();
+//        String oracleUser = DataBaseConfig.getOracleUserID();
+//        String oraclePassWd = DataBaseConfig.getOraclePassWd();
+//        String minLimit = DataBaseConfig.getOracleMinLimit();
+//        String maxLimit = DataBaseConfig.getOracleMaxLimit();
+//        String initialLimit = DataBaseConfig.getOracleInitialLimit();
+//        String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
+//
+//        boolean usePriorityFlag = HarvesterConfig.getPriorityFlag();
 
         log.info( String.format( "DB Url : %s ", oracleUrl ) );
         log.info( String.format( "DB User: %s ", oracleUser ) );
@@ -427,14 +496,16 @@ public class DatadockMain
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
         log.trace( "Initializing plugin resolver" );
-        String host = FedoraConfig.getHost();
-        String port = FedoraConfig.getPort();
-        String user = FedoraConfig.getUser();
-        String pass = FedoraConfig.getPassPhrase();
+//        String host = FedoraConfig.getHost();
+//        String port = FedoraConfig.getPort();
+//        String user = FedoraConfig.getUser();
+//        String pass = FedoraConfig.getPassPhrase();
         FcrepoReader reader = new FcrepoReader( host, port );
         FcrepoModifier modifier = new FcrepoModifier( host, port, user, pass );
         PluginResolver pluginResolver = new PluginResolver();
-        String javascriptPath = FileSystemConfig.getScriptPath();
+
+        //String javascriptPath = FileSystemConfig.getScriptPath();
+
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
         Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, reader, modifier, javascriptPath );
 
