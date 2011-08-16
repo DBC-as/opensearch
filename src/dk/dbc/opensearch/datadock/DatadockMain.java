@@ -50,6 +50,7 @@ import dk.dbc.opensearch.pluginframework.PluginTask;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,6 +69,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+
 
 import org.xml.sax.SAXException;
 
@@ -144,13 +146,15 @@ public class DatadockMain
     {
         // Read args for config file!
         String configFile = System.getProperty( "configfile" );
-        log.debug( String.format( "Config file read", configFile ) );
+        URL url = getClass().getClassLoader().getResource( "datadock.properties" );
+        log.debug( String.format( "Config file url: %s", url.toString() ) );
+        log.debug( String.format( "Config file read: %s", configFile ) );
         
         
         Configuration config = null;
         try
         {
-            config = new PropertiesConfiguration( "config/" + propFileName );
+            config = new PropertiesConfiguration( propFileName );
         }
         catch( ConfigurationException e )
         {

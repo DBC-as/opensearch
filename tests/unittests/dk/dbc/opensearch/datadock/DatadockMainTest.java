@@ -68,12 +68,12 @@ import static org.junit.Assert.assertTrue;
  */
 public class DatadockMainTest 
 {
-
     @Mocked DatadockConfig configClass;
     @Mocked DataBaseConfig dbConfigClass;
     @Mocked FedoraConfig fedoraClass;
     @Mocked FileSystemConfig FSClass;
     @Mocked IDBConnection dbConn;
+
     
 //    @BeforeClass
 //    public static void setUpClass() throws Exception
@@ -82,20 +82,24 @@ public class DatadockMainTest
 //        LogManager.getRootLogger().setLevel( Level.TRACE );
 //    }
 
+
     private Expectations setConfigExpectations() throws Exception
     {
         return new NonStrictExpectations()
         {{
-                DatadockConfig.getPluginFlowXmlPath();returns( new File( "." ) );
-                DatadockConfig.getPluginFlowXsdPath();returns( new File( "." ) );
+             DatadockConfig.getPluginFlowXmlPath();returns( new File( "." ) );
+             DatadockConfig.getPluginFlowXsdPath();returns( new File( "." ) );
         }};
     }
 
+
+    @Ignore( "All configuration settings are now read in main class" )
     @Test( expected = ConfigurationException.class )
     public void testConstructorNullChecks() throws Exception
     {
         new DatadockMain();
     }
+
 
     @Test
     public void testConstructorCorrectlyInitialized() throws Exception
@@ -103,6 +107,7 @@ public class DatadockMainTest
         Expectations a = setConfigExpectations();
         new DatadockMain();
     }
+
 
     @Test
     public void testSetServerMode() throws Exception
@@ -114,6 +119,7 @@ public class DatadockMainTest
         Boolean field = (Boolean)Deencapsulation.getField( datadock, "terminateOnZeroSubmitted" );
         assertFalse( field.booleanValue() );
     }
+
 
     @Ignore( "Until I figure out how to get to the method-private field 'mode'")
     @Test
@@ -128,6 +134,7 @@ public class DatadockMainTest
         System.out.println( String.format( "%s", field.booleanValue() ) );
         assertTrue( field.booleanValue() );
     }
+
 
     @Test
     public void testInitializeServices() throws Exception
@@ -148,24 +155,33 @@ public class DatadockMainTest
         Deencapsulation.invoke( datadock, "initializeServices" );
     }
 
+
     @MockClass( realClass=PostgresqlDBConnection.class)
-    public static class MockDBConnection{
+    public static class MockDBConnection
+    {
         @Mock public void $init( String userId, String passwd, String url, String driver ){}
     }
 
+
     @MockClass( realClass=FcrepoReader.class )
-    public static class MockReader{
+    public static class MockReader
+    {
         @Mock public void $init( String host, String port ){}
     }
 
+
     @MockClass( realClass=FcrepoModifier.class )
-    public static class MockModifier{
+    public static class MockModifier
+    {
         @Mock public void $init( String host, String port, String user, String passwd ){}
     }
 
+
     @MockClass( realClass=FlowMapCreator.class )
-    public static class MockMapCreator{
+    public static class MockMapCreator
+    {
         @Mock public void $init( File a, File b ){}
+
         @Mock
         public Map<String, List<PluginTask>> createMap( PluginResolver a, FcrepoReader b, FcrepoModifier c, String d )
         {
@@ -173,15 +189,17 @@ public class DatadockMainTest
         }
     }
 
+
     @MockClass( realClass=FileHarvest.class )
-    public static class MockHarvest{
+    public static class MockHarvest
+    {
         @Mock public void $init(){}
     }
 
+    
     @MockClass( realClass=DatadockManager.class )
     public static class MockManager
     {
         @Mock public void $init( DatadockPool a, IHarvest b, Map< String, List< PluginTask > > c){}
     }
-
 }
