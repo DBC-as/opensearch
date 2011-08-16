@@ -471,7 +471,14 @@ public class FcrepoReader
             MIMETypedStream ds = this.getAPIA().getDatastreamDissemination( pid, datastreamId, null );
             timer = System.currentTimeMillis() - timer;
             log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-            return ds.getStream();
+            if ( ds == null)
+            {
+                throw new ObjectRepositoryException( String.format( "Stream '%s' is null for object '%s'", datastreamId, pid ));
+            }
+            else
+            {
+                return ds.getStream();
+            }
         }
         catch( RemoteException ex )
         {
