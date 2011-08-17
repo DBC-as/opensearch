@@ -61,7 +61,7 @@ public class JSFcrepoStreamReader
             return new String[] {};
         }
     }
-    public String getDatastream( String pid, String datastreamId )
+    synchronized public String getDatastream( String pid, String datastreamId )
     {
         try
         {
