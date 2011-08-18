@@ -1,5 +1,5 @@
-use ( "XmlUtil.use.js" );
-use ( "XmlNamespaces.use.js" );
+use ( "XmlUtil" );
+use ( "XmlNamespaces" );
 
 EXPORTED_SYMBOLS = ['DeleteObjects'];
 

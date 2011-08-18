@@ -26,14 +26,17 @@
 package dk.dbc.opensearch.pluginframework;
 
 
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
+import dk.dbc.jslib.Environment;
+import dk.dbc.jslib.FileSchemeHandler;
+import dk.dbc.jslib.ModuleHandler;
+import dk.dbc.jslib.SchemeURI;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.ConfigurationException;
+import org.mozilla.javascript.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,38 +47,53 @@ public final class PluginEnvironmentUtils
 
     
     /**
-     * Initializes a SimpleRhinoWrapper given a javascript filename and a list of objects used to load into the rhino-scope.
-     * 
+     * Initializes a JavaScript environment loaded with modules found in
+     * supplied script.
+     *
+     * @param jsFileName {@link String} containing the name of the javascript file to be read.
+     * @param objectList {@link List} of properties to add to the javascript scope.
+     * @param scriptPath Search path as {@link String} for javascript file and other dependent
+     *                   modules.
+     *
+     * @return environment as {@link Environment}
+     *
+     * @throws {@link PluginException} when unable to access javascript file.
      */
-    public static SimpleRhinoWrapper initializeWrapper( String jsFileName, 
-							List< Pair< String, Object > > objectList, 
-							String scriptPath ) throws PluginException
+    public static Environment initializeJavaScriptEnvironment(
+                                String jsFileName,
+							    List< Pair< String, Object > > objectList,
+							    String scriptPath ) throws PluginException
     {
-        SimpleRhinoWrapper wrapper = null;
-        
-        try 
+        log.debug( String.format( "JavaScript environment file: %s path: %s", jsFileName, scriptPath ) );
+
+        // Setup a module handler to allow loading modules from the filesystem
+        ModuleHandler mh = new ModuleHandler();
+        FileSchemeHandler fsh = new FileSchemeHandler( scriptPath );
+        mh.registerHandler( "file", fsh );
+        mh.addSearchPath( new SchemeURI( "file:." ) );
+        // Create the environment and enable the module system.
+        Environment env = new Environment();
+        env.registerUseFunction( mh );
+
+        // Add objects to scope:
+        for ( Pair< String, Object > objectPair : objectList )
         {
-            wrapper = new SimpleRhinoWrapper( scriptPath, jsFileName, objectList );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-            log.error( errorMsg, fnfe );
-            throw new PluginException( errorMsg, fnfe );
+            log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
+            env.put( objectPair.getFirst(), objectPair.getSecond() );
         }
 
-        log.trace( "Checking wrapper (inner)" );
-        if (wrapper == null)
+        try
         {
-            log.trace("Wrapper is null");
-            throw new PluginException( "After construction of RhinoWrapper it was still null." );
+            env.evalFile( scriptPath + jsFileName );
         }
-        else
+        catch( IOException e )
         {
-            log.trace("Wrapper is initialized");
+            String errorMsg = String.format( "Error accessing file: %s", jsFileName );
+            log.error( errorMsg, e );
+            throw new PluginException( errorMsg, e );
         }
 
-        return wrapper;
+        return env;
     }
 
     
@@ -102,5 +120,26 @@ public final class PluginEnvironmentUtils
 	return true;
     }
 
+    /**
+     * Validates if a JavaScript function object can be found matching the
+     * specified function name in the given JavaScript environment.
+     *
+     * @param jsEnv JavaScript {@link Environment} to validate against.
+     * @param functionEntryPoint name of JavaScript function as {@link String}.
+     *
+     * @return true if function object exists. False otherwise.
+     */
+    public static boolean validateJavaScriptFunction( Environment jsEnv, String functionEntryPoint )
+    {
+        Object fObj = jsEnv.get( functionEntryPoint );
+        if ( !( fObj instanceof Function ) )
+        {
+            String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
+            log.error( errorMsg );
 
+            return false;
+        }
+
+        return true;
+    }
 }

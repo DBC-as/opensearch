@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
+import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.FcrepoUtils;
@@ -38,7 +38,6 @@ import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.DataStreamType;
-import dk.dbc.opensearch.types.IObjectIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class StoreEnvironment implements IPluginEnvironment
 
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;
-    private final SimpleRhinoWrapper jsWrapper;
+    private Environment jsEnvironment;
 
     // For validation:
     private static final String javascriptStr = "javascript";
@@ -77,22 +76,23 @@ public class StoreEnvironment implements IPluginEnvironment
         if( javascript != null && javascript.length() > 0 )
         {
             this.validateArguments( args, objectList, scriptPath );
-            this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList, scriptPath );
+            //this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList, scriptPath );
+            this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( javascript, objectList, scriptPath );
         }
         else
         {
             // Use old behaviour
-            jsWrapper = null;
+            jsEnvironment = null;
         }
 
-        log.trace( "Checking wrapper (outer)" );
-        if( jsWrapper == null )
+        log.trace( "Checking JavaScript environment (outer)" );
+        if( jsEnvironment == null )
         {
-            log.trace( "Wrapper is null" );
+            log.trace( "JavaScript environment is null" );
         }
         else
         {
-            log.trace( "Wrapper is initialized" );
+            log.trace( "JavaScript environment is initialized" );
         }
     }
 
@@ -106,17 +106,17 @@ public class StoreEnvironment implements IPluginEnvironment
         String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
         String pidStr = cargo.getIdentifierAsString();// get the pid of the cargocontainer
         boolean hasObject = false;
-        // Let javascript decide if post should be deleted or stored
+        // Let JavaScript decide if record should be deleted or stored
         boolean deleteRecord = false;
-        if (jsWrapper != null)
+        if (jsEnvironment != null)
         {
-            log.debug( "Calling javascript to determine if post should be deleted");
-            deleteRecord = ( (Boolean) jsWrapper.run( entryPointFunc, submitter, format, language, XML, pidStr ) ).booleanValue();
-            log.debug( String.format( "js to determin if it is a deleterecord returned: '%s'", deleteRecord ) );
+            log.debug( "Calling JavaScript to determine if record should be deleted");
+            deleteRecord = ( (Boolean) jsEnvironment.callMethod( entryPointFunc, new Object[] { submitter, format, language, XML, pidStr } ) ).booleanValue();
+            log.debug( String.format( "js to determine if it is a deleterecord returned: '%s'", deleteRecord ) );
         }
         else
         {
-            log.debug(String.format("Javascript not defined for [%s:%s], skipping", format, submitter));
+            log.debug(String.format("JavaScript not defined for [%s:%s], skipping", format, submitter));
         }
        
         //determining whether we have the object or not
@@ -199,7 +199,7 @@ public class StoreEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      *
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< Pair< String, Object > > A list of objects used to initialize the JavaScript environment.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
@@ -218,11 +218,10 @@ public class StoreEnvironment implements IPluginEnvironment
             throw new PluginException( String.format( "Could not find argument: %s", StoreEnvironment.entryFuncStr ) );
         }
 
-        // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( StoreEnvironment.javascriptStr ), objectList, scriptPath );
+        Environment tmpJsEnv = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( StoreEnvironment.javascriptStr ), objectList, scriptPath );
 
-        // Validating function entries:
-        if( !tmpWrapper.validateJavascriptFunction( args.get( StoreEnvironment.entryFuncStr ) ) )
+        // Validating JavaScript function entries.
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( StoreEnvironment.entryFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( StoreEnvironment.entryFuncStr ) ) );
         }

@@ -1,4 +1,4 @@
-use ( "Relations.use.js" );
+use ( "Relations" );
 
 function isReviewOf ( submitter, format, language, xml, pid ) {
   Relations.isReviewOf ( xml, pid );

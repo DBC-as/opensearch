@@ -28,7 +28,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.types.Pair;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
+import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
@@ -59,7 +59,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     private static Logger log = LoggerFactory.getLogger( MarcxchangeWorkRelationEnvironment.class );
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;
-    private SimpleRhinoWrapper rhinoWrapper;
+    private Environment jsEnvironment;
 
     private final String searchFunc;
     private final String matchFunc;
@@ -90,7 +90,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         this.matchFunc = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
         this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
 
-        this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList, scriptPath );
+        this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( 
+                                    args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ),
+                                    objectList, scriptPath );
     }
 
 
@@ -170,7 +172,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         String[] pairArray = new String[ 100 ];
 
         //execute the script that fills the pairsList
-        rhinoWrapper.run( searchFunc, dcString, orgData, pairArray );
+        jsEnvironment.callMethod( searchFunc, new Object[] { dcString, orgData, pairArray } );
 
         //go through the pairArray
         //create the ITargetField for the searchList
@@ -296,7 +298,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             String replacedTempDCString = tempDCString.replace( "\n", "" );
             log.debug( String.format( " matching postdc: %s with workdc: %s", dcString, replacedTempDCString ) ); 
             //call the match test with the xmls until a match occurs
-            match = (Boolean)rhinoWrapper.run( matchFunc, dcString, replacedTempDCString );
+            match = (Boolean)jsEnvironment.callMethod( matchFunc, new Object[] { dcString, replacedTempDCString } );
             log.debug( String.format( "result of match on post: %s on work: %s is %s ", cargo.getIdentifier().getIdentifier(), pid.getIdentifier(), match ) );
 
             if( match )
@@ -335,7 +337,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         //call the javascript that creates a workobject xml from a cargo data
         log.info( "calling makeworkobject" );
 
-        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDataString );
+        String workXml = (String)jsEnvironment.callMethod( createObjectFunc, new Object[] { tempDataString } );
 
         log.debug( "workXml :" + workXml );
 
@@ -444,18 +446,18 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             throw new PluginException( String.format( "Could not find argument: %s", createObjectFuncStr ) );
         }
 
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList, scriptPath );
+        Environment tmpJsEnv = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( javascriptStr ), objectList, scriptPath );
 
-        // Validate function entries:
-        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) )
+        // Validating JavaScript function entries.
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) );
         }
-        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr ) ) )
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr ) ) );
         }
-        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr ) ) )
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr ) ) );
         }

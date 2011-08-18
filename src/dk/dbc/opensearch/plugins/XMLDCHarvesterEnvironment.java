@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
+import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.pluginframework.PluginException;
@@ -49,7 +49,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 
     private static Logger log = LoggerFactory.getLogger( XMLDCHarvesterEnvironment.class );
 
-    private SimpleRhinoWrapper jsWrapper = null;
+    private Environment jsEnvironment;
 
     private static final String javascriptStr = "javascript";
     private static final String entryFuncStr  = "entryfunction";
@@ -65,7 +65,8 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 
         this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
 
-        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList, scriptPath );
+        //this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList, scriptPath );
+        this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList, scriptPath );
         this.entryFunc = args.get( XMLDCHarvesterEnvironment.entryFuncStr );
     }
 
@@ -87,7 +88,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         String replacedXml = xml.replace( "\n", "");
         //log.debug( String.format( "the xml string of the original data: '%s'", replacedXml )  );
 
-        String dcXmlString = (String)jsWrapper.run( entryFunc, replacedXml );
+        String dcXmlString = (String)jsEnvironment.callMethod( entryFunc, new Object[] { replacedXml } );
 
         log.debug( " The dc string: " + dcXmlString );
         try
@@ -117,7 +118,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      * 
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< Pair< String, Object > > A list of objects used to initialize the JavaScript environment.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
@@ -137,11 +138,10 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
             throw new PluginException( String.format( "Could not find argument: %s", entryFuncStr ) );
         }
 
-        // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList, scriptPath );
+        Environment tmpJsEnv = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( javascriptStr ), objectList, scriptPath );
 
-        // Validating function entries:
-        if( !tmpWrapper.validateJavascriptFunction( args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) )
+        // Validating JavaScript function entries.
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) );
         }

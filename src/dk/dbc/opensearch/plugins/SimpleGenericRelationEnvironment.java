@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
+import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.javascript.JSFedoraPIDSearch;
@@ -52,7 +52,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
     private static Logger log = LoggerFactory.getLogger( SimpleGenericRelationEnvironment.class );
 
-    private SimpleRhinoWrapper jsWrapper = null;
+    private Environment jsEnvironment;
 
     private final String entryPointFunc;
 
@@ -78,17 +78,8 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
         this.entryPointFunc = args.get( SimpleGenericRelationEnvironment.entryFuncStr );
 
-        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
-
-        log.trace( "Checking wrapper (outer)" );
-        if( jsWrapper == null )
-        {
-            log.trace( "Wrapper is null" );
-        }
-        else
-        {
-            log.trace( "Wrapper is initialized" );
-        }
+        //this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
+        this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
     }
 
 
@@ -107,7 +98,8 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
         String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
-        jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
+        //jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
+        jsEnvironment.callMethod( entryPointFunc, new Object[] { submitter, format, language, XML, pid } );
 
     }
 
@@ -118,7 +110,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      * 
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< Pair< String, Object > > A list of objects used to initialize the JavaScript environment.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
@@ -138,11 +130,10 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
             throw new PluginException( String.format( "Could not find argument: %s", SimpleGenericRelationEnvironment.entryFuncStr ) );
         }
 
-        // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
+        Environment tmpJsEnv = PluginEnvironmentUtils.initializeJavaScriptEnvironment( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
 
-        // Validating function entries:
-        if( !tmpWrapper.validateJavascriptFunction( args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) )
+        // Validating JavaScript function entries.
+        if( !PluginEnvironmentUtils.validateJavaScriptFunction( tmpJsEnv, args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) )
         {
             throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) );
         }
