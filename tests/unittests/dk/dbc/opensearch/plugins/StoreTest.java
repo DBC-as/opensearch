@@ -26,13 +26,13 @@ package dk.dbc.opensearch.plugins;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import org.mozilla.javascript.IdFunctionObject;
+import dk.dbc.jslib.ModuleHandler;
+import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.fedora.FcrepoUtils;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import java.util.HashMap;
-import java.util.List;
-import dk.dbc.commons.types.Pair;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
@@ -139,7 +139,7 @@ public class StoreTest
         }
 
         @Mock( invocations = 1 )
-        public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage )
+        public void deleteObject( String objectIdentifier, String logMessage )
         {
         }
     }
@@ -159,7 +159,7 @@ public class StoreTest
         }
 
         @Mock( invocations = 1 )
-        public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+        public void deleteObject( String objectIdentifier, String logMessage ) throws ObjectRepositoryException
         {
             throw new ObjectRepositoryException( "test" );
         }
@@ -204,28 +204,50 @@ public class StoreTest
         {
             return 0;
         }
+
+        @Mock
+        public static void removeOutboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
+        {
+        }
     }
 
 
     /**
-     * mocks the constructor called in the environment
+     * mocks the JavaScript environment
      */
-    @MockClass( realClass = SimpleRhinoWrapper.class )
-    public static class MockSimpleRhinoWrapper
+    @MockClass( realClass = Environment.class )
+    public static class MockEnvironment
     {
         @Mock
-        public void $init( String jsFileName, List< Pair< String, Object > > objectList )
+        public void $init()
         {}
 
         @Mock
-        public Object run( String functionEntryPoint, Object... args )
+        public void registerUseFunction( final ModuleHandler moduleHandler )
+        {
+        }
+
+        @Mock
+        public Object get( final java.lang.String name )
+        {
+            return new IdFunctionObject( null, null, 0, 0 );
+        }
+
+        @Mock
+        public void put( final java.lang.String name, final java.lang.Object value )
+        {
+        }
+
+        @Mock
+        public Object evalFile( final String fileName )
+        {
+            return new Object();
+        }
+
+        @Mock
+        public Object callMethod( String functionEntryPoint, Object[] args )
         {
             return Boolean.TRUE;
-        }
-        @Mock
-        public boolean validateJavascriptFunction( String functionEntryPoint )
-        {
-            return true;
         }
     }
 
@@ -337,11 +359,10 @@ public class StoreTest
     /**
      * testing the path through the plugin when javascript returns true.
      */
-    @Ignore //we dont store objects marked for deletion
     @Test
     public void storeCargoContainerMarkDeleted() throws Exception
     {
-        setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeleted.class );
+        setUpMocks( MockEnvironment.class, MockReaderHasObject.class, MockModifierMarkDeleted.class, MockUtils.class );
         FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
@@ -359,11 +380,10 @@ public class StoreTest
     /**
      * tests the handling of PluginException when javascript returns true.
      */
-    @Ignore //we dont store objects marked for deletion
     @Test( expected = PluginException.class )
     public void storeCargoContainerMarkDeletedException() throws Exception
     {
-        setUpMocks( MockSimpleRhinoWrapper.class, MockReaderHasNoObject.class, MockModifierMarkDeletedException.class );
+        setUpMocks( MockEnvironment.class, MockReaderHasNoObject.class, MockModifierMarkDeletedException.class );
         FcrepoReader reader = new FcrepoReader( "Host", "Port" );
         FcrepoModifier modifier = new FcrepoModifier( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );

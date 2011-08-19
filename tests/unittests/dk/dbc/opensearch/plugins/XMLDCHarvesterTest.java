@@ -25,8 +25,6 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.commons.types.Pair;
-import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.types.CargoContainer;
@@ -43,7 +41,6 @@ import org.xml.sax.InputSource;
 
 import java.io.IOException;
 
-import java.util.List;
 
 import org.junit.*;
 import mockit.Mock;
@@ -51,7 +48,6 @@ import mockit.MockClass;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.w3c.dom.Document;
-import static mockit.Mockit.setUpMocks;
 import static mockit.Mockit.tearDownMocks;
 
 
@@ -111,21 +107,9 @@ public class XMLDCHarvesterTest
         }
     }
 
-    /**
-     * mocks the constructor called in the environment
-     */
-    @MockClass( realClass = SimpleRhinoWrapper.class )
-    public static class MockSimpleRhinoWrapper
-    {
-        @Mock
-        public void $init( String jsFilePath, String jsFileName, List< Pair< String, Object > > objectList )
-        {}
-    }
-
     @Before
     public void setUp() throws Exception
     {
-        setUpMocks( MockSimpleRhinoWrapper.class );
         Document xmldata = XMLUtils.documentFromString( referenceData );
 
         ddjob = new TaskInfo( mockIdentifier, xmldata );
