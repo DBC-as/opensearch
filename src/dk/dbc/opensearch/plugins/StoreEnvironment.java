@@ -76,7 +76,6 @@ public class StoreEnvironment implements IPluginEnvironment
         if( javascript != null && javascript.length() > 0 )
         {
             this.validateArguments( args, objectList, scriptPath );
-            //this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList, scriptPath );
             this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( javascript, objectList, scriptPath );
         }
         else
