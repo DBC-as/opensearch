@@ -153,7 +153,7 @@
         />
     <xml-property
         name="facet.category"
-        xpath="/ting:container/dkabm:record/dcterms:audience"
+        xpath="/ting:container/dkabm:record/dcterms:audience[not(@xsi:type='dkdcplus:pegi' and @xsi:type='dkdcplus:medieraad' and @xsi:type='age')]"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -536,7 +536,7 @@
         />
     <xml-property
         name="facet.category"
-        xpath="/ting:container/dkabm:record/dcterms:audience"
+        xpath="/ting:container/dkabm:record/dcterms:audience[not(@xsi:type='dkdcplus:pegi' and @xsi:type='dkdcplus:medieraad' and @xsi:type='age')]"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -1000,7 +1000,7 @@
         />
     <xml-property
         name="facet.category"
-        xpath="/ting:container/dkabm:record/dcterms:audience"
+        xpath="/ting:container/dkabm:record/dcterms:audience[not(@xsi:type='dkdcplus:pegi' and @xsi:type='dkdcplus:medieraad' and @xsi:type='age')]"
         index="un_tokenized"
         value-converter="facet"
         />
