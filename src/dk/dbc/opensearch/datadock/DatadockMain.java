@@ -145,11 +145,6 @@ public class DatadockMain
     public DatadockMain()  throws ConfigurationException
     {
         // Read args for config file!
-        String configFile = System.getProperty( "configfile" );
-        URL url = getClass().getClassLoader().getResource( "datadock.properties" );
-        log.info( String.format( "Config file url: %s", url.toString() ) );
-        log.info( String.format( "Config file read: %s", configFile ) );
-        
         Configuration config = null;
         try
         {
