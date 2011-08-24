@@ -147,9 +147,8 @@ public class DatadockMain
         // Read args for config file!
         String configFile = System.getProperty( "configfile" );
         URL url = getClass().getClassLoader().getResource( "datadock.properties" );
-        log.debug( String.format( "Config file url: %s", url.toString() ) );
-        log.debug( String.format( "Config file read: %s", configFile ) );
-        
+        log.info( String.format( "Config file url: %s", url.toString() ) );
+        log.info( String.format( "Config file read: %s", configFile ) );
         
         Configuration config = null;
         try
