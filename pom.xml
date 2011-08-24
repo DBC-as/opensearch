@@ -6,7 +6,6 @@
   <artifactId>opensearch</artifactId>
   <version>1.9</version>
   <packaging>jar</packaging>
-
   <name>opensearch</name>
   <url>http://oss.dbc.dk</url>
 
@@ -66,7 +65,11 @@
           <archive>
             <manifest>
               <mainClass>dk.dbc.opensearch.datadock.DatadockMain</mainClass>
+              <addClasspath>true</addClasspath>
             </manifest>
+            <manifestEntries>
+              <Class-Path>config</Class-Path>
+            </manifestEntries>
           </archive>
         </configuration>
         <executions>
@@ -80,8 +83,6 @@
       </plugin>
 
     </plugins>
-
-
 
   </build>
 
