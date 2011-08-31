@@ -193,7 +193,7 @@ public class DatadockMainTest
     @MockClass( realClass=FileHarvestLight.class )
     public static class MockHarvest
     {
-        @Mock public void $init(){}
+        @Mock public void $init( String a, String b, String c ){}
     }
 
     

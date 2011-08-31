@@ -27,7 +27,6 @@ package dk.dbc.opensearch.harvest;
 
 import dk.dbc.commons.os.FileHandler;
 import dk.dbc.commons.os.StreamHandler;
-import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.DataStreamType;
 import dk.dbc.opensearch.types.IIdentifier;
@@ -98,26 +97,10 @@ public final class FileHarvestLight implements IHarvest
     /**
      *
      */
-    public FileHarvestLight() throws HarvesterIOException
+    public FileHarvestLight( String harvesterConfigDir, String successConfigDir, String failureConfigDir ) throws HarvesterIOException
     {
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
        	
-	String harvesterConfigDir;
-	String successConfigDir;
-	String failureConfigDir;
-	try
-	{
-	    harvesterConfigDir = HarvesterConfig.getFolder();
-	    successConfigDir   = HarvesterConfig.getDoneFolder();
-	    failureConfigDir   = HarvesterConfig.getFailureFolder();
-	}
-	catch ( ConfigurationException ce)
-	{
-	    String errMsg = "Could not handle on of the following in HarvesterConfig: getFolder(), getDoneFolder(), getFailurefolder()";
-	    log.error( errMsg );
-	    throw new HarvesterIOException( errMsg, ce );
-	}
-
 	// Set folders from config, or set default names:
 	harvesterDirName = harvesterConfigDir.isEmpty() ? "Harvest" : harvesterConfigDir;
 	successDirName = successConfigDir.isEmpty() ? "success" : successConfigDir;

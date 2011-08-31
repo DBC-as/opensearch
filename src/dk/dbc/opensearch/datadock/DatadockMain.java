@@ -137,11 +137,16 @@ public class DatadockMain
     String user = ""; //FedoraConfig.getUser();
     String pass = ""; //FedoraConfig.getPassPhrase();
 
+    private String fileHarvestLightDir;
+    private String fileHarvestLightSuccessDir;
+    private String fileHarvestLightFailureDir;
+
     private String javascriptPath = ""; // FileSystemConfig.getScriptPath();
 
     
     public DatadockMain()  throws ConfigurationException
     {
+
         // Read args for config file!
         Configuration config = null;
         try
@@ -214,6 +219,10 @@ public class DatadockMain
         pass = config.getString( "PassPhrase" );
 
         javascriptPath = config.getString( "ScriptPath" );
+
+	fileHarvestLightDir = config.getString( "ToHarvest" );
+	fileHarvestLightSuccessDir = config.getString( "HarvestDone" );
+	fileHarvestLightFailureDir = config.getString( "HarvestFailure" );
     }
 
 
@@ -425,11 +434,13 @@ public class DatadockMain
                 break;
             case FileHarvestLight:
                 log.trace( "selecting FileHarvestLight" );
-                harvester = new FileHarvestLight();
+                harvester = new FileHarvestLight( fileHarvestLightDir, fileHarvestLightSuccessDir, 
+						  fileHarvestLightFailureDir );
                 break;
             default:
                 log.warn( "no harvester explicitly selected, and default type failed. This should not happen, but I'll default to FileHarvestLight" );
-                harvester = new FileHarvestLight();
+                harvester = new FileHarvestLight( fileHarvestLightDir, fileHarvestLightSuccessDir, 
+						  fileHarvestLightFailureDir );
         }
         return harvester;
     }
@@ -528,6 +539,7 @@ public class DatadockMain
      */
     public static void main(String[] args)
     {
+
         DatadockMain serverInstance = null;
         try
         {
