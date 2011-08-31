@@ -37,7 +37,6 @@ import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.harvest.ESHarvest;
-import dk.dbc.opensearch.harvest.FileHarvest;
 import dk.dbc.opensearch.harvest.FileHarvestLight;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
 import dk.dbc.opensearch.harvest.IHarvest;
@@ -90,7 +89,6 @@ public class DatadockMain
     private enum HarvestType
     {
         ESHarvest,
-        FileHarvest,
         FileHarvestLight;
     }
 
@@ -117,7 +115,7 @@ public class DatadockMain
     private final int pollTime;
     private final File pluginFlowXmlPath;
     private final File pluginFlowXsdPath;
-    private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
+    private static HarvestType defaultHarvestType = HarvestType.FileHarvestLight;
     static java.util.Date startTime = null;
     private boolean terminateOnZeroSubmitted = false;
 
@@ -231,7 +229,6 @@ public class DatadockMain
         else
         {
             harvestType = harvestTypeFromCmdLine.equals( "ESHarvest" ) ? HarvestType.ESHarvest : harvestType;
-            harvestType = harvestTypeFromCmdLine.equals( "FileHarvest" ) ? HarvestType.FileHarvest : harvestType;
             harvestType = harvestTypeFromCmdLine.equals( "FileHarvestLight" ) ? HarvestType.FileHarvestLight : harvestType;
 
             if ( harvestType == null )
@@ -417,17 +414,13 @@ public class DatadockMain
             case ESHarvest:
                 harvester = this.selectESHarvester();
                 break;
-            case FileHarvest:
-                log.trace( "selecting FileHarvest" );
-                harvester = new FileHarvest();
-                break;
             case FileHarvestLight:
                 log.trace( "selecting FileHarvestLight" );
                 harvester = new FileHarvestLight();
                 break;
             default:
-                log.warn( "no harvester explicitly selected, and default type failed. This should not happen, but I'll default to FileHarvester" );
-                harvester = new FileHarvest();
+                log.warn( "no harvester explicitly selected, and default type failed. This should not happen, but I'll default to FileHarvestLight" );
+                harvester = new FileHarvestLight();
         }
         return harvester;
     }

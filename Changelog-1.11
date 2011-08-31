@@ -1,1 +1,2 @@
 1.11.0
+   - bug [13000] "FileHarvest.java kan fjernes fra OpenSearch"
