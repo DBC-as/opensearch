@@ -38,7 +38,7 @@ import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.harvest.IHarvest;
-import dk.dbc.opensearch.harvest.FileHarvest;
+import dk.dbc.opensearch.harvest.FileHarvestLight;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 import dk.dbc.opensearch.pluginframework.PluginTask;
@@ -145,7 +145,7 @@ public class DatadockMainTest
         Mockit.setUpMock( FcrepoReader.class, MockReader.class );
         Mockit.setUpMock( FcrepoModifier.class, MockModifier.class );
         Mockit.setUpMock( FlowMapCreator.class, MockMapCreator.class );
-        Mockit.setUpMock( FileHarvest.class, MockHarvest.class );
+        Mockit.setUpMock( FileHarvestLight.class, MockHarvest.class );
         Mockit.setUpMock( DatadockManager.class, MockManager.class );
         Deencapsulation.setField( datadock, "queueSize", 1 );
         Deencapsulation.setField( datadock, "corePoolSize", 1 );
@@ -190,7 +190,7 @@ public class DatadockMainTest
     }
 
 
-    @MockClass( realClass=FileHarvest.class )
+    @MockClass( realClass=FileHarvestLight.class )
     public static class MockHarvest
     {
         @Mock public void $init(){}
