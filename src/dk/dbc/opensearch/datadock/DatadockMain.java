@@ -151,8 +151,17 @@ public class DatadockMain
         catch( ConfigurationException e )
         {
             String errMsg = String.format( "Could not load properties file '%s'", propFileName );
-            log.error( errMsg );
+            System.err.println( errMsg );
             throw e;
+        }
+
+        try
+        {
+            Log4jConfiguration.configure( config.getString( "Log4j" ) );
+        }
+        catch( ConfigurationException ex )
+        {
+            System.out.println( String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() ) );
         }
 
 //        pollTime = DatadockConfig.getMainPollTime();
@@ -519,15 +528,6 @@ public class DatadockMain
      */
     public static void main(String[] args)
     {
-        try
-        {
-            Log4jConfiguration.configure( logConfiguration );
-        }
-        catch( ConfigurationException ex )
-        {
-            System.out.println( String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() ) );
-        }
-
         DatadockMain serverInstance = null;
         try
         {

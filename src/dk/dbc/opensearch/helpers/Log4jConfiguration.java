@@ -42,20 +42,10 @@ public class Log4jConfiguration
     static Logger log = LoggerFactory.getLogger( Log4jConfiguration.class );
 
     
-    public static void configure( String configFile ) throws ConfigurationException
+    public static void configure( String logFile ) throws ConfigurationException
     {
-        try
-        {
-            String path = FileSystemConfig.getConfigPath();
-            String logFile = path + configFile; // "log4j_datadock.xml";
-            DOMConfigurator.configure( logFile );
+	DOMConfigurator.configure( logFile );
 
-            log.debug( String.format( "Configuring log4j using logFile: '%s' done!", logFile ) );
-        }
-        catch( ConfigurationException ex )
-        {
-            log.error( "DatadockMain exception in log4j configuration" + ex ); 
-            throw ex;
-        } 
+	log.debug( String.format( "Configuring log4j using logFile: '%s' done!", logFile ) );
     }
 }
