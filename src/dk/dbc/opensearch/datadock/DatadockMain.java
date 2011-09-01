@@ -157,7 +157,7 @@ public class DatadockMain
             localPropFileName = propFileName;
         }
         log.debug( String.format( "Using properties file: %s", localPropFileName ) );
-        
+        System.out.println( String.format( "Using properties file: %s", localPropFileName ) );
         Configuration config = null;
         try
         {
@@ -173,9 +173,9 @@ public class DatadockMain
                     tmpPropFileName = "../config/" + localPropFileName;
                     config = new PropertiesConfiguration( tmpPropFileName );                    
                 }
-                else if( new File( "./config/" + localPropFileName ).exists() )
+                else if( new File( "config/" + localPropFileName ).exists() )
                 {
-                    tmpPropFileName = "./config/" + localPropFileName;
+                    tmpPropFileName = "config/" + localPropFileName;
                     config = new PropertiesConfiguration( tmpPropFileName );
                 }
                 else
@@ -184,6 +184,7 @@ public class DatadockMain
                 }
                 
                 log.debug( String.format( "Using properties file: %s", tmpPropFileName ) );
+                System.out.println( String.format( "Using properties file: %s", tmpPropFileName ) );
             }
         }
         catch( ConfigurationException e )
