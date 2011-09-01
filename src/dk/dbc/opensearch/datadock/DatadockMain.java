@@ -185,7 +185,24 @@ public class DatadockMain
 
         try
         {
-            Log4jConfiguration.configure( config.getString( "Log4j" ) );
+            String configFile = config.getString( "Log4j" );
+            if( new File( configFile ).exists() )
+            {
+                Log4jConfiguration.configure( configFile );
+            }
+            else
+            {
+                if( configFile.startsWith( "../" ) )
+                {
+                    configFile = configFile.replaceFirst( "../", "" );
+                    if( !new File( configFile).exists() )
+                    {
+                        throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
+                    }
+                }
+            }
+            
+            log.debug( String.format( "Using config file: %s", configFile ) );
         }
         catch( ConfigurationException ex )
         {
