@@ -483,9 +483,9 @@ var Relations = function() {
     Log.info ("Start isSubjectDescriptionOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var authorXML = XmlUtil.fromString( xml );
+    var subjectXML = XmlUtil.fromString( xml );
 
-    var title = String(authorXML.dkabm::record.dc::title[0]);
+    var title = String(subjectXML.dkabm::record.dc::title[0]);
 
     Log.info( "Title: " + title );    
     Log.info( "pid: " + pid );
@@ -498,7 +498,7 @@ var Relations = function() {
         
         Log.info("result: " + result);
         
-        if (!String(result).match(/work:.*/)) {
+        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/)) {
           DbcAddiRelations.hasSubjectDescription(result, pid);
         }
       }
