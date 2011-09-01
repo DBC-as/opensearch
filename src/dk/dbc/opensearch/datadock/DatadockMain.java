@@ -146,6 +146,17 @@ public class DatadockMain
     
     public DatadockMain( String[] args ) throws ConfigurationException
     {
+        File directory = new File (".");
+        try 
+        {
+            System.out.println ("Current directory's canonical path: " + directory.getCanonicalPath()); 
+            System.out.println ("Current directory's absolute  path: " + directory.getAbsolutePath());
+        }
+        catch(Exception e) 
+        {
+            System.out.println("Exceptione is =" + e.getMessage());
+        }
+        
         // Read args for config file!
         String localPropFileName = "";
         if( args.length > 0 )
