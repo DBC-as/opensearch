@@ -156,6 +156,7 @@ public class DatadockMain
         {
             localPropFileName = propFileName;
         }
+        log.debug( String.format( "Using properties file: %s", localPropFileName ) );
         
         Configuration config = null;
         try
@@ -166,14 +167,23 @@ public class DatadockMain
             }
             else
             {
+                String tmpPropFileName;
                 if( new File( "../config/" + localPropFileName ).exists() )
                 {
-                    config = new PropertiesConfiguration( "../config/" + localPropFileName );
+                    tmpPropFileName = "../config/" + localPropFileName;
+                    config = new PropertiesConfiguration( tmpPropFileName );                    
                 }
                 else if( new File( "./config/" + localPropFileName ).exists() )
                 {
-                    config = new PropertiesConfiguration( "./config/" + localPropFileName );
+                    tmpPropFileName = "./config/" + localPropFileName;
+                    config = new PropertiesConfiguration( tmpPropFileName );
                 }
+                else
+                {
+                    throw new ConfigurationException( String.format( "Could not locate properties file at neither '%s' nor '%s'", "../config/", "./config/" ) );
+                }
+                
+                log.debug( String.format( "Using properties file: %s", tmpPropFileName ) );
             }
         }
         catch( ConfigurationException e )
