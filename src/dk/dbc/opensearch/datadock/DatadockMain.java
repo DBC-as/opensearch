@@ -167,7 +167,7 @@ public class DatadockMain
             }
             else
             {
-                String tmpPropFileName;
+                String tmpPropFileName = "";
                 if( new File( "../config/" + localPropFileName ).exists() )
                 {
                     tmpPropFileName = "../config/" + localPropFileName;
@@ -180,7 +180,7 @@ public class DatadockMain
                 }
                 else
                 {
-                    throw new ConfigurationException( String.format( "Could not locate properties file at neither '%s' nor '%s'", "../config/", "./config/" ) );
+                    throw new ConfigurationException( String.format( "Could not locate properties file at neither '%s' nor '%s': %s", "../config/", "./config/", tmpPropFileName ) );
                 }
                 
                 log.debug( String.format( "Using properties file: %s", tmpPropFileName ) );
