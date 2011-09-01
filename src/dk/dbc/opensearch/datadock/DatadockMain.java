@@ -28,11 +28,6 @@ package dk.dbc.opensearch.datadock;
 
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.os.FileHandler;
-//import dk.dbc.opensearch.config.DataBaseConfig;
-//import dk.dbc.opensearch.config.DatadockConfig;
-//import dk.dbc.opensearch.config.FileSystemConfig;
-//import dk.dbc.opensearch.config.FedoraConfig;
-//import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
@@ -49,7 +44,6 @@ import dk.dbc.opensearch.pluginframework.PluginTask;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -120,42 +114,71 @@ public class DatadockMain
     private boolean terminateOnZeroSubmitted = false;
 
     private final int maxToHarvest;
-    boolean usePriorityFlag = false; // HarvesterConfig.getPriorityFlag();
+    boolean usePriorityFlag = false;
 
-    List< String > dataBaseNames = null; // config.getOracleDataBaseNames();
-    String oracleCacheName = ""; // DataBaseConfig.getOracleCacheName();
-    String oracleUrl = ""; // DataBaseConfig.getOracleUrl();
-    String oracleUser = ""; // DataBaseConfig.getOracleUserID();
-    String oraclePassWd = ""; // DataBaseConfig.getOraclePassWd();
-    String minLimit = ""; // DataBaseConfig.getOracleMinLimit();
-    String maxLimit = ""; // DataBaseConfig.getOracleMaxLimit();
-    String initialLimit = ""; // DataBaseConfig.getOracleInitialLimit();
-    String connectionWaitTimeout = ""; // DataBaseConfig.getOracleConnectionWaitTimeout();
+    List< String > dataBaseNames = null;
+    String oracleCacheName = "";
+    String oracleUrl = ""; 
+    String oracleUser = "";
+    String oraclePassWd = "";
+    String minLimit = "";
+    String maxLimit = "";
+    String initialLimit = "";
+    String connectionWaitTimeout = "";
     
-    String host = ""; // FedoraConfig.getHost();
-    String port = ""; //FedoraConfig.getPort();
-    String user = ""; //FedoraConfig.getUser();
-    String pass = ""; //FedoraConfig.getPassPhrase();
+    String host = ""; 
+    String port = ""; 
+    String user = ""; 
+    String pass = ""; 
 
     private String fileHarvestLightDir;
     private String fileHarvestLightSuccessDir;
     private String fileHarvestLightFailureDir;
 
-    private String javascriptPath = ""; // FileSystemConfig.getScriptPath();
+    private String javascriptPath = "";
 
     
-    public DatadockMain()  throws ConfigurationException
+    public DatadockMain() throws ConfigurationException
     {
-
+        this( new String[0] );        
+    }
+    
+    
+    public DatadockMain( String[] args ) throws ConfigurationException
+    {
         // Read args for config file!
+        String localPropFileName = "";
+        if( args.length > 0 )
+        {
+            localPropFileName = args[0];            
+        }
+        else
+        {
+            localPropFileName = propFileName;
+        }
+        
         Configuration config = null;
         try
         {
-            config = new PropertiesConfiguration( propFileName );
+            if( localPropFileName.startsWith( "./config" ) || localPropFileName.startsWith( "config" ) )
+            {
+                config = new PropertiesConfiguration( localPropFileName );
+            }
+            else
+            {
+                if( new File( "../config/" + localPropFileName ).exists() )
+                {
+                    config = new PropertiesConfiguration( "../config/" + localPropFileName );
+                }
+                else if( new File( "./config/" + localPropFileName ).exists() )
+                {
+                    config = new PropertiesConfiguration( "./config/" + localPropFileName );
+                }
+            }
         }
         catch( ConfigurationException e )
         {
-            String errMsg = String.format( "Could not load properties file '%s'", propFileName );
+            String errMsg = String.format( "Could not load properties file '%s'", localPropFileName );
             System.err.println( errMsg );
             throw e;
         }
@@ -169,11 +192,6 @@ public class DatadockMain
             System.out.println( String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() ) );
         }
 
-//        pollTime = DatadockConfig.getMainPollTime();
-//        queueSize = DatadockConfig.getQueueSize();
-//        corePoolSize = DatadockConfig.getCorePoolSize();
-//        maxPoolSize = DatadockConfig.getMaxPoolSize();
-//        keepAliveTime = DatadockConfig.getKeepAliveTime();
         pollTime = config.getInt( "MainPollTime" );
         queueSize = config.getInt( "QueueSize" );
         corePoolSize = config.getInt( "CorePoolSize" );
@@ -186,8 +204,6 @@ public class DatadockMain
         log.debug(  String.format( "Starting Datadock with maxPoolSize = %s", maxPoolSize ) );
         log.debug(  String.format( "Starting Datadock with keepAliveTime = %s", keepAliveTime ) );
 
-//        pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
-//        pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
         pluginFlowXmlPath = new File( config.getString( "PluginFlowXmlPath" ) );
         pluginFlowXsdPath = new File( config.getString( "PluginFlowXsdPath" ) );
         if( null == pluginFlowXmlPath || null == pluginFlowXsdPath )
@@ -197,8 +213,7 @@ public class DatadockMain
         log.debug(  String.format( "Starting Datadock with pluginFlowXmlPath = %s", pluginFlowXmlPath ) );
         log.debug(  String.format( "Starting Datadock with pluginFlowXsdPath = %s", pluginFlowXsdPath) );
 
-	//maxToHarvest = HarvesterConfig.getMaxToHarvest();
-        maxToHarvest = config.getInt( "MaxToHarvest" );
+	maxToHarvest = config.getInt( "MaxToHarvest" );
 
         dataBaseNames = new ArrayList< String >();
         dataBaseNames.add( config.getString( "OracleDataBaseNames" ) );
@@ -539,11 +554,10 @@ public class DatadockMain
      */
     public static void main(String[] args)
     {
-
         DatadockMain serverInstance = null;
         try
         {
-            serverInstance = new DatadockMain();
+            serverInstance = new DatadockMain( args );
             serverInstance.setServerMode();
         }
         catch( ConfigurationException ex )
