@@ -146,18 +146,7 @@ public class DatadockMain
     
     public DatadockMain( String[] args ) throws ConfigurationException
     {
-        File directory = new File (".");
-        try 
-        {
-            System.out.println ("Current directory's canonical path: " + directory.getCanonicalPath()); 
-            System.out.println ("Current directory's absolute  path: " + directory.getAbsolutePath());
-        }
-        catch(Exception e) 
-        {
-            System.out.println("Exceptione is =" + e.getMessage());
-        }
-        
-        // Read args for config file!
+        // Read args for config file
         String localPropFileName = "";
         if( args.length > 0 )
         {
@@ -168,7 +157,7 @@ public class DatadockMain
             localPropFileName = propFileName;
         }
         log.debug( String.format( "Using properties file: %s", localPropFileName ) );
-        System.out.println( String.format( "Using properties file: %s", localPropFileName ) );
+        
         Configuration config = null;
         try
         {
@@ -195,13 +184,11 @@ public class DatadockMain
                 }
                 
                 log.debug( String.format( "Using properties file: %s", tmpPropFileName ) );
-                System.out.println( String.format( "Using properties file: %s", tmpPropFileName ) );
             }
         }
         catch( ConfigurationException e )
         {
             String errMsg = String.format( "Could not load properties file '%s'", localPropFileName );
-            System.err.println( errMsg );
             throw e;
         }
 
@@ -228,7 +215,9 @@ public class DatadockMain
         }
         catch( ConfigurationException ex )
         {
-            System.out.println( String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() ) );
+            String errMsg = String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() );
+            log.error( errMsg );
+            System.out.println( errMsg );
         }
 
         pollTime = config.getInt( "MainPollTime" );
