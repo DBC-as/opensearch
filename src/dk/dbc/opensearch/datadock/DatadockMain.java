@@ -63,7 +63,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
-
 import org.xml.sax.SAXException;
 
 
@@ -101,7 +100,6 @@ public class DatadockMain
     
     static FlowMapCreator flowMapCreator = null;
 
-
     private final int queueSize;
     private final int corePoolSize;
     private final int maxPoolSize;
@@ -137,61 +135,73 @@ public class DatadockMain
 
     private String javascriptPath = "";
 
-    
+
+    /**
+     *
+     * 
+     * @throws ConfigurationException
+     */
     public DatadockMain() throws ConfigurationException
     {
         this( new String[0] );        
     }
     
-    
+
+    /**
+     *
+     * 
+     * @param args
+     * @throws ConfigurationException
+     */
     public DatadockMain( String[] args ) throws ConfigurationException
     {
-        // Read args for config file
-        String localPropFileName = "";
-        if( args.length > 0 )
+        /** Try obtaining home path of datadock. If property 'datadock.home' is not set,
+         * current working directory is assumed to be home.
+         */
+        String datadockHome = System.getProperty( "datadock.home" );
+        if( datadockHome == null )
         {
-            localPropFileName = args[0];            
+            datadockHome = new File( "." ).getAbsolutePath();
         }
         else
         {
-            localPropFileName = propFileName;
+            datadockHome = new File( datadockHome ).getAbsolutePath();
         }
-        log.debug( String.format( "Using properties file: %s", localPropFileName ) );
+        log.info( String.format( "Using datadock.home: %s", datadockHome ) );
+        System.out.println( String.format( "Using datadock.home: %s", datadockHome ) );
         
         Configuration config = null;
-        try
+        
+        // Try reading properties file from -Dproperties.file
+        String localPropFileName = System.getProperty( "properties.file" );
+        
+        // If -Dpropfile is not set try reading from either ../config/datadock.properties or ./config/datadock.properties
+        if( localPropFileName != null )
         {
-            if( localPropFileName.startsWith( "./config" ) || localPropFileName.startsWith( "config" ) )
+            config = new PropertiesConfiguration( localPropFileName );
+        }
+        else
+        {
+            localPropFileName = "../config/" + propFileName;
+            if( new File( localPropFileName ).exists() )
             {
                 config = new PropertiesConfiguration( localPropFileName );
             }
-            else
+
+            localPropFileName = "./config/" + propFileName;
+            if( new File( localPropFileName ).exists() )
             {
-                String tmpPropFileName = "";
-                if( new File( "../config/" + localPropFileName ).exists() )
-                {
-                    tmpPropFileName = "../config/" + localPropFileName;
-                    config = new PropertiesConfiguration( tmpPropFileName );                    
-                }
-                else if( new File( "config/" + localPropFileName ).exists() )
-                {
-                    tmpPropFileName = "config/" + localPropFileName;
-                    config = new PropertiesConfiguration( tmpPropFileName );
-                }
-                else
-                {
-                    throw new ConfigurationException( String.format( "Could not locate properties file at neither '%s' nor '%s': %s", "../config/", "./config/", tmpPropFileName ) );
-                }
-                
-                log.debug( String.format( "Using properties file: %s", tmpPropFileName ) );
+                config = new PropertiesConfiguration( localPropFileName );
             }
         }
-        catch( ConfigurationException e )
-        {
-            String errMsg = String.format( "Could not load properties file '%s'", localPropFileName );
-            throw e;
-        }
 
+        // Throw new ConfigurationException if properties file could not be located.
+        if( config == null )
+        {
+            throw new ConfigurationException( String.format( "Could not load configuration from configuration file: %s", localPropFileName ) );
+        }        
+        log.info( String.format( "Using properties file: %s", localPropFileName ) );
+        
         try
         {
             String configFile = config.getString( "Log4j" );
@@ -201,17 +211,9 @@ public class DatadockMain
             }
             else
             {
-                if( configFile.startsWith( "../" ) )
-                {
-                    configFile = configFile.replaceFirst( "../", "" );
-                    if( !new File( configFile).exists() )
-                    {
-                        throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
-                    }
-                }
-            }
-            
-            log.debug( String.format( "Using config file: %s", configFile ) );
+                throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
+            }            
+            log.info( String.format( "Using config file: %s", configFile ) );
         }
         catch( ConfigurationException ex )
         {
@@ -477,8 +479,7 @@ public class DatadockMain
                 break;
             case FileHarvestLight:
                 log.trace( "selecting FileHarvestLight" );
-                harvester = new FileHarvestLight( fileHarvestLightDir, fileHarvestLightSuccessDir, 
-						  fileHarvestLightFailureDir );
+                harvester = new FileHarvestLight( fileHarvestLightDir, fileHarvestLightSuccessDir, fileHarvestLightFailureDir );
                 break;
             default:
                 log.warn( "no harvester explicitly selected, and default type failed. This should not happen, but I'll default to FileHarvestLight" );
