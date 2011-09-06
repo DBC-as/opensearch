@@ -134,7 +134,7 @@ const DbcAddiRelations = function() {
     */
     that.isReviewOf = function ( pid1, pid2 ){
         Log.info( "Start isReviewOf" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasReview", pid1);
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#hasReview", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isReviewOf", pid2 );
         Log.info( "End isReviewOf" );
     };
