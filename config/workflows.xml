@@ -61,6 +61,114 @@
       </args>
     </plugin>
   </workflow>
+  <workflow format="katalog" submitter="100100">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromMarc"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+        <args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+      </args>
+                </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+              <arg name="searchfunction" value="generateSearchPairs"/>
+              <arg name="matchfunction" value="checkmatch"/>
+              <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="katalog" submitter="100200">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromMarc"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+        <args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+      </args>
+                </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+              <arg name="searchfunction" value="generateSearchPairs"/>
+              <arg name="matchfunction" value="checkmatch"/>
+              <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
+  </workflow>
   <workflow format="katalog" submitter="100450">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
@@ -106,6 +214,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -219,7 +333,12 @@
         <arg name="entryfunction" value="dcFromMarc"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+      </args>
+		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="javascript" value="workmatch_relation_functions.js"/>
@@ -657,6 +776,12 @@
         <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="question" submitter="150024">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -676,7 +801,12 @@
         <arg name="entryfunction" value="dcFromMarc"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+      </args>
+		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="javascript" value="workmatch_relation_functions.js"/>
@@ -789,29 +919,6 @@
       </args>
     </plugin>
   </workflow>
-	<workflow format="ucviden" submitter="150029">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="javascript" value="xmldcharvester_beta.js"/>
-        <arg name="entryfunction" value="dcFromDkabm"/>
-      </args>
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    	<args>
-        <arg name="javascript" value="store_functions.js"/>
-        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
-      </args>
-		</plugin>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
-      <args>
-	      <arg name="javascript" value="workmatch_relation_functions.js"/>
-	      <arg name="searchfunction" value="generateSearchPairs"/>
-	      <arg name="matchfunction" value="checkmatch"/>
-	      <arg name="createobjectfunction" value="makeworkobject"/>
-      </args>
-    </plugin>		
-  </workflow>	
   <workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
@@ -888,6 +995,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
     <workflow format="katalog" submitter="714700">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -933,6 +1046,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -982,6 +1101,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="716500">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1027,6 +1152,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1076,6 +1207,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow> 
   <workflow format="katalog" submitter="717500">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1121,6 +1258,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1170,6 +1313,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="720100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1215,6 +1364,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow> 
@@ -1264,6 +1419,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="732900">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1309,6 +1470,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1358,6 +1525,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow> 
   <workflow format="katalog" submitter="724000">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1403,6 +1576,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1452,6 +1631,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="736000">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1497,6 +1682,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1546,6 +1737,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow> 
   <workflow format="katalog" submitter="743000">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1591,6 +1788,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1640,6 +1843,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow> 
   <workflow format="katalog" submitter="746100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1685,6 +1894,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1734,6 +1949,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="756000">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1779,6 +2000,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1828,6 +2055,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="756100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1873,6 +2106,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -1923,6 +2162,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="757500">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1968,6 +2213,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>  
@@ -2017,6 +2268,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="760700">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2062,6 +2319,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -2111,6 +2374,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="763000">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2156,6 +2425,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -2205,6 +2480,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="766500">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2250,6 +2531,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -2299,6 +2586,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2346,6 +2639,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="ebsco" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2363,6 +2662,12 @@
 	      <arg name="searchfunction" value="generateSearchPairs"/>
 	      <arg name="matchfunction" value="checkmatch"/>
 	      <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -2412,6 +2717,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="785100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -2457,6 +2768,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
@@ -2574,7 +2891,7 @@
       </args>
     </plugin>
   </workflow>
-  <workflow format="katalog" submitter="875180">
+  <workflow format="katalog" submitter="830060">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -2620,8 +2937,14 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
   </workflow>
-  <workflow format="ebrary" submitter="875180">
+  <workflow format="ebrary" submitter="830060">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -2629,8 +2952,12 @@
         <arg name="entryfunction" value="dcFromMarc"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
-    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+      </args>
+		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="javascript" value="workmatch_relation_functions.js"/>
@@ -2643,6 +2970,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
