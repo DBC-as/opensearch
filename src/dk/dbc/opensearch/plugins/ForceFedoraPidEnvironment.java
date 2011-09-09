@@ -50,10 +50,11 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
     
     private static Logger log = LoggerFactory.getLogger( ForceFedoraPidEnvironment.class );
 
-    // Create lock-object to guarantee sequential access to XPathFactory.
+    // Create lock-objects to guarantee sequential access to XPathFactory and XPathExpression.evaluate(...).
     // It is static to ensure that all instances of ForceFedoraPidEnvironment can access it.
     // It is private to ensure only we - inside this class can access it - thereby noone else locks on it and slows us down.
     private static final Object XPathFactoryLock = new Object();
+    private static final Object XPathExpressionEvaluateLock = new Object();
 
     ForceFedoraPidEnvironment( Map< String, String > args ) throws PluginException
     {
@@ -99,6 +100,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
 
+
         // String xpathStr = "/ting:container/dkabm:record/ac:identifier";
         try
         {
@@ -106,7 +108,9 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         }
         catch( XPathExpressionException e )
         {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'", xpathStr ), e );
+            String err = String.format( "Could not compile xpath expression '%s'", xpathStr );
+            log.error( err, e );
+            throw new PluginException( err, e );
         }
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
@@ -115,11 +119,16 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         String regNum;
         try
         {
-            regNum = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
+            synchronized( XPathExpressionEvaluateLock )
+            {
+                regNum = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
+            }
         }
         catch( XPathExpressionException xpe )
         {
-            throw new PluginException( "Could not evaluate xpath expression to find registration number", xpe );
+            String err = "Could not evaluate xpath expression to find registration number";
+            log.error( err, xpe );
+            throw new PluginException( err, xpe );
         }
 
         log.trace( String.format( "registration number found [%s]", regNum ) );
@@ -178,6 +187,4 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         
         return cargo;
     }
-
-
 }

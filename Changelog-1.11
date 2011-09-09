@@ -1,2 +1,3 @@
 1.11.0
+   - bug [13294] "Vedr. version 1.10: Katalogposter fejler med "Could not evaluate xpath expression to find registration number""
    - bug [13000] "FileHarvest.java kan fjernes fra OpenSearch"
