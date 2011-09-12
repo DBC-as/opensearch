@@ -1,10 +1,4 @@
-/**
- *
- */
-package dk.dbc.opensearch.config;
-
 /*
-
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,14 +17,15 @@ package dk.dbc.opensearch.config;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.config;
+
 
 import java.io.File;
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
- * @author mro
- *
  * Sub class of Config providing access to datadock settings in the
  * configuration file. Method names should be explanatory enough.
  *
@@ -141,6 +136,7 @@ public class DatadockConfig extends Config
         return ret;
     }
 
+    
     /**
      * @return Path to the config/datadock_jobs.xml file
      * @throws ConfigurationException
@@ -151,6 +147,7 @@ public class DatadockConfig extends Config
         return ddc.getDatadockPath();
     }
 
+
     private File getDatadockPluginFlowXmlPath() throws ConfigurationException
     {
         String ret = config.getString( "datadock.pluginflowxmlpath" );
@@ -158,15 +155,19 @@ public class DatadockConfig extends Config
         {
             throw new ConfigurationException( "Could not retrieve configuration value for 'datadock.pluginflowxmlpath'" );
         }
+
         File returnFile = new File( ret );
+
         return returnFile;
     }
+
 
     public static File getPluginFlowXmlPath() throws ConfigurationException
     {
         DatadockConfig ddc = new DatadockConfig();
         return ddc.getDatadockPluginFlowXmlPath();
     }
+
 
     private File getDatadockPluginFlowXsdPath() throws ConfigurationException
     {
@@ -175,9 +176,12 @@ public class DatadockConfig extends Config
         {
             throw new ConfigurationException( "Could not retrieve configuration value for 'datadock.pluginflowxsdpath'" );
         }
+
         File returnFile = new File( ret );
+
         return returnFile;
     }
+    
 
     public static File getPluginFlowXsdPath() throws ConfigurationException
     {
