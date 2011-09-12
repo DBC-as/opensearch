@@ -29,9 +29,8 @@ import static org.junit.Assert.*;
 /**
  *
  */
-public class PIDTest {
-
-
+public class PIDTest
+{
     PID p;
 
     @Before

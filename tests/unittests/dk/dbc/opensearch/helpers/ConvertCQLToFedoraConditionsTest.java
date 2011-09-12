@@ -19,19 +19,17 @@
 
 package dk.dbc.opensearch.helpers;
 
-import dk.dbc.opensearch.fedora.FedoraObjectFields;
+
 import dk.dbc.opensearch.fedora.OpenSearchCondition;
-import dk.dbc.opensearch.types.ITargetField;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import mockit.Mocked;
 
-public class ConvertCQLToFedoraConditionsTest {
-    
 
+public class ConvertCQLToFedoraConditionsTest
+{
     /*
      * Tests that transformConditionStringToConditionList can convert 
      * a cql query part into an OpensearchCondition contained in an ArrayList
