@@ -66,5 +66,4 @@ public enum JobStatus
      * marked {@code RETRY}. 
      */
      RETRY;
-
 }
