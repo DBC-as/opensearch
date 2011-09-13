@@ -554,7 +554,7 @@ public final class FoxmlDocument
         }
         catch( XPathExpressionException e )
         {
-            throw new IllegalArgumentException( String.format( "%s does not exist.", dsvId ) );
+            throw new IllegalArgumentException( String.format( "%s does not exist.", dsvId ), e );
         }
     }
 

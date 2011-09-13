@@ -71,7 +71,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         {
             String error = "ForceFedoraPid-plugin Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
-            throw new PluginException( String.format( error ) );
+            throw new PluginException( error );
         }
 
         byte[] b = co.getBytes();

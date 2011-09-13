@@ -85,7 +85,7 @@ public class DatadockPool
         {
 			if ( executor.isShutdown() )
             {
-				throw new RejectedExecutionException();
+				throw new RejectedExecutionException( "Executor has been shutdown" );
 			}
 			
             try

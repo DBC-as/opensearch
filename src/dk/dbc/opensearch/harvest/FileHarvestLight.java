@@ -155,17 +155,17 @@ public final class FileHarvestLight implements IHarvest
         }
         catch( ParserConfigurationException pce )
         {
-            log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
+            log.error( String.format( "Caught error while trying to instantiate documentbuilder for '%s'", id), pce );
             DocOK = false;
         }
         catch( SAXException se )
         {
-            log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
+            log.error( String.format( "Could not parse data for '%s'",id ), se );
             DocOK = false;
         }
         catch( IOException ioe )
         {
-            log.error( String.format( "Could not read the ref-file: '%s'", ioe.getMessage() ) );
+            log.error( String.format( "Could not read the ref-file for '%s'", id ), ioe.getMessage() );
             DocOK = false;
         }
 
@@ -242,7 +242,7 @@ public final class FileHarvestLight implements IHarvest
         }
         catch( FileNotFoundException fnfe )
         {
-            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", jobId.getURI().getRawPath() ) );
+            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", jobId.getURI().getRawPath() ), fnfe );
         }
 
 	byte[] data = null;
@@ -252,7 +252,7 @@ public final class FileHarvestLight implements IHarvest
 	}
         catch( IOException ioe )
 	{
-	    throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", jobId.getURI().getRawPath() ) );
+	    throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", jobId.getURI().getRawPath() ), ioe );
 	}
 	
 

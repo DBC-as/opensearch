@@ -37,6 +37,7 @@ final class FileIdentifier implements IIdentifier
 {
     private URI uri;
 
+
     /**
      *
      */
@@ -50,5 +51,12 @@ final class FileIdentifier implements IIdentifier
     {
         return uri;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.valueOf( uri );
+    }
+
 
 }

@@ -232,8 +232,8 @@ public class CargoContainer
         }
         else if( (data == null) || (data.length <= 0) )
         {
-            log.error( "data must be present " );
-            throw new IllegalArgumentException( "data must be present " );
+            log.error( "data must be present" );
+            throw new IllegalArgumentException( "data must be present" );
         }
 
         CargoObject co = new CargoObject( dataStreamName,

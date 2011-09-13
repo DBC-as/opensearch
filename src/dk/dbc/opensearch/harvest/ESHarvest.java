@@ -281,17 +281,17 @@ public final class ESHarvest implements IHarvest
         }
         catch( ParserConfigurationException pce )
         {
-            log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
+            log.error( String.format( "Caught error while trying to instantiate documentbuilder for '%s'", id ), pce );
             DocOK = false;
         }
         catch( SAXException se )
         {
-            log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
+            log.error( String.format( "Could not parse data for '%s'", id ), se );
             DocOK = false;
         }
         catch( IOException ioe )
         {
-            log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
+            log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource for '%s'", id ), ioe );
             DocOK = false;
         }
 
@@ -1160,7 +1160,7 @@ public final class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-            String errorMsg = new String( "Could not insert diagnostic with id: " + diagnosticId );
+            String errorMsg = "Could not insert diagnostic with id: " + diagnosticId ;
             log.error( errorMsg, sqle );
             conn.rollback();
             pstmt2.close();

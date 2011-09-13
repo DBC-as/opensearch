@@ -73,10 +73,10 @@ public class CQLToLuceneQueryConverter {
 	    root = p.parse( cql );
 	} catch ( CQLParseException e ) {
 	    String errMsg = String.format( "Could not parse CQL [%s]", cql );
-	    throw new IllegalArgumentException( errMsg );
+	    throw new IllegalArgumentException( errMsg, e );
 	} catch ( IOException e ) {
 	    String errMsg = String.format( "Could not parse CQL [%s]", cql );
-	    throw new IllegalArgumentException( errMsg );
+	    throw new IllegalArgumentException( errMsg, e );
 	}
 	return convertCQLToLucene( root, 0, true );
     }
