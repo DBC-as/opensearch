@@ -61,15 +61,14 @@ import org.xml.sax.SAXException;
 public class FcrepoReader
 {
     private final static Logger log = LoggerFactory.getLogger( FcrepoReader.class );
-    private final FedoraAPIA fea;
-    private final String fedora_base_url;
+    private final ThreadLocal<FedoraAPIA> apiaThreadLocal;
 
 
     public FcrepoReader( String host, String port ) throws ObjectRepositoryException
     {
-        this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
+        String fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s", fedora_base_url ) );
-        FedoraClient fc;
+        final FedoraClient fc;
         try
         {
             fc = new FedoraClient( fedora_base_url, "FcrepoReader", "" );
@@ -81,29 +80,42 @@ public class FcrepoReader
             throw new ObjectRepositoryException( error, ex );
         }
 
-        try
+        apiaThreadLocal = new ThreadLocal<FedoraAPIA>()
         {
-            fea = fc.getAPIA();
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
+            protected FedoraAPIA initialValue()
+            {
+                try
+                {
+                    return fc.getAPIA();
+                }
+                catch( ServiceException ex )
+                {
+                    String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
+                    log.error( error );
+                    throw new IllegalArgumentException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to obtain connection to fedora repository: %s", ex.getMessage() );
+                    log.error( error );
+                    throw new IllegalArgumentException( error, ex );
+                }
+            }
+        };
     }
 
 
-    private FedoraAPIA getAPIA()
+    private FedoraAPIA getAPIA() throws RemoteException
     {
         log.trace( "FcrepoReader getAPIA" );
-        return fea;
+        try
+        {
+            return apiaThreadLocal.get();
+        }
+        catch ( IllegalArgumentException ex )
+        {
+            throw new RemoteException( "Unable to retrieve APIA Instance", ex );
+        }
     }
 
 
@@ -123,7 +135,7 @@ public class FcrepoReader
         boolean retValue = true;
         try
         {
-            DatastreamDef[] d = this.fea.listDatastreams( identifier, null );
+            DatastreamDef[] d = getAPIA().listDatastreams( identifier, null );
             if( d == null )
             {
                 log.info( String.format( "Could not list datastreams for object %s. We take this as an indication that the object doesn't exist", identifier ) );

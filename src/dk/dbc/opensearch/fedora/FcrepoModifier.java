@@ -58,15 +58,15 @@ public class FcrepoModifier
 {
     private final static Logger log = LoggerFactory.getLogger( FcrepoModifier.class );
     private final static String DeletedState = "D";
-    private final FedoraAPIM fem;
-    private final FedoraClient fc;
-    private final String fedora_base_url;
+
+    private final ThreadLocal<FedoraAPIM> apimThreadLocal;
 
 
     public FcrepoModifier( String host, String port, String user, String pass ) throws ObjectRepositoryException
     {
-        this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
+        String fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
+        final FedoraClient fc;
         try
         {
             fc = new FedoraClient( fedora_base_url, user, pass );
@@ -78,36 +78,42 @@ public class FcrepoModifier
             throw new ObjectRepositoryException( error, e );
         }
 
-        try
+        apimThreadLocal = new ThreadLocal<FedoraAPIM>()
         {
-            fem = fc.getAPIM();
-        }
-        catch( ServiceException e )
-        {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, e );
-        }
-        catch( IOException e )
-        {
-            String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, e );
-        }
+            protected FedoraAPIM initialValue()
+            {
+                try
+                {
+                    return fc.getAPIM();
+                }
+                catch( ServiceException e )
+                {
+                    String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
+                    log.error( error );
+                    throw new IllegalArgumentException( error, e );
+                }
+                catch( IOException e )
+                {
+                    String error = String.format( "Failed to obtain connection to fedora repository: %s", e.getMessage() );
+                    log.error( error );
+                    throw new IllegalArgumentException( error, e );
+                }
+            }
+        };
     }
 
 
-    private FedoraAPIM getAPIM()
+    private FedoraAPIM getAPIM() throws RemoteException
     {
         log.trace( "FcrepoModifier getAPIM" );
-        return fem;
-    }
-
-
-    private FedoraClient getFC()
-    {
-        log.trace( "FcrepoModifier getFC()" );
-        return fc;
+        try
+        {
+            return apimThreadLocal.get();
+        }
+        catch ( IllegalArgumentException ex )
+        {
+            throw new RemoteException( "Unable to retrieve APIM Instance", ex );
+        }
     }
 
 
@@ -121,19 +127,6 @@ public class FcrepoModifier
         log.info( String.format( "HANDLE Timing: ( %s f) %s", this.getClass(), timer ) );
 
         return pid;
-    }
-
-
-    private String uploadFile( File fileToUpload ) throws IOException
-    {
-        long timer = System.currentTimeMillis();
-
-        String msg = this.getFC().uploadFile( fileToUpload );
-
-        timer = System.currentTimeMillis() - timer;
-        log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-
-        return msg;
     }
 
 

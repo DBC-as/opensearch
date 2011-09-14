@@ -39,7 +39,7 @@ public final class ObjectRepositoryException extends Exception
      * @param e
      *            The originating exception
      */
-    public ObjectRepositoryException( Exception e )
+    public ObjectRepositoryException( Throwable e )
     {
         super( e );
     }
@@ -55,7 +55,7 @@ public final class ObjectRepositoryException extends Exception
      * @param e
      *            The original Exception that was caught
      */
-    public ObjectRepositoryException( String msg, Exception e )
+    public ObjectRepositoryException( String msg, Throwable e )
     {
         super( msg, e );
     }
