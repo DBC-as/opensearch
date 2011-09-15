@@ -133,6 +133,8 @@ var DcCreator = function(){
 
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
+		
+		Log.debug( "ORIGINALDATA: " + originalXml );
     
     if (String(originalXml.ting::originalData.status) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
@@ -218,6 +220,8 @@ var DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "relation", dc );
       }
     }
+		
+		Log.debug( "DCXML: " + dcXml );
 
     var dcString = String(dcXml);
 
