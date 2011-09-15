@@ -791,7 +791,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store">
     	<args>
         <arg name="javascript" value="store_functions.js"/>
-        <arg name="entryfunction" value="isDeleteObjectDkabm"/>
+        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
   </workflow>
