@@ -1,3 +1,4 @@
 1.11.0
+   - bug [13354] "ESHarvet får ikek fat i noget fra ES i trunk"
    - bug [13294] "Vedr. version 1.10: Katalogposter fejler med "Could not evaluate xpath expression to find registration number""
    - bug [13000] "FileHarvest.java kan fjernes fra OpenSearch"

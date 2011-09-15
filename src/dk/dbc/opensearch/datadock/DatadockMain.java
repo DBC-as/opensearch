@@ -243,10 +243,9 @@ public class DatadockMain
         log.debug(  String.format( "Starting Datadock with pluginFlowXmlPath = %s", pluginFlowXmlPath ) );
         log.debug(  String.format( "Starting Datadock with pluginFlowXsdPath = %s", pluginFlowXsdPath) );
 
-	maxToHarvest = config.getInt( "MaxToHarvest" );
+        maxToHarvest = config.getInt( "MaxToHarvest" );
 
-        dataBaseNames = new ArrayList< String >();
-        dataBaseNames.add( config.getString( "OracleDataBaseNames" ) );
+        dataBaseNames = config.getList( "OracleDataBaseNames" );
         oracleCacheName = config.getString( "OracleCacheName" );
         oracleUrl = config.getString( "OracleUrl" );
         oracleUser = config.getString( "OracleUserID" );
@@ -265,9 +264,9 @@ public class DatadockMain
 
         javascriptPath = config.getString( "ScriptPath" );
 
-	fileHarvestLightDir = config.getString( "ToHarvest" );
-	fileHarvestLightSuccessDir = config.getString( "HarvestDone" );
-	fileHarvestLightFailureDir = config.getString( "HarvestFailure" );
+        fileHarvestLightDir = config.getString( "ToHarvest" );
+        fileHarvestLightSuccessDir = config.getString( "HarvestDone" );
+        fileHarvestLightFailureDir = config.getString( "HarvestFailure" );
     }
 
 
