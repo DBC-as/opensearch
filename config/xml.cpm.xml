@@ -159,7 +159,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='dkdcplus:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -231,7 +231,7 @@
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='dkdcplus:sort'][1]"
         index="un_tokenized"
         value-converter="sort"
         />
@@ -548,7 +548,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='dkdcplus:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -584,7 +584,7 @@
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='dkdcplus:sort'][1]"
         index="un_tokenized"
         value-converter="sort"
         />
@@ -1012,7 +1012,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='dkdcplus:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
        value-converter="facet"
         />
@@ -1090,7 +1090,7 @@
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='dkdcplus:sort'][1]"
         index="un_tokenized"
         value-converter="sort"
         />
