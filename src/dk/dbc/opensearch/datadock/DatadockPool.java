@@ -185,7 +185,7 @@ public class DatadockPool
                 {                    
                     // getting exception from thread
                     Throwable cause = ee.getCause();
-                    log.error( String.format( "Exception Caught from thread: '%s' Message: '%s'", cause.getClass() , cause.getMessage() ), cause );
+                    log.error( String.format( "Exception caught for identifier: %s, from thread: '%s'", id, cause ), cause );
 
                     log.info( String.format( "Setting status to FAILURE for identifier: %s with message: '%s'", id, cause.getMessage() ) );
                     try

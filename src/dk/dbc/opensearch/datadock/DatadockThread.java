@@ -109,6 +109,7 @@ public class DatadockThread implements Callable<Boolean>
     @Override
     public Boolean call() throws HarvesterIOException, HarvesterUnknownIdentifierException, PluginException, ClassNotFoundException, SQLException
     {
+        Thread.currentThread().setName( String.valueOf( this.identifier ) );
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
         log.info( String.format( "DatadockThread call method called on identifier: %s", this.identifier.toString() ) );
@@ -128,7 +129,7 @@ public class DatadockThread implements Callable<Boolean>
         //get submitter and format from the first cargoObject in the cargoContainer
         String submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
         String format = cargo.getCargoObject( DataStreamType.OriginalData ).getFormat();
-	log.info( String.format( "Found submitter = \"%s\" and format = \"%s\"", submitter, format ) );
+        log.info( String.format( "Found submitter = \"%s\" and format = \"%s\"", submitter, format ) );
         List<PluginTask> pluginTaskList = flowMap.get( submitter + format);
 
         for( PluginTask pluginTask : pluginTaskList )
@@ -172,7 +173,11 @@ public class DatadockThread implements Callable<Boolean>
             log.error( hisce.getMessage() , hisce);
             return Boolean.FALSE;
         }
+        finally
+        {
+            Thread.currentThread().setName( "Idle thread" );
+        }
 
-	return Boolean.TRUE;
+    	return Boolean.TRUE;
     }
 }

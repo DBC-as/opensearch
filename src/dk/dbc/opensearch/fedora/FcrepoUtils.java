@@ -67,11 +67,12 @@ public class FcrepoUtils
      */
     public static void removeOutboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
     {
+        log.info( "Removing outbound relations from [{}]", objectIdentifier );
         String[] purged = null;
         try
         {
             String msg = String.format( "removing RELS-EXT datastream from pid %s", objectIdentifier );
-            log.info( msg );
+            log.debug( msg );
             purged = modifier.purgeDatastream( objectIdentifier, "RELS-EXT", null, null, msg, false );
         }
         catch( IOException ex )
@@ -105,6 +106,7 @@ public class FcrepoUtils
      */
     public static int removeInboundRelations( FcrepoReader reader, FcrepoModifier modifier, String objectIdentifier ) throws ObjectRepositoryException
     {
+        log.info( "Removing inbound relations for [{}]", objectIdentifier );
         log.debug( String.format( "Searching for objects with relations to: '%s'", objectIdentifier ));
         int count = 0;
         OpenSearchCondition cond = new OpenSearchCondition( FedoraObjectFields.RELOBJ, OpenSearchCondition.Operator.EQUALS, objectIdentifier );

@@ -251,10 +251,10 @@ public class FcrepoModifier
             if( purgeRelationship )
             {
                 log.debug( "purged" );
-                log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relation, subject ) );
             }
             else
             {
+                log.warn( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relation, subject ) );
                 log.debug( "not purged" );
             }
 

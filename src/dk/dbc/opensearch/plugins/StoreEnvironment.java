@@ -109,9 +109,9 @@ public class StoreEnvironment implements IPluginEnvironment
         boolean deleteRecord = false;
         if (jsEnvironment != null)
         {
-            log.debug( "Calling JavaScript to determine if record should be deleted");
+            log.debug( "Calling javascript to determine if post [{}] should be deleted", pidStr );
             deleteRecord = ( (Boolean) jsEnvironment.callMethod( entryPointFunc, new Object[] { submitter, format, language, XML, pidStr } ) ).booleanValue();
-            log.debug( String.format( "js to determine if it is a deleterecord returned: '%s'", deleteRecord ) );
+            log.debug( "js to determine if [{}] is a delete record returned: {}", pidStr, deleteRecord );
         }
         else
         {
@@ -142,7 +142,7 @@ public class StoreEnvironment implements IPluginEnvironment
                 log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
                 try
                 {
-                    String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
+                    String logm = String.format( "Datadock: %s deleted with pid [%s]", format, pidStr );
                     FcrepoUtils.removeInboundRelations( reader, modifier, pidStr );
                     modifier.deleteObject( pidStr, logm );
                     FcrepoUtils.removeOutboundRelations( reader, modifier, pidStr );
