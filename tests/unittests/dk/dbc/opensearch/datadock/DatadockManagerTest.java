@@ -89,7 +89,7 @@ public class DatadockManagerTest
         mockJobs.clear();
         setUpMocks( MockHarvester.class );
         setUpMocks( MockDatadockPool.class );
-        mockHarvester = new ESHarvest( null, null, false );
+        mockHarvester = new ESHarvest( null, null, null, false );
         mockDatadockPool = new DatadockPool( null, mockHarvester, null );
     }
 
@@ -149,7 +149,7 @@ public class DatadockManagerTest
         static List<TaskInfo> list;
 
         @Mock
-        public void $init( OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag )
+        public void $init( DatadockMain datadock, OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag )
         {
             list = new ArrayList<TaskInfo>();
         }

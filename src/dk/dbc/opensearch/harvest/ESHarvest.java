@@ -32,6 +32,7 @@ import dk.dbc.opensearch.types.DataStreamType;
 import dk.dbc.opensearch.types.IIdentifier;
 import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.commons.db.OracleDBPooledConnection;
+import dk.dbc.opensearch.datadock.DatadockMain;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -64,6 +65,7 @@ public final class ESHarvest implements IHarvest
 {
     Logger log = LoggerFactory.getLogger( ESHarvest.class );
 
+    private final DatadockMain datadock;
 
     private final OracleDBPooledConnection connectionPool; // The connectionPool, given through the constuctor
     private final List< String > databasenames; // The ES-base database names - given through the constructor
@@ -77,8 +79,9 @@ public final class ESHarvest implements IHarvest
      *   Creates a new ES-Harvester.
      *   The Harvester 
      */
-    public ESHarvest( OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag) throws HarvesterIOException
+    public ESHarvest( DatadockMain datadock, OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag) throws HarvesterIOException
     {
+        this.datadock = datadock;
         this.connectionPool = connectionPool;
         this.databasenames = databasenames;
         this.usePriorityFlag = usePriorityFlag;
@@ -96,6 +99,11 @@ public final class ESHarvest implements IHarvest
         log.info( "Starting the ES-Harvester" );
         log.debug( "ESHarvest started" );
 
+    }
+
+    private void shutdownDatadock()
+    {
+        datadock.shutdown();
     }
 
 

@@ -384,8 +384,9 @@ public class DatadockMain
     /**
      * The shutdown hook. This method is called when the program catches a
      * kill signal.
+     * Or if internal code requests that the datadock is shutdown
      */
-    private void shutdown()
+    public void shutdown()
     {
         this.shutdownRequested = true;
 
@@ -542,7 +543,7 @@ public class DatadockMain
 
         OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
-        return new ESHarvest( connectionPool, dataBaseNames, usePriorityFlag );
+        return new ESHarvest( this, connectionPool, dataBaseNames, usePriorityFlag );
 
     }
 
