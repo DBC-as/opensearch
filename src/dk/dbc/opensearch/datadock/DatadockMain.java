@@ -35,6 +35,7 @@ import dk.dbc.opensearch.harvest.ESHarvest;
 import dk.dbc.opensearch.harvest.FileHarvestLight;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
 import dk.dbc.opensearch.harvest.IHarvest;
+import dk.dbc.opensearch.helpers.IShutdownMain;
 import dk.dbc.opensearch.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
@@ -74,7 +75,7 @@ import org.xml.sax.SAXException;
  * It also adds a shutdown hook to the JVM so orderly shutdown is
  * accompleshed when the process is killed.
  */
-public class DatadockMain
+public class DatadockMain implements IShutdownMain
 {
     /**
      *  Private enum used to differentiate between various harvester types

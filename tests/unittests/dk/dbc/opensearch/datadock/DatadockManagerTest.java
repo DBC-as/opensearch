@@ -24,6 +24,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.datadock;
 
 
+import dk.dbc.opensearch.helpers.IShutdownMain;
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.harvest.ESHarvest;
@@ -149,7 +150,7 @@ public class DatadockManagerTest
         static List<TaskInfo> list;
 
         @Mock
-        public void $init( DatadockMain datadock, OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag )
+        public void $init( IShutdownMain datadock, OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag )
         {
             list = new ArrayList<TaskInfo>();
         }
