@@ -168,11 +168,17 @@ public class DatadockThread implements Callable<Boolean>
         {
             harvester.setStatusSuccess( identifier, identifierAsString );
         }
-        catch ( HarvesterInvalidStatusChangeException hisce )
+        catch ( HarvesterInvalidStatusChangeException e )
         {
-            log.error( hisce.getMessage() , hisce);
+            log.error( e.getMessage() , e);
             return Boolean.FALSE;
         }
+        catch( HarvesterIOException e )
+        {
+            String errMsg = "Harvester could not get connection to ES, it will shutdown the datadock";
+            log.error( errMsg, e );
+        }
+        
         finally
         {
             Thread.currentThread().setName( "Idle thread" );

@@ -70,7 +70,6 @@ public final class ESHarvest implements IHarvest
     private final OracleDBPooledConnection connectionPool; // The connectionPool, given through the constuctor
     private final List< String > databasenames; // The ES-base database names - given through the constructor
     private final boolean usePriorityFlag; // Use priority flag when querying for new jobs
-    private final long dbConnectionRetryTime;
 
     private LinkedList< ESIdentifier > jobCandidatesQueue = new LinkedList< ESIdentifier >();
 
@@ -81,8 +80,6 @@ public final class ESHarvest implements IHarvest
      */
     public ESHarvest( IShutdownMain datadock, OracleDBPooledConnection connectionPool, List< String > databasenames, boolean usePriorityFlag) throws HarvesterIOException
     {
-
-        this.dbConnectionRetryTime = 100l;
         this.datadock = datadock;
         this.connectionPool = connectionPool;
         this.databasenames = databasenames;
@@ -339,15 +336,17 @@ public final class ESHarvest implements IHarvest
 
         // get a connection from the connectionpool:
         Connection conn;
+
         try
         {
             conn = connectionPool.getConnection();
         }
-        catch ( SQLException sqle )
+        catch( SQLException e )
         {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.error( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            String errMsg = "Could not get a db-connection from the connection pool within the timeout, shutting down the datadock";
+            log.error( errMsg, e );
+            shutdownDatadock();
+            throw new HarvesterIOException( errMsg, e );
         }
 
         List< TaskInfo > theJobList = new ArrayList< TaskInfo >();
@@ -473,11 +472,12 @@ public final class ESHarvest implements IHarvest
         {
             conn = connectionPool.getConnection();
         }
-        catch ( SQLException sqle )
+        catch ( SQLException e )
         {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.error( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            String errorMsg = "Could not get a db-connection from the connection pool within the timeout, shutting down the datadock";
+            log.error( errorMsg, e );
+            shutdownDatadock();
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         String referenceData = retrieveReferenceData( id, conn );
@@ -536,11 +536,11 @@ public final class ESHarvest implements IHarvest
         {
             conn = connectionPool.getConnection();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.error( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            String errorMsg = "Could not get a db-connection from the connection pool within the timeout, shutting down the datadock";
+            log.error( errorMsg, e );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         try
@@ -617,17 +617,18 @@ public final class ESHarvest implements IHarvest
 
         log.info( String.format( "ESHarvest.setStatusFailure( identifier %s ) ", Id ) );
 
-        Connection conn;
+        Connection conn = null;
 
         try
         {
             conn = connectionPool.getConnection();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.error( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            String errorMsg = "Could not get a db-connection from the connection pool within the timeout, shutting down the datadock";
+            log.error( errorMsg, e );
+            shutdownDatadock();
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         ESIdentifier EsId = (ESIdentifier)Id;
@@ -653,31 +654,17 @@ public final class ESHarvest implements IHarvest
         log.info( String.format( "ESHarvest.setStatusSuccess( identifier %s ) ", Id ) );
 
         Connection conn = null;
-        boolean gotConnection = false;
 
-        while( !gotConnection )
+        try
         {
-            try
-            {
-                conn = connectionPool.getConnection();
-                gotConnection = true;
-            }
-            catch( SQLException sqle )
-            {
-                String warnMsg = new String("Could not get a db-connection from the connection pool, retrying");
-                log.warn( warnMsg, sqle );
-                try
-                {
-                    Thread.currentThread().sleep( dbConnectionRetryTime );
-                }
-                catch( InterruptedException e )
-                {
-                    //we rethrow as HarvesterIOException
-                    String errorMsg = String.format( "Thread interrupted by other thread, should not happen, tried to set status succes for id: %s", Id );
-                    log.error( errorMsg, e );
-                    throw new HarvesterIOException( errorMsg );
-                }
-            }
+            conn = connectionPool.getConnection();
+        }
+        catch( SQLException e )
+        {
+            String errorMsg = "Could not get a db-connection from the connection pool within the timeout, shutting down the datadock";
+            log.error( errorMsg, e );
+            shutdownDatadock();
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         ESIdentifier EsId = (ESIdentifier)Id;
