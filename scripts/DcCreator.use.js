@@ -1,8 +1,8 @@
 EXPORTED_SYMBOLS = ['DcCreator'];
 
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
-use ( "Normalize" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
+use ( "Normalize.use.js" );
 
 var DcCreator = function(){
 
