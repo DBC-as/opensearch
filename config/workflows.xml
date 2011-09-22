@@ -986,6 +986,12 @@
         <arg name="entryfunction" value="dcFromDkabm"/>
       </args>
     </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
+      </args>
+		</plugin>
   </workflow>	
   <workflow format="spilmedier" submitter="150030">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
