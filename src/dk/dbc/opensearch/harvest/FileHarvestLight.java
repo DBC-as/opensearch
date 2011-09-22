@@ -32,42 +32,24 @@ import dk.dbc.opensearch.types.DataStreamType;
 import dk.dbc.opensearch.types.IIdentifier;
 import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.opensearch.os.NoRefFileFilter;
-import dk.dbc.commons.xml.XMLUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileOutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.NoSuchElementException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
@@ -94,8 +76,13 @@ public final class FileHarvestLight implements IHarvest
     private final File successDir;
     private final File failureDir;
 
+
     /**
-     *
+     * 
+     * @param harvesterConfigDir
+     * @param successConfigDir
+     * @param failureConfigDir
+     * @throws HarvesterIOException
      */
     public FileHarvestLight( String harvesterConfigDir, String successConfigDir, String failureConfigDir ) throws HarvesterIOException
     {

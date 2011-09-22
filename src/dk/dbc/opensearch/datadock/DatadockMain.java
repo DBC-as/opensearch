@@ -199,7 +199,9 @@ public class DatadockMain implements IShutdownMain
         // Throw new ConfigurationException if properties file could not be located.
         if( config == null )
         {
-            throw new ConfigurationException( String.format( "Could not load configuration from configuration file: %s", localPropFileName ) );
+            throw new ConfigurationException( String.format( "Could not load configuration from configuration file: %s; CWD: %s",
+                    localPropFileName,
+                    new File( "." ).getAbsoluteFile() ) );
         }        
         log.info( String.format( "Using properties file: %s", localPropFileName ) );
         
@@ -212,7 +214,22 @@ public class DatadockMain implements IShutdownMain
             }
             else
             {
-                throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
+                if( configFile.startsWith( "../" ) )
+                {
+                    configFile = configFile.replaceFirst( "../", "" );
+                    if( new File( configFile ).exists() )
+                    {
+                        Log4jConfiguration.configure( configFile );
+                    }
+                    else
+                    {
+                        throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
+                    }
+                }
+                else
+                {
+                    throw new ConfigurationException( String.format( "Could not locate config file at: %s",  config.getString( "Log4j" ) ) );
+                }
             }            
             log.info( String.format( "Using config file: %s", configFile ) );
         }
