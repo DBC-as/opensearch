@@ -48,7 +48,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -127,11 +126,11 @@ public final class ESHarvest implements IHarvest
         {
             connectionPool.shutdown();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = new String(  "Error when closing the Oracle pooled connection" );
-            log.error( errorMsg , sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            log.error( errorMsg , e );
+            throw new HarvesterIOException( errorMsg, e );
         }
     }
 
@@ -156,7 +155,8 @@ public final class ESHarvest implements IHarvest
                 targetrefSelect.append( "OR databasename = ? " );
             }
             targetrefSelect.append( ") AND taskstatus = 0 " );
-            if ( this.usePriorityFlag ) {
+            if ( this.usePriorityFlag )
+            {
                 targetrefSelect.append( "AND rownum < 2 " );
             }
             targetrefSelect.append( "ORDER BY update_priority , creationdate , targetreference" );
@@ -223,12 +223,12 @@ public final class ESHarvest implements IHarvest
             selectLbnrQueryStmt.close();
 
         }
-        catch ( SQLException sqle )
+        catch ( SQLException e )
         {
             String errorMsg = new String( "An SQL error occured while trying to retrieve job candidates" );
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         return retrievedAmount;
@@ -263,12 +263,12 @@ public final class ESHarvest implements IHarvest
             rs.close();
             pstmt.close();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = new String( "An sql exception was caught" );
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         return referenceData;
@@ -380,12 +380,12 @@ public final class ESHarvest implements IHarvest
             {
                 setRecordStatusToInProgress( id, conn );
             }
-            catch( SQLException sqle )
+            catch( SQLException e )
             {
                 String errorMsg = new String( "An SQL error occured while trying to change recordstatus" );
-                log.error( errorMsg, sqle );
+                log.error( errorMsg, e );
                 releaseConnection( conn );
-                throw new HarvesterIOException( errorMsg, sqle );
+                throw new HarvesterIOException( errorMsg, e );
             }
 
             String referenceData = retrieveReferenceData( id, conn );
@@ -449,12 +449,12 @@ public final class ESHarvest implements IHarvest
             rs.close();
             pstmt.close();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = new String( "A database error occured " );
-            log.error(  errorMsg, sqle );
+            log.error(  errorMsg, e );
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         return returnData;
@@ -595,11 +595,11 @@ public final class ESHarvest implements IHarvest
             setTaskpackageTaskstatusAndSubstatus( id.getTargetRef(), TaskStatus.PENDING, conn );
 
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = String.format( "An SQL error occured while releasing job: %s", id.toString() );
-            log.error( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
+            log.error( errorMsg, e );
+            throw new HarvesterIOException( errorMsg, e );
         }
         finally
         {
@@ -637,12 +637,12 @@ public final class ESHarvest implements IHarvest
         {
             setFailureDiagnostic( EsId, failureDiagnostic, conn );
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = String.format( "Could not set failureDiagnostic on Id: %s", EsId );
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         releaseConnection( conn );
@@ -773,11 +773,11 @@ public final class ESHarvest implements IHarvest
                 setTaskPackageStatus( ESJobId.getTargetRef(), conn );
             }
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
-            log.error( "A database error occured", sqle );
+            log.error( "A database error occured", e );
             releaseConnection( conn );
-            throw new HarvesterIOException( "A database error occured", sqle );
+            throw new HarvesterIOException( "A database error occured", e );
         }
     }
 
@@ -1089,14 +1089,14 @@ public final class ESHarvest implements IHarvest
                         // set the taskpackage.taskstatus to complete:
                         setTaskpackageTaskstatusAndSubstatus( targetref, TaskStatus.COMPLETE, conn );
                     }
-                    catch( SQLException sqle )
+                    catch( SQLException e )
                     {
                         String errorMsg = String.format( "An SQL error occured when trying to update updatestatus in TaskSpecificUpdate with targetref %s" , targetref);
-                        log.error( errorMsg, sqle );
+                        log.error( errorMsg, e );
                         pstmt4.close();
                         conn.rollback();
                         releaseConnection( conn );
-                        throw new HarvesterInvalidStatusChangeException( errorMsg, sqle );
+                        throw new HarvesterInvalidStatusChangeException( errorMsg, e );
                     }
                 }
 
@@ -1139,14 +1139,14 @@ public final class ESHarvest implements IHarvest
 
             diagnosticId = rs.getInt( 1 );
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = String.format( "A database error occured when trying to retrive unique id from diagIdSeq in ES base for ESId: %s.", Id );
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             pstmt.close();
             conn.rollback();
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         pstmt.close();
@@ -1170,14 +1170,14 @@ public final class ESHarvest implements IHarvest
             pstmt2.executeQuery( );
 
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             String errorMsg = "Could not insert diagnostic with id: " + diagnosticId ;
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             conn.rollback();
             pstmt2.close();
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
 
         // Attach diagnostic to failed record:
@@ -1225,14 +1225,14 @@ public final class ESHarvest implements IHarvest
             pstmt3.close();
             conn.commit();
         }
-        catch ( SQLException sqle )
+        catch ( SQLException e )
         {
             String errorMsg = String.format( "Could not attach diagnostic (Id: %s) to taskpackagerecordstructure (Id: %s) with text: [%s]", diagnosticId, Id, failureDiagnostic );
-            log.error( errorMsg, sqle );
+            log.error( errorMsg, e );
             pstmt3.close();
             conn.rollback();
             releaseConnection( conn );
-            throw new HarvesterIOException( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, e );
         }
     }
 
@@ -1289,14 +1289,14 @@ public final class ESHarvest implements IHarvest
             pstmt2.close();
             conn.commit();
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
             // If, for some reason, the PID can not be set in the ES-base we must not
             // break down. Just set a warning.
             // Note: When the record_id is set to >= 64 in the ES-base, this method
             // _should_ not set a warning.
             String errorMsg = String.format( "Could not set the PID: [%s] for the identifier: %s.", PID, Id);
-            log.warn( errorMsg, sqle );
+            log.warn( errorMsg, e );
         }
     }
 
@@ -1318,14 +1318,14 @@ public final class ESHarvest implements IHarvest
                 log.debug( "Connection was already closed" );
             }
         }
-        catch( SQLException sqle )
+        catch( SQLException e )
         {
 
             log.debug( "An Exception occured when trying to release the connection" );
 
             String errorMsg = new String( "Could not release the database connection" );
-            log.error( errorMsg, sqle );
-            // throw new HarvesterIOException( errorMsg, sqle );
+            log.error( errorMsg, e );
+            // throw new HarvesterIOException( errorMsg, e );
         }
     }
 
