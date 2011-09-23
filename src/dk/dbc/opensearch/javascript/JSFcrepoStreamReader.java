@@ -27,8 +27,6 @@ package dk.dbc.opensearch.javascript;
 
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import java.util.logging.Level;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +34,10 @@ import org.slf4j.LoggerFactory;
 
 public class JSFcrepoStreamReader
 {
-    public static final int MAX_SEARCH_RESULTS = 10000;
     private Logger log = LoggerFactory.getLogger( JSFcrepoStreamReader.class );
 
 
+    public static final int MAX_SEARCH_RESULTS = 10000;
     private final FcrepoReader reader;
 
 
@@ -61,6 +59,8 @@ public class JSFcrepoStreamReader
             return new String[] {};
         }
     }
+
+
     synchronized public String getDatastream( String pid, String datastreamId )
     {
         try
@@ -73,7 +73,4 @@ public class JSFcrepoStreamReader
             return "";
         }
     }
-
-
-
 }
