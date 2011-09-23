@@ -68,7 +68,7 @@ public class ForceFedoraPid implements IPluggable
     @Override
     public IPluginEnvironment createEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map< String, String > args, String scriptPath ) throws PluginException
     {
-	    // reader, modifier and scriptPath are unused.
+	// reader, modifier and scriptPath are unused.
     	return new ForceFedoraPidEnvironment( args );
     }
 

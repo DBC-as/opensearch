@@ -59,10 +59,7 @@ public final class PluginEnvironmentUtils
      *
      * @throws {@link PluginException} when unable to access javascript file.
      */
-    public static Environment initializeJavaScriptEnvironment(
-                                String jsFileName,
-							    List< Pair< String, Object > > objectList,
-							    String scriptPath ) throws PluginException
+    public static Environment initializeJavaScriptEnvironment( String jsFileName, List< Pair< String, Object > > objectList, String scriptPath ) throws PluginException
     {
         log.debug( String.format( "JavaScript environment file: %s path: %s", jsFileName, scriptPath ) );
 

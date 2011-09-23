@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 public class ForceFedoraPidEnvironment implements IPluginEnvironment
-{
-    
+{    
     private static Logger log = LoggerFactory.getLogger( ForceFedoraPidEnvironment.class );
+
 
     // Create lock-objects to guarantee sequential access to XPathFactory and XPathExpression.evaluate(...).
     // It is static to ensure that all instances of ForceFedoraPidEnvironment can access it.
@@ -56,6 +56,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
     private static final Object XPathFactoryLock = new Object();
     private static final Object XPathExpressionEvaluateLock = new Object();
 
+    
     ForceFedoraPidEnvironment( Map< String, String > args ) throws PluginException
     {
     }
@@ -67,7 +68,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 
         NamespaceContext nsc = new OpensearchNamespaceContext();
 
-        if ( co == null )
+        if( co == null )
         {
             String error = "ForceFedoraPid-plugin Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
@@ -99,7 +100,6 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         }
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
-
 
         // String xpathStr = "/ting:container/dkabm:record/ac:identifier";
         try
@@ -133,7 +133,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 
         log.trace( String.format( "registration number found [%s]", regNum ) );
 
-        if ( regNum == null || regNum.equals( "" ) )
+        if( regNum == null || regNum.equals( "" ) )
         {
             return null;
         }
@@ -142,7 +142,7 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         try
         {
             newID = co.getSubmitter() + ":" + regNum.substring( 0, regNum.indexOf( '|' ) );
-            if ( newID.length() > 64 )
+            if( newID.length() > 64 )
             {
                 log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0, 64 ) ) );
                 newID = newID.substring( 0, 64 );

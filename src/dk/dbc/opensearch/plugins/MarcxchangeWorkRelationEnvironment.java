@@ -73,15 +73,13 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 
 
-    public MarcxchangeWorkRelationEnvironment( FcrepoReader reader, FcrepoModifier modifier,
-					       Map<String, String> args,
-					       String scriptPath ) throws PluginException
+    public MarcxchangeWorkRelationEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map<String, String> args, String scriptPath ) throws PluginException
     {
         this.reader = reader;
         this.modifier = modifier;
 
         // Creates a list of objects to be used in the js-scope
-        List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
+        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
         objectList.add( new Pair<String, Object>( "Log", log ) );
 
         this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
@@ -90,11 +88,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         this.matchFunc = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
         this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
 
-        this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( 
-                                    args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ),
-                                    objectList, scriptPath );
+        String jsStr = args.get( MarcxchangeWorkRelationEnvironment.javascriptStr );
+        this.jsEnvironment = PluginEnvironmentUtils.initializeJavaScriptEnvironment( jsStr, objectList, scriptPath );
     }
-
 
 
     /**
@@ -110,9 +106,8 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      */
     public CargoContainer run( CargoContainer cargo, List< Pair< ITargetField, String > > searchPairs ) throws PluginException
     {
-
         long gwl_timer = System.currentTimeMillis();
-        List<PID> pidList = getWorkList( searchPairs );
+        List< PID > pidList = getWorkList( searchPairs );
         gwl_timer = System.currentTimeMillis() - gwl_timer;
         log.info( String.format( "KULMULE getWorkList Timing: time: %s", gwl_timer ) );
 
@@ -135,9 +130,11 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.debug( "cargo pid: " + cargo.getIdentifier().getIdentifier() );
         log.debug( "work pid: " + workPid.getIdentifier() );
         log.debug( "Relating object and work" );
+
         long rpaw_timer = System.currentTimeMillis();
         relatePostAndWork( (PID) cargo.getIdentifier(), workPid );
         rpaw_timer = System.currentTimeMillis() - rpaw_timer;
+        
         log.info( String.format( "KULMULE relatePostAndWork Timing: time: %s", rpaw_timer ) );
 
         return cargo;

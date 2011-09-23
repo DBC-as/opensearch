@@ -76,7 +76,7 @@ public class FlowMapCreator
     //initiates the object with the path to the workflow xml file and creates an InputStream
     public FlowMapCreator( File path, File xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
     {
-        log.trace( String.format("path: %s, xsdPath: %s", path, xsdPath ) );
+        log.trace( String.format( "path: %s, xsdPath: %s", path, xsdPath ) );
         //validate the file
         try
         {
@@ -111,7 +111,7 @@ public class FlowMapCreator
     }
 
     //creates the flowmap from the file specified in the path
-    public Map<String, List< PluginTask > > createMap( PluginResolver pluginResolver, FcrepoReader reader, FcrepoModifier modifier, String scriptPath ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
+    public Map< String, List< PluginTask > > createMap( PluginResolver pluginResolver, FcrepoReader reader, FcrepoModifier modifier, String scriptPath ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {
         XMLInputFactory infac = XMLInputFactory.newInstance(); 
        //read the stream into the xmlEventReader
@@ -130,7 +130,7 @@ public class FlowMapCreator
             StartElement startElement; 
             EndElement endElement; 
             List<PluginTask> taskList = new ArrayList<PluginTask>();
-            Map<String, String> argsMap = new HashMap<String, String>();
+            Map< String, String > argsMap = new HashMap< String, String >();
 
             while( eventReader.hasNext() )
             {

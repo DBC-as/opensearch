@@ -68,10 +68,10 @@ public class MarcxchangeWorkRelation implements IPluggable
             throw new PluginException( errMsg );
         }
 
-        MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment) ienv;
+        MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment)ienv;
 
         long sp_timer = System.currentTimeMillis();
-        List<Pair<ITargetField, String>> searchPairs = env.getSearchPairs( cargo );
+        List< Pair< ITargetField, String > > searchPairs = env.getSearchPairs( cargo );
         sp_timer = System.currentTimeMillis() - sp_timer;
         log.info( String.format( "searchPairs Timing: time: %s", sp_timer ) );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
