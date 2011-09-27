@@ -127,20 +127,27 @@ public class FcrepoUtils
             String relPredObjCSV = of.getRelPredObj();
             String otherObjectIdentifier = of.getPid();
             log.debug( String.format( "checking relations for object: '%s'", otherObjectIdentifier ) );
-            log.debug( String.format( "relationstring for '%s' is: '%s'", otherObjectIdentifier, relPredObjCSV ) );
+            log.info( String.format( "relationstring for '%s' is: '%s'", otherObjectIdentifier, relPredObjCSV ) );
             //splitting the string containing all the relations for the object found
             if( relPredObjCSV != null && !relPredObjCSV.isEmpty() )
             {
                 for( String relPredObj : relPredObjCSV.split( "," ) )
                 {
                     String[] predObjPair = relPredObj.split( "\\|" );
-                    //splitting to get the predicate and the subject identifier seperated
-                    log.debug( String.format( "found relation '%s' from obj '%s' to obj '%s'", predObjPair[0], otherObjectIdentifier, predObjPair[1] ) );
-                    if( objectIdentifier.equals( predObjPair[1] ) )
+                    if (predObjPair.length < 2)
                     {
-                        log.info( String.format( "removing relation from obj '%s'", otherObjectIdentifier ) );
-                        modifier.removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
-                        count++;
+                        log.info( "relPredObj '{}', skipping unparsable value :'{}'", relPredObjCSV, relPredObj);
+                    }
+                    else
+                    {
+                        //splitting to get the predicate and the subject identifier seperated
+                        log.debug( String.format( "found relation '%s' from obj '%s' to obj '%s'", predObjPair[0], otherObjectIdentifier, predObjPair[1] ) );
+                        if( objectIdentifier.equals( predObjPair[1] ) )
+                        {
+                            log.info( String.format( "removing relation from obj '%s'", otherObjectIdentifier ) );
+                            modifier.removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
+                            count++;
+                        }
                     }
                 }
             }
