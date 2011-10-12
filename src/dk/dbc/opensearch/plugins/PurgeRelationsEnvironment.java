@@ -31,11 +31,9 @@ import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.metadata.DBCBIB;
-import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.types.CargoContainer;
-import dk.dbc.opensearch.types.IObjectIdentifier;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -56,10 +54,10 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
     private final FcrepoReader reader;
     private final FcrepoModifier modifier;
 
-    private final IPredicate isMemberOfWork = DBCBIB.IS_MEMBER_OF_WORK;
-    private final IPredicate hasManifestation = DBCBIB.HAS_MANIFESTATION;
-    private final IPredicate reviewOf = DBCBIB.IS_REVIEW_OF;
-    private final IPredicate hasReview = DBCBIB.HAS_REVIEW;
+    private final DBCBIB isMemberOfWork = DBCBIB.IS_MEMBER_OF_WORK;
+    private final DBCBIB hasManifestation = DBCBIB.HAS_MANIFESTATION;
+    private final DBCBIB reviewOf = DBCBIB.IS_REVIEW_OF;
+    private final DBCBIB hasReview = DBCBIB.HAS_REVIEW;
 
     public PurgeRelationsEnvironment( FcrepoReader reader, FcrepoModifier modifier, Map<String, String> args ) throws PluginException
     {
@@ -75,7 +73,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         if ( reader.hasObject( pid ) )
         {
             log.debug( String.format( "Getting object relations for '%s' with relation '%s'", pid, hasReview.getPredicateString() ) );
-            List< Pair< IPredicate, String > > relations = modifier.getObjectRelations( pid, hasReview.getPredicateString() );
+            List< Pair< String, String > > relations = modifier.getObjectRelations( pid, hasReview.getPredicateString() );
             
             if ( relations != null )
             {
@@ -83,12 +81,11 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                 {
                     String anmeldelse = pair.getSecond().toString();
                     log.debug( String.format( "Getting object relations for '%s' with relation '%s'", anmeldelse, reviewOf.getPredicateString() ) );
-                    List< Pair< IPredicate, String > > anmeldelsesRelations = modifier.getObjectRelations( anmeldelse, reviewOf.getPredicateString() );
+                    List< Pair< String, String > > anmeldelsesRelations = modifier.getObjectRelations( anmeldelse, reviewOf.getPredicateString() );
                     if ( anmeldelsesRelations != null && anmeldelsesRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", anmeldelse, reviewOf.getPredicateString(), pid ) );
-                        IObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.fedora.PID( anmeldelse );
-                        modifier.removeObjectRelation( anmeldelsesIdentifier, reviewOf, pid );
+                        modifier.removeObjectRelation( anmeldelse, reviewOf.getPredicateString(), pid );
                     }
                 }
             }
@@ -106,7 +103,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         if ( reader.hasObject( subject ) )
         {
             log.debug( String.format( "Getting work relations for post '%s' with relation '%s'", subject, isMemberOfWork.getPredicateString() ) );
-            List< Pair< IPredicate, String > > relations = modifier.getObjectRelations( subject, isMemberOfWork.getPredicateString() );
+            List< Pair< String, String > > relations = modifier.getObjectRelations( subject, isMemberOfWork.getPredicateString() );
             
             if ( relations != null )
             {
@@ -114,13 +111,12 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                 {
                     String work = pair.getSecond().toString();
                     log.debug( String.format( "Getting relations for work '%s' with relation '%s'", work, hasManifestation.getPredicateString() ) );
-                    List< Pair< IPredicate, String > > workRelations = modifier.getObjectRelations( work, hasManifestation.getPredicateString() );
+                    List< Pair< String, String > > workRelations = modifier.getObjectRelations( work, hasManifestation.getPredicateString() );
             
                     if ( workRelations != null && workRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", work, hasManifestation.getPredicateString(), subject ) );
-                        IObjectIdentifier workIdentifier = new dk.dbc.opensearch.fedora.PID( work );
-                        modifier.removeObjectRelation( workIdentifier, hasManifestation, subject );
+                        modifier.removeObjectRelation( work, hasManifestation.getPredicateString(), subject );
                     }
                     else
                     {

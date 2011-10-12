@@ -389,7 +389,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
         try
         {
-            this.modifier.addObjectRelation( workPid.getIdentifier(), DBCBIB.HAS_MANIFESTATION, cargoPid.getIdentifier() );
+            this.modifier.addObjectRelation( workPid.getIdentifier(), DBCBIB.HAS_MANIFESTATION.getPredicateString(), cargoPid.getIdentifier() );
 
         }
         catch( ObjectRepositoryException ore )
@@ -400,8 +400,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
         }
 
-        try{
-            this.modifier.addObjectRelation( cargoPid.getIdentifier(), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
+        try
+        {
+            this.modifier.addObjectRelation( cargoPid.getIdentifier(), DBCBIB.IS_MEMBER_OF_WORK.getPredicateString(), workPid.getIdentifier() );
         }
         catch( ObjectRepositoryException ore )
         {
