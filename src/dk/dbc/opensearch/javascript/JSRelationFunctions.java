@@ -60,11 +60,11 @@ public class JSRelationFunctions
     {
         try
         {
-            modifier.addUncheckedObjectRelation( subject, relation, object );
+            modifier.addObjectRelation( subject, relation, object );
         }
         catch( ObjectRepositoryException ore )
         {
-            // Error has already been logged in addUncheckedObjectRelation, so just discard it here
+            // Error has already been logged in addObjectRelation, so just discard it here
             return false;
         }
 

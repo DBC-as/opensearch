@@ -25,7 +25,6 @@ package dk.dbc.opensearch.fedora;
 import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.metadata.AdministrationStream;
 import dk.dbc.opensearch.metadata.IMetaData;
-import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.IObjectIdentifier;
@@ -177,28 +176,12 @@ public class FcrepoModifier
 
 
     /**
-     *  Adds
-     *
-     *
      * @param objectIdentifier
      * @param relation
      * @param subject
      * @throws ObjectRepositoryException
      */
-    public boolean addObjectRelation( String objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
-    {
-        String relationString = relation.getPredicateString();
-        return this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
-    }
-
-
-    /**
-     * @param objectIdentifier
-     * @param relation
-     * @param subject
-     * @throws ObjectRepositoryException
-     */
-    public boolean addUncheckedObjectRelation( String objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
+    public boolean addObjectRelation( String objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
     {
         try
         {
@@ -228,13 +211,7 @@ public class FcrepoModifier
     }
 
 
-    public void removeObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
-    {
-        removeObjectRelation( objectIdentifier.getIdentifier(), relation.getPredicateString(), subject );
-    }
-
-
-    void removeObjectRelation( String objectIdentifier, String relation, String subject ) throws ObjectRepositoryException
+    public void removeObjectRelation( String objectIdentifier, String relation, String subject ) throws ObjectRepositoryException
     {
         String pid = objectIdentifier;
 
@@ -280,7 +257,7 @@ public class FcrepoModifier
      * \Todo: Why do we return the IPredicate telleing what relation we found, when we in the predicate param
      * specifies what relation type to search for?
      */
-    public List<Pair<IPredicate, String>> getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
+    public List<Pair<String, String>> getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
     {
         try
         {
@@ -295,11 +272,11 @@ public class FcrepoModifier
 
             if( tuple != null )
             {
-                List<Pair<IPredicate, String>> ret = new ArrayList<Pair<IPredicate, String>>();
+                List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
                 for( RelationshipTuple relationship : tuple )
                 {
                     String object = relationship.getObject();
-                    Pair<IPredicate, String> pair = new Pair( predicate, object ); //we put the predicate param into the return value, why?
+                    Pair<String, String> pair = new Pair< String, String > ( predicate, object ); //we put the predicate param into the return value, why?
                     ret.add( pair );
                 }
 

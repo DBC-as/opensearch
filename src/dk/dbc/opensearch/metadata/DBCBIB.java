@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
  * objects of types Work and Manifestation.  And Handling of of
  * Collections.
  */
-public enum DBCBIB implements IPredicate
+public enum DBCBIB
 {
     IS_MEMBER_OF_WORK( "isMemberOfWork"),
     HAS_MANIFESTATION( "hasManifestation" ),
@@ -59,7 +59,6 @@ public enum DBCBIB implements IPredicate
     }
 
     
-    @Override
     public String getPredicateString()
     {       
         return NS+localName; 

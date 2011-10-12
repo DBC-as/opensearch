@@ -300,7 +300,7 @@ public class FcrepoModifierTest
         String identifier = "test:1";
         String subject = "test:2";
 
-        boolean res = instance.addUncheckedObjectRelation( identifier, "", subject );
+        boolean res = instance.addObjectRelation( identifier, "", subject );
         assertTrue( res);
     }
 
@@ -309,14 +309,14 @@ public class FcrepoModifierTest
     {
         String identifier = "test:1";
 
-        boolean res = instance.addUncheckedObjectRelation( identifier, "", identifier );
+        boolean res = instance.addObjectRelation( identifier, "", identifier );
         // Adding relation to self is not allowed
         assertFalse( res);
     }
 
     @Test
     public void testpurgeObjectRelation( ) throws Exception {
-        instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");
+        instance.removeObjectRelation("object:1", DBCBIB.IS_MEMBER_OF_WORK.getPredicateString() , "Subject:1");
     }
 
 
@@ -381,6 +381,5 @@ public class FcrepoModifierTest
 
         instance.purgeDatastream( identifier, "RELS-EXT", null, null, logmessage, false );
     }
-
 
 }
