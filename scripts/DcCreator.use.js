@@ -150,6 +150,8 @@ var DcCreator = function(){
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
+		
+		var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2")) {
@@ -157,7 +159,6 @@ var DcCreator = function(){
       }
     }
 
-    var child;
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")  && !String(child.@xsi::type).match("dkdcplus:genre")) {
