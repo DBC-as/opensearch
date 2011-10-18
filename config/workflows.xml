@@ -1067,7 +1067,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isImageOf"/>
+        <arg name="entryfunction" value="hasImage"/>
       </args>
     </plugin>		
   </workflow>	
@@ -1106,6 +1106,12 @@
         <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isImageOf"/>
+      </args>
+    </plugin>	
   </workflow>			
   <workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
