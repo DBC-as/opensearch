@@ -66,6 +66,10 @@
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
+  <job submitter="150014" format="nmlink" alias="oso">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>	
   <job submitter="150015" format="netlydbog" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
@@ -141,7 +145,11 @@
 	<job submitter="150031" format="image" alias="oso">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
-  </job>	
+  </job>
+	  <job submitter="150031" format="link" alias="oso">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>		
   <job submitter="159002" format="lokalbibl" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />

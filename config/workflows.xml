@@ -1069,7 +1069,13 @@
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasImage"/>
       </args>
-    </plugin>		
+    </plugin>	
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	      <arg name="javascript" value="simple_relation.js"/>
+	      <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>			
   </workflow>	
   <workflow format="tema" submitter="150031">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1089,6 +1095,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	      <arg name="javascript" value="simple_relation.js"/>
+	      <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>		
   </workflow>
@@ -1110,6 +1122,27 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="isImageOf"/>
+      </args>
+    </plugin>	
+  </workflow>		
+  <workflow format="link" submitter="150031">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromOso"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
+      </args>
+		</plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isOnlineAccessOf"/>
       </args>
     </plugin>	
   </workflow>			
