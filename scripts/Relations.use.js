@@ -672,7 +672,7 @@ var Relations = function() {
           	DbcAddiRelations.hasOnlineAccess( pid, result );
         	}
       	}
-			} else if (String(manifestationXML.dkabm::record.dc::identifier).match(/s[0-9]+\|150031/)) {
+			} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
 				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1speak");
 
     		Log.info( "Identifier: " + identifier );
