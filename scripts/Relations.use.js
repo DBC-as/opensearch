@@ -633,6 +633,12 @@ var Relations = function() {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t.*|150031/)) {
+				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+        }
+      }
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
 				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1dlink");
 
