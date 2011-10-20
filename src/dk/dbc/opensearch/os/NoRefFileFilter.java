@@ -1,11 +1,3 @@
-/**
- * \file NoRefFileFilter.java
- * \brief The NoRefFileFilter class
- * \package os;
- */
-
-package dk.dbc.opensearch.os;
-
 /*
    
 This file is part of opensearch.
@@ -26,15 +18,26 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file NoRefFileFilter.java
+ * \brief The NoRefFileFilter class
+ * \package os;
+ */
+
+
+package dk.dbc.opensearch.os;
+
+
 import java.io.File;
 import java.io.FilenameFilter;
+
 /**
  * \ingroup tools
  * \brief Filter extract .ref files .these files carries the referencedata
  * for files to be given to the Datadock
  */
-public class NoRefFileFilter implements FilenameFilter{
-    
+public class NoRefFileFilter implements FilenameFilter
+{    
     /**
      * @param dir the path of the directory to be tested
      * @param name the dir- or filename on the path
@@ -43,20 +46,25 @@ public class NoRefFileFilter implements FilenameFilter{
      *
      * @throws NullPointerException if the dir- or filename is null
      */
-    public boolean accept(File dir, String name) throws NullPointerException{
-
+    public boolean accept( File dir, String name ) throws NullPointerException
+    {
         if( dir == null )
         {
             throw new NullPointerException( "invalid directory" );
         }
-        if( name.endsWith( ".ref" ) ){
+
+        if( name.endsWith( ".ref" ) )
+        {
             return false;
-        }else {
+        }
+        else
+        {
             if( (new File( dir, name ) ).isDirectory() )
             {
                 return false;
             }
         }
+
         return true;
     }
 }
