@@ -551,8 +551,8 @@ var Relations = function() {
 
     var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image\|(.*)/, "$2:$1");
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+    Log.info( "Identifier isImageOf: " + identifier );
+    Log.info( "pid isImageOf: " + pid );
 
     var results = FedoraPIDSearch.pid( identifier );
 
@@ -579,8 +579,8 @@ var Relations = function() {
 
     var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image");
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+    Log.info( "Identifier hasImage: " + identifier );
+    Log.info( "pid hasImage: " + pid );
 
     var results = FedoraPIDSearch.pid( identifier );
 
@@ -675,8 +675,8 @@ var Relations = function() {
 			} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
 				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1speak");
 
-    		Log.info( "Identifier: " + identifier );
-    		Log.info( "pid: " + pid );
+    		Log.info( "Identifier hasOnlineAccess: " + identifier );
+    		Log.info( "pid hasOnlineAccess: " + pid );
 
     		var results = FedoraPIDSearch.pid( identifier );
 
@@ -691,8 +691,8 @@ var Relations = function() {
       	}
 				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1text");
 
-    		Log.info( "Identifier: " + identifier );
-    		Log.info( "pid: " + pid );
+    		Log.info( "Identifier hasOnlineAccess: " + identifier );
+    		Log.info( "pid hasOnlineAccess: " + pid );
 
     		var results = FedoraPIDSearch.pid( identifier );
 
@@ -723,72 +723,75 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var imageXML = XmlUtil.fromString( xml );
 
-    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)dlink\|(.*)/, "$2:$1");
+		if (String(imageXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
+    	var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)dlink\|(.*)/, "$2:$1");
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+    	Log.info( "Identifier: " + identifier );
+    	Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.pid( identifier );
+    	var results = FedoraPIDSearch.pid( identifier );
 
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
+    	for ( var i = 0; i < results.length; ++i ) {
+      	var result = results[i];
 
-      Log.info( "result: " + result );
+      	Log.info( "result: " + result );
 
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasOnlineAccess( result, pid );
-      }
-    }
-		identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)slink\|(.*)/, "$2:$1");
+      	if (!String(result).match(/work:.*/)) {
+        	DbcAddiRelations.hasOnlineAccess( result, pid );
+      	}
+    	}
+			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)slink\|(.*)/, "$2:$1");
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+    	Log.info( "Identifier: " + identifier );
+    	Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.pid( identifier );
+    	var results = FedoraPIDSearch.pid( identifier );
 
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
+    	for ( var i = 0; i < results.length; ++i ) {
+      	var result = results[i];
 
-      Log.info( "result: " + result );
+      	Log.info( "result: " + result );
 
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasOnlineAccess( result, pid );
-      }
-    }
-		identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
+      	if (!String(result).match(/work:.*/)) {
+        	DbcAddiRelations.hasOnlineAccess( result, pid );
+      	}
+    	}
+		} else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
+			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+	    Log.info( "Identifier: " + identifier );
+	    Log.info( "pid: " + pid );
+	
+	    var results = FedoraPIDSearch.pid( identifier );
 
-    var results = FedoraPIDSearch.pid( identifier );
+	    for ( var i = 0; i < results.length; ++i ) {
+	      var result = results[i];
+	
+	      Log.info( "result: " + result );
 
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
+	      if (!String(result).match(/work:.*/)) {
+	        DbcAddiRelations.hasOnlineAccess( result, pid );
+	      }
+	    }
+			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)text\|(.*)/, "$2:$1");
 
-      Log.info( "result: " + result );
+    	Log.info( "Identifier: " + identifier );
+    	Log.info( "pid: " + pid );
 
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasOnlineAccess( result, pid );
-      }
-    }
-		identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)text\|(.*)/, "$2:$1");
+    	var results = FedoraPIDSearch.pid( identifier );
 
-    Log.info( "Identifier: " + identifier );
-    Log.info( "pid: " + pid );
+    	for ( var i = 0; i < results.length; ++i ) {
+      	var result = results[i];
 
-    var results = FedoraPIDSearch.pid( identifier );
+      	Log.info( "result: " + result );
 
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
+      	if (!String(result).match(/work:.*/)) {
+        	DbcAddiRelations.hasOnlineAccess( result, pid );
+      	}
+	    }
+		}	
 
-      Log.info( "result: " + result );
-
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasOnlineAccess( result, pid );
-      }
-    }
-
-    Log.info ("End isOnlineAccessOf" );
+	    Log.info ("End isOnlineAccessOf" );
 
   };
   
