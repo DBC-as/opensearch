@@ -31,6 +31,7 @@ import dk.dbc.jslib.Environment;
 import dk.dbc.opensearch.fedora.FcrepoModifier;
 import dk.dbc.opensearch.fedora.FcrepoReader;
 import dk.dbc.opensearch.javascript.JSFedoraPIDSearch;
+import dk.dbc.opensearch.javascript.JSFedoraCQLSearch;
 import dk.dbc.opensearch.javascript.JSRelationFunctions;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
@@ -68,11 +69,13 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         // Setting the objectlist.
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( reader );
         JSRelationFunctions relationFunctions = new JSRelationFunctions( reader, modifier );
+        JSFedoraCQLSearch fedoraCQLSearch = new JSFedoraCQLSearch( reader );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
         objectList.add( new Pair<String, Object>( "scriptClass", relationFunctions ) );
         objectList.add( new Pair<String, Object>( "FedoraPIDSearch", fedoraPIDSearch ) );
+        objectList.add( new Pair<String, Object>( "FedoraCQLSearch", fedoraCQLSearch ) );
 
         this.validateArguments( args, objectList, scriptPath );
 
