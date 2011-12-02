@@ -154,9 +154,9 @@ public class DatadockThread implements Callable<Boolean>
             }
 
             /** Check to see if it is a delete record **/
-            if ( cargo.getIsDeleteRecord() )
+            if ( cargo.getNoFurtherProcessing() )
             {
-                log.info( String.format( "Delete record found with id '%s' leaving plugin loop", cargo.getIdentifierAsString() ) );
+                log.info( String.format( "Found record that needs no further procesing with id '%s' leaving plugin loop", cargo.getIdentifierAsString() ) );
                 break;
             }
         }

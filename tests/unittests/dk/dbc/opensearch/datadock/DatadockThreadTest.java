@@ -166,7 +166,7 @@ public class DatadockThreadTest
         @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
-            mockCC.setIsDeleteRecord( true );
+            mockCC.setNoFurtherProcessing( true );
             return mockCC;
         }
     }
@@ -328,11 +328,11 @@ public class DatadockThreadTest
 
     /**
      * Tests whether the plugin flow is stopped or not when a CargoContainer has the
-     * isDeleteRecord flag set to true.
+     * noFurtherProcessing flag set to true.
      * If not, a IllegalStateException will be thrown when the second plugin is run 
      */
     @Test
-    public void testIsDeleteRecordFromCargoContainer() throws Exception
+    public void testNoFurtherProcessingRecordFromCargoContainer() throws Exception
     {
         Mockit.setUpMocks( MockStoreIsDeleteRecord.class );
         
