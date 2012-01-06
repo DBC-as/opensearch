@@ -720,7 +720,7 @@
       </args>
     </plugin>
   </workflow>
-	  <workflow format="danhist" submitter="150018">
+	<workflow format="danhist" submitter="150018">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -1130,8 +1130,23 @@
         <arg name="entryfunction" value="isOnlineAccessOf"/>
       </args>
     </plugin>	
-  </workflow>			
-  <workflow format="lokalbibl" submitter="159002">
+  </workflow>
+	<workflow format="danhist" submitter="150032">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromDkabm"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    	<args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
+      </args>
+		</plugin>
+  </workflow>	
+	<workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
