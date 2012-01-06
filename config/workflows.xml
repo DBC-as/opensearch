@@ -1131,7 +1131,7 @@
       </args>
     </plugin>	
   </workflow>
-	<workflow format="danhist" submitter="150032">
+	<workflow format="samfund" submitter="150032">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
