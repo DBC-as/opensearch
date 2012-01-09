@@ -35,7 +35,7 @@ var DeleteObjects = function() {
     Log.info ("Start checkDeleteObjectDkabm" );
 
     var originalXml = XmlUtil.fromString( xml );
-		if (String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
+		if (String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" || String(originalXml.oso::object.ac::activity.ac::action) === "delete-out-of-scope") {
      	return true;
 		} else {
 			return false;
