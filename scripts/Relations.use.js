@@ -498,7 +498,7 @@ var Relations = function() {
         
         Log.info("result: " + result);
         
-        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/)) {
+        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/) && !String(result).match(/150033:.*/)) {
           DbcAddiRelations.hasSubjectDescription(result, pid);
         }
       }
@@ -531,7 +531,7 @@ var Relations = function() {
 	
 	        Log.info( "result: " + result );
 	
-	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/)) {
+	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/) || String(result).match(/150033:.*/)) {
 	          DbcAddiRelations.hasSubjectDescription( pid, result );
 	        }
 	      }
