@@ -490,6 +490,12 @@
 	      <arg name="entryfunction" value="dcFromDkabm"/>
       </args>
     </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.Store">
+			<args>
+				<arg name="javascript" value="store_functions.js"/>
+				<arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
+			</args>
+		</plugin>	
     <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
@@ -3288,6 +3294,12 @@
         <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>		
   </workflow>
   <workflow format="anmeld" submitter="870973">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
