@@ -121,6 +121,8 @@ var Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var analysisXML = XmlUtil.fromString( xml );
+		
+		//lav en linje der matcher på submitter, og hvis 870874, så gør en ting, ellers gør noget andet - eller lav en match-case
 
     if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
       var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
