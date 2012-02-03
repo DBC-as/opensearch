@@ -122,9 +122,47 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var analysisXML = XmlUtil.fromString( xml );
 		
-		//lav en linje der matcher på submitter, og hvis 870874, så gør en ting, ellers gør noget andet - eller lav en match-case
+		//lav en linje der matcher på source, og hvis litteraturtolkninger så gør en ting, ellers gør noget andet - eller lav en match-case
+		var child;
+		var personName;
+		var personNames = [];
+				
+		if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
+			//fremfind efternavn og fornavne
+			//for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a') //efternavn
+			for each (child in analysisXML.*.*.*.(@tag=='600')) {
+				var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
+				var last = child.*.(@code=='a');
+				last = " " + last;
+				personName = first + last;
+				personNames.push (personName);
+				}
+			//måske kan jeg benytte modulet MarcRecord.use.js til at få lavet et personnavn, men så skal det uses i starten. Og så skal man henvise
+			//til overfeltet og måske virker det ikke, fordi den forventer en marc record, og det jeg giver den er en dkabm + marc exchange. 
+			// men så kan jeg måske stjæle koden fra MarcRecord.use.js i stedet
+			
+			
+			
+				//	that.createPersonName = function ( field ) {
+    
+    		//	Log.info( "Entering: createPersonName function" );
 
-    if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+    		//	var first = field.getValue( /h/ );
+    		//	var last = field.getValue( /a/ );
+    		//	last = " " + last;
+
+    		//	var value = first + last; 
+    
+    		//	Log.info( "Leaving: createPersonName function" );
+
+    		//	return value;
+
+  			//	};
+			
+			
+			
+			
+		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
       var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       var results = FedoraPIDSearch.identifier( relation );
@@ -635,6 +673,8 @@ var Relations = function() {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Samfundsfaget|Religionsfaget|Dansk Historie/)) {
+				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.dc::identifier));
 		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
 				for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
