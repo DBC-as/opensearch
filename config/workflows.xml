@@ -679,6 +679,12 @@
         <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
   </workflow>	
   <workflow format="filmstrib" submitter="150021">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1095,6 +1101,12 @@
         <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
   </workflow>
 		<workflow format="danskedyr" submitter="150033">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1131,6 +1143,12 @@
         <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
   </workflow>		
 	<workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
