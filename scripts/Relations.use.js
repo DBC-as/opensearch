@@ -137,6 +137,13 @@ var Relations = function() {
 				personName = first + last;
 				personNames.push (personName);
 				}
+			var result = personName; // skal laves om til en for i in personNames og så 
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+	  	DbcAddiRelations.isAnalysisOf(pid, result);
+	    }
 			//måske kan jeg benytte modulet MarcRecord.use.js til at få lavet et personnavn, men så skal det uses i starten. Og så skal man henvise
 			//til overfeltet og måske virker det ikke, fordi den forventer en marc record, og det jeg giver den er en dkabm + marc exchange. 
 			// men så kan jeg måske stjæle koden fra MarcRecord.use.js i stedet
