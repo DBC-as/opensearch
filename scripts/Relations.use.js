@@ -127,30 +127,31 @@ var Relations = function() {
 		var personName;
 		var personNames = [];
 				
-		if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
-			//fremfind efternavn og fornavne
-			//for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a') //efternavn
-			for each (child in analysisXML.*.*.*.(@tag=='600')) {
-				var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
-				var last = child.*.(@code=='a');
-				last = " " + last;
-				personName = first + last;
-				personNames.push (personName);
-				}
-			
-			for (var i = 0; i < personNames.length; ++i ) {
-				var results = FedoraPIDSearch.creator( personNames[i] );
-			}
-			
-			for (var i = 0; i < results.length; ++i) {
-	  	var result = results[i]; // 
-	  			
-				Log.info("result: " + result);
-				
-				if (!String(result).match(/work:.*/)) {
-					DbcAddiRelations.isAnalysisOf(pid, result);
-				}
-			}
+	 if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
+      //fremfind efternavn og fornavne
+      //for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a') //efternavn
+      for each (child in analysisXML.*.*.*.(@tag=='600')) {
+         var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
+         var last = child.*.(@code=='a');
+         last = " " + last;
+         personName = first + last;
+         personNames.push (personName);
+      }
+
+      for (var i = 0; i < personNames.length; ++i ) {
+          var temp = FedoraPIDSearch.creator( personNames[i] );
+					var results = [];
+					results.push (temp);
+      }
+      for (var i = 0; i < results.length; ++i) {
+          var result = results[i]; //
+
+          Log.info("result: " + result);
+          if (!String(result).match(/work:.*/)) {
+            DbcAddiRelations.isAnalysisOf(pid, result);
+          }
+      }
+
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
