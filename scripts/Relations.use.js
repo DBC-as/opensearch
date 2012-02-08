@@ -138,37 +138,19 @@ var Relations = function() {
 				personNames.push (personName);
 				}
 			
-			for (var i = 0; i < personNames.length; ++i) {
-	  	var result = personNames[i]; // 
+			for (var i = 0; i < personNames.length; ++i ) {
+				var results = FedoraPIDSearch.creator( personNames[i] );
+			}
+			
+			for (var i = 0; i < results.length; ++i) {
+	  	var result = results[i]; // 
+	  			
 				Log.info("result: " + result);
 				
 				if (!String(result).match(/work:.*/)) {
 					DbcAddiRelations.isAnalysisOf(pid, result);
 				}
 			}
-			//måske kan jeg benytte modulet MarcRecord.use.js til at få lavet et personnavn, men så skal det uses i starten. Og så skal man henvise
-			//til overfeltet og måske virker det ikke, fordi den forventer en marc record, og det jeg giver den er en dkabm + marc exchange. 
-			// men så kan jeg måske stjæle koden fra MarcRecord.use.js i stedet
-			
-			
-			
-				//	that.createPersonName = function ( field ) {
-    
-    		//	Log.info( "Entering: createPersonName function" );
-
-    		//	var first = field.getValue( /h/ );
-    		//	var last = field.getValue( /a/ );
-    		//	last = " " + last;
-
-    		//	var value = first + last; 
-    
-    		//	Log.info( "Leaving: createPersonName function" );
-
-    		//	return value;
-
-  			//	};
-			
-			
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
