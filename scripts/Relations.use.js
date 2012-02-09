@@ -4,6 +4,7 @@ use ( "DbcAddiRelations" );
 use ( "DbcBibRelations" );
 use ( "Dcterms" );
 use ( "Normalize" );
+use ( "Repository" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
@@ -140,7 +141,9 @@ var Relations = function() {
 				
 
         for (var i = 0; i < personNames.length; ++i ) {
-          var results = FedoraPIDSearch.creator( personNames[i] );
+					var query = "creator ~ " + personNames[i] +"\"";
+					var results = Repository.searchRepository (query); 
+          //var results = FedoraPIDSearch.creator( personNames[i] );
         }
 
         for (var i = 0; i < results.length; ++i) {
