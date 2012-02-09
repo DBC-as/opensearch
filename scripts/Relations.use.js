@@ -142,6 +142,7 @@ var Relations = function() {
 
         for (var i = 0; i < personNames.length; ++i ) {
 					var query = "\"creator \u003D " + personNames[i] +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
+					Log.info("kwc1 query: " + query); 
 					var results = FedoraCQLSearch.search(query); 
           //var results = FedoraPIDSearch.creator( personNames[i] );
         }
