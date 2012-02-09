@@ -136,17 +136,17 @@ var Relations = function() {
           var last = child.*.(@code=='a');
           last = " " + last;
           personName = first + last;
-					
+					Log.info("kwc4 personName: " + personName);
           personNames.push (personName);
         }
 				
 
         for (var i = 0; i < personNames.length; ++i ) {
 					
-					Log.info("kwc2 personName: " + personNames[i]);
+					Log.info("kwc5 personNames: " + personNames[i]);
 					
 					var query = "\"creator \u003D " + personNames[i] +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
-					Log.info("kwc3 query: " + query); 
+					Log.info("kwc6 query: " + query); 
 					var results = FedoraCQLSearch.search(query); 
           //var results = FedoraPIDSearch.creator( personNames[i] );
         }
