@@ -141,7 +141,7 @@ var Relations = function() {
 				
 
         for (var i = 0; i < personNames.length; ++i ) {
-					var query = "creator ~ " + personNames[i] +"\"";
+					var query = "\"creator ~ " + personNames[i] +"\"";
 					var results = Repository.searchRepository (query); 
           //var results = FedoraPIDSearch.creator( personNames[i] );
         }
