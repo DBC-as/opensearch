@@ -138,27 +138,20 @@ var Relations = function() {
           personNames.push (personName);
         }
 				
-          for (var i = 0; i < personNames.length; ++i ) {
-						var result= personNames[i];
-						
-					if (!String(result).match(/work:.*/)) {
-		  	     DbcAddiRelations.isAnalysisOf(pid, result);
-		       } 
-		  }
 
-     //   for (var i = 0; i < personNames.length; ++i ) {
-     //     var results = FedoraPIDSearch.creator( personNames[i] );
-     //   }
+        for (var i = 0; i < personNames.length; ++i ) {
+          var results = FedoraPIDSearch.creator( personNames[i] );
+        }
 
-     //   for (var i = 0; i < results.length; ++i) {
-     //     var result = results[i]; //
+        for (var i = 0; i < results.length; ++i) {
+          var result = results[i]; //
 
-     //     Log.info("result: " + result);            
+          Log.info("kwc result: " + result);            
 
-     //     if (!String(result).match(/work:.*/)) {
-     //     DbcAddiRelations.isAnalysisOf(pid, result);
-     //     }
-     //   }  
+          if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.isAnalysisOf(pid, result);
+          }
+        }  
 
 			
 			
