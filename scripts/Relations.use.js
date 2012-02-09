@@ -149,7 +149,7 @@ var Relations = function() {
         for (var i = 0; i < results.length; ++i) {
           var result = results[i]; //
 
-          Log.info("kwc result: " + result);            
+          Log.info("kwc1 result: " + result);            
 
           if (!String(result).match(/work:.*/)) {
           DbcAddiRelations.isAnalysisOf(pid, result);
