@@ -145,8 +145,9 @@ var Relations = function() {
 					
 					Log.info("kwc5 personNames: " + personNames[i]);
 					
-					//var query = "\"creator \u003D " + personNames[i] +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
-					var query = "creator = Sophus Claussen"; 
+					var personNameStringed = String(personNames[i]);
+				  var query = "\"creator \u003D " + personNameStringed +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
+					//var query = "creator = Sophus Claussen";  - Denne simple query virker. 
 					Log.info("kwc6 query: " + query); 
 					var results = FedoraCQLSearch.search(query); 
           //var results = FedoraPIDSearch.creator( personNames[i] );
