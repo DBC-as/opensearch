@@ -4,7 +4,6 @@ use ( "DbcAddiRelations" );
 use ( "DbcBibRelations" );
 use ( "Dcterms" );
 use ( "Normalize" );
-use ("Repository");
 
 
 EXPORTED_SYMBOLS = ['Relations'];
@@ -138,7 +137,7 @@ var Relations = function() {
 					var born = String(child.*.(@code=='c'));
 					last = " " + last;
           personName = first + last;
-					if (!born){
+					if (born !== undefined){
 						personName = personName + " \(" + born + "\)";
 					}
 					Log.info("kwc4 personName: " + personName);
