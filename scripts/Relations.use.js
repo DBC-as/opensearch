@@ -162,10 +162,10 @@ var Relations = function() {
 					
         }
 				  var xx,yy;
-					for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
-						query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
+			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
+			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
 						
-						//printSearch "pid = 775100* AND ( type = Avisartikel OR type = Tidsskriftsartikel )"
+					query = "\"creator \u003D " + "Helle Helle" + " AND " + "title \u003D " + "De*" + "\"";
 					
          	
 					Log.info("kwc6 query: " + query);
@@ -181,7 +181,7 @@ var Relations = function() {
           		DbcAddiRelations.isAnalysisOf(pid, result);
           		}
         		}	  
- 				}
+ 			//	}
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
