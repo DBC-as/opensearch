@@ -156,14 +156,19 @@ var Relations = function() {
 
         for (var i = 0; i < personNames.length; ++i ) {
 					
-					Log.info("kwc5 personNames: " + personNames[i]);
-					
-				  //var query = "\"creator \u003D " + personNameStringed +"\""; 
-					//Log.info("kwc6 query: " + query);
-					Log.info("kwc6 query: " + personNames[i]);  
-					//var results = FedoraCQLSearch.search(query); 
+					Log.info("kwc5 personName: " + personNames[i]);
 
-          var results = FedoraPIDSearch.creator( personNames[i] );
+					
+        }
+				  for (var xx = 0, var yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
+						var query = "\"creator \u003D " + personNames[xx] + "AND" + "title \u003D " + analysedTitles[yy] "\""; 
+						
+						//printSearch "pid = 775100* AND ( type = Avisartikel OR type = Tidsskriftsartikel )"
+					
+         	
+					Log.info("kwc6 query: " + query);
+					var results = FedoraCQLSearch.search(query); 
+				  //var results = FedoraPIDSearch.creator( personNames[i] );
 
         		for (var ii = 0; ii < results.length; ++ii) {
           		var result = results[ii]; //
