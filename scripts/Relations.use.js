@@ -133,7 +133,7 @@ var Relations = function() {
         //for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a') //efternavn
         for each (child in analysisXML.*.*.*.(@tag=='600')) {
           var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
-          var last = child.*.(@code=='a');
+          var last = String(child.*.(@code=='a'));
           last = " " + last;
           personName = first + last;
 					Log.info("kwc4 personName: " + personName);
