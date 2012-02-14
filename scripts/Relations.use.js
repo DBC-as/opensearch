@@ -163,7 +163,7 @@ var Relations = function() {
         }
 				  var xx,yy;
 					for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
-						query = "\"creator \u003D " + personNames[xx] + "AND" + "title \u003D " + analysedTitles[yy] + "\""; 
+						query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
 						
 						//printSearch "pid = 775100* AND ( type = Avisartikel OR type = Tidsskriftsartikel )"
 					
