@@ -127,6 +127,8 @@ var Relations = function() {
 		var child;
 		var personName;
 		var personNames = [];
+		var analysedTitle; 
+		var analysedTitles = [];
 				
 	  if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
         //fremfind efternavn og fornavne
@@ -145,7 +147,8 @@ var Relations = function() {
         }
 				
 				for each (child in analysisXML.*.*.*.(@tag=='666')) {
-					var analysedTitles = String(child.*.(@code=='t'));
+					analysedTitle = String(child.*.(@code=='t'));
+					analysedTitles.push (analysedTitle);
 				}
 				for (var j = 0; j < analysedTitles.length; ++j){
 					Log.info("kwc7 analysedTitle: " + analysedTitles[j]);
