@@ -144,6 +144,12 @@ var Relations = function() {
           personNames.push (personName);
         }
 				
+				for each (child in analysisXML.*.*.*.(@tag=='666')) {
+					var analysedTitles = String(child.*.(@code=='t'));
+				}
+				for (var j = 0; j < analysedTitles.length; ++j){
+					Log.info("kwc7 analysedTitle: " + analysedTitles[j]);
+				}
 
         for (var i = 0; i < personNames.length; ++i ) {
 					
