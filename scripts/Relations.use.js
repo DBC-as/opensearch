@@ -154,7 +154,7 @@ var Relations = function() {
           var results = FedoraPIDSearch.creator( personNameStringed );
        
 
-        		for (var i = 0; i < results.length; ++i) {
+        		for (var ii = 0; ii < results.length; ++ii) {
           		var result = results[i]; //
 
           		Log.info("kwc1 result: " + result);            
