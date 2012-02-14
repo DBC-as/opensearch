@@ -152,18 +152,18 @@ var Relations = function() {
 					Log.info("kwc6 query: " + personNameStringed);  
 					//var results = FedoraCQLSearch.search(query); 
           var results = FedoraPIDSearch.creator( personNameStringed );
-        }
+       
 
-        for (var i = 0; i < results.length; ++i) {
-          var result = results[i]; //
+        		for (var i = 0; i < results.length; ++i) {
+          		var result = results[i]; //
 
-          Log.info("kwc1 result: " + result);            
+          		Log.info("kwc1 result: " + result);            
 
-          if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.isAnalysisOf(pid, result);
-          }
-        }  
-
+          		if (!String(result).match(/work:.*/)) {
+          		DbcAddiRelations.isAnalysisOf(pid, result);
+          		}
+        		}	  
+ 				}
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
