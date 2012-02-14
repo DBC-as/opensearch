@@ -129,6 +129,7 @@ var Relations = function() {
 		var personNames = [];
 		var analysedTitle; 
 		var analysedTitles = [];
+		var query;
 				
 	  if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
         //fremfind efternavn og fornavne
@@ -160,8 +161,9 @@ var Relations = function() {
 
 					
         }
-				  for (var xx = 0, var yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
-						var query = "\"creator \u003D " + personNames[xx] + "AND" + "title \u003D " + analysedTitles[yy] "\""; 
+				  var xx,yy;
+					for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
+						query = "\"creator \u003D " + personNames[xx] + "AND" + "title \u003D " + analysedTitles[yy] + "\""; 
 						
 						//printSearch "pid = 775100* AND ( type = Avisartikel OR type = Tidsskriftsartikel )"
 					
