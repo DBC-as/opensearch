@@ -155,7 +155,7 @@ var Relations = function() {
        
 
         		for (var ii = 0; ii < results.length; ++ii) {
-          		var result = results[i]; //
+          		var result = results[ii]; //
 
           		Log.info("kwc1 result: " + result);            
 
