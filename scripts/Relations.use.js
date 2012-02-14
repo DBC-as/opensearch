@@ -137,7 +137,7 @@ var Relations = function() {
 					var born = String(child.*.(@code=='c'));
 					last = " " + last;
           personName = first + last;
-					if (born !== undefined){
+					if (born !== ""){
 						personName = personName + " \(" + born + "\)";
 					}
 					Log.info("kwc4 personName: " + personName);
