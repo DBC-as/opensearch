@@ -132,7 +132,7 @@ var Relations = function() {
 				
 	  if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
         //fremfind efternavn og fornavne
-        //for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a') //efternavn
+        //for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a')) //efternavn
         for each (child in analysisXML.*.*.*.(@tag=='600')) {
           var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
           var last = String(child.*.(@code=='a'));
@@ -146,8 +146,8 @@ var Relations = function() {
           personNames.push (personName);
         }
 				
-				for each (child in analysisXML.*.*.*.(@tag=='666')) {
-					analysedTitle = String(child.*.(@code=='t'));
+				for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
+					analysedTitle = String(child);
 					analysedTitles.push (analysedTitle);
 				}
 				for (var j = 0; j < analysedTitles.length; ++j){
