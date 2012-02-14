@@ -145,7 +145,8 @@ var Relations = function() {
 					
 					Log.info("kwc5 personNames: " + personNames[i]);
 					
-					var query = "\"creator \u003D " + personNames[i] +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
+					//var query = "\"creator \u003D " + personNames[i] +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
+					var query = "creator = Sophus Claussen"; 
 					Log.info("kwc6 query: " + query); 
 					var results = FedoraCQLSearch.search(query); 
           //var results = FedoraPIDSearch.creator( personNames[i] );
