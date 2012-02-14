@@ -4,6 +4,7 @@ use ( "DbcAddiRelations" );
 use ( "DbcBibRelations" );
 use ( "Dcterms" );
 use ( "Normalize" );
+use ("Repository");
 
 
 EXPORTED_SYMBOLS = ['Relations'];
@@ -145,12 +146,11 @@ var Relations = function() {
 					
 					Log.info("kwc5 personNames: " + personNames[i]);
 					
-					//var personNameStringed = String(personNames[i]);
 				  //var query = "\"creator \u003D " + personNameStringed +"\""; 
 					//Log.info("kwc6 query: " + query);
 					Log.info("kwc6 query: " + personNames[i]);  
 					//var results = FedoraCQLSearch.search(query); 
-          //var results = FedoraPIDSearch.creator( personNameStringed );
+
           var results = FedoraPIDSearch.creator( personNames[i] );
 
         		for (var ii = 0; ii < results.length; ++ii) {
