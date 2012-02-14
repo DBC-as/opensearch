@@ -145,14 +145,13 @@ var Relations = function() {
 					
 					Log.info("kwc5 personNames: " + personNames[i]);
 					
-					var personNameStringed = String(personNames[i]);
-				  //var query = "\"creator \u003D " + personNameStringed +"\""; //var query = "\"creator \u02DC " + personNames[i] +"\""; eller u223C
-					//var query = "creator = Sophus Claussen";  - Denne simple query virker. 
+					//var personNameStringed = String(personNames[i]);
+				  //var query = "\"creator \u003D " + personNameStringed +"\""; 
 					//Log.info("kwc6 query: " + query);
-					Log.info("kwc6 query: " + personNameStringed);  
+					Log.info("kwc6 query: " + personNames[i]);  
 					//var results = FedoraCQLSearch.search(query); 
-          var results = FedoraPIDSearch.creator( personNameStringed );
-       
+          //var results = FedoraPIDSearch.creator( personNameStringed );
+          var results = FedoraPIDSearch.creator( personNames[i] );
 
         		for (var ii = 0; ii < results.length; ++ii) {
           		var result = results[ii]; //
