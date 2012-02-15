@@ -149,6 +149,9 @@ var Relations = function() {
 				
 				for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
 					analysedTitle = String(child);
+					analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
+					//var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( creator ) );
+					
 					analysedTitles.push (analysedTitle);
 				}
 				for (var j = 0; j < analysedTitles.length; ++j){
