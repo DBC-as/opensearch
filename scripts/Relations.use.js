@@ -143,52 +143,42 @@ var Relations = function() {
 					if (born !== ""){
 						personName = personName + " \(" + born + "\)";
 					}
-					Log.info("kwc4 personName: " + personName);
+					Log.info("kwc1 personName: " + personName);
           personNames.push (personName);
         }
 				
 				for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
 					analysedTitle = String(child);
-						Log.info("kwc9 analysedTitle before: " + analysedTitle);
-					analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
-						Log.info("kwc10 analysedTitle after: " + analysedTitle);
-					//analysedTitle = String(analysedTitle).replace(/\u00A4/g, "");
-					Log.info("kwc11 analysedTitle tryself: " + analysedTitle);
-					
-					analysedTitles.push (analysedTitle);
+          analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
+		      analysedTitles.push (analysedTitle);
 				}
-				for (var j = 0; j < analysedTitles.length; ++j){
-					Log.info("kwc7 analysedTitle: " + analysedTitles[j]);
-				}
+        for (var x = 0; x < personNames.length; ++x ) {
+					Log.info("kwc2 personName: " + personNames[x]);
+        
+					for (var y = 0; y < analysedTitles.length; ++y){
+					Log.info("kwc3 analysedTitle: " + analysedTitles[y]);
 
-        for (var i = 0; i < personNames.length; ++i ) {
-					
-					Log.info("kwc5 personName: " + personNames[i]);
-
-					
-        }
-				  var xx,yy;
-			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
-			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
-						
-					for (xx = 0; xx < analysedTitles.length; ++xx ) {
-					query = "title \u003D " + analysedTitles[xx];  
-					
-         	
-					Log.info("kwc6 query: " + query);
+					query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y];  
+							
+					Log.info("kwc4 query: " + query);
+							
 					var results = FedoraCQLSearch.search(query); 
 				  //var results = FedoraPIDSearch.creator( personNames[i] );
 
-        		for (var ii = 0; ii < results.length; ++ii) {
+        	for (var ii = 0; ii < results.length; ++ii) {
           		var result = results[ii]; //
 
-          		Log.info("kwc1 result: " + result);            
+          		Log.info("kwc5 result: " + result);            
 
           		if (!String(result).match(/work:.*/)) {
-          		DbcAddiRelations.isAnalysisOf(pid, result);
+          			DbcAddiRelations.isAnalysisOf(pid, result);
           		}
-        		}	  
- 				}
+        		}	 
+					}
+        }
+			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
+			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
+
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
