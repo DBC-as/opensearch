@@ -165,7 +165,8 @@ var Relations = function() {
 			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
 			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
 						
-					query = "title \u003D " + "Gemmestedet";  // + " AND " + "title \u003D " + "De\*" + "\"";
+					for (xx = 0; xx < analysedTitles.length; ++xx ) {
+					query = "title \u003D " + analysedTitles[xx];  
 					
          	
 					Log.info("kwc6 query: " + query);
@@ -181,7 +182,7 @@ var Relations = function() {
           		DbcAddiRelations.isAnalysisOf(pid, result);
           		}
         		}	  
- 			//	}
+ 				}
 			
 			
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
