@@ -1,7 +1,7 @@
 EXPORTED_SYMBOLS = ['Normalize'];
 
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
 
 var Normalize = function(){
 
@@ -9,7 +9,7 @@ var Normalize = function(){
 
   that.removeSpecialCharacters = function ( string ) {
 
-    var newString = string.replace(/\?|!|\*|'|\¤/g, "");
+    var newString = string.replace(/\?|!|\*|'|\u00A4/g, "");
 		
 		return newString
 
