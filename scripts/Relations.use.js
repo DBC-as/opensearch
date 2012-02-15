@@ -1,9 +1,9 @@
-use ( "XmlUtil.use.js" );
-use ( "XmlNamespaces.use.js" );
-use ( "DbcAddiRelations.use.js" );
-use ( "DbcBibRelations.use.js" );
-use ( "Dcterms.use.js" );
-use ( "Normalize.use.js" );
+use ( "XmlUtil" );
+use ( "XmlNamespaces" );
+use ( "DbcAddiRelations" );
+use ( "DbcBibRelations" );
+use ( "Dcterms" );
+use ( "Normalize" );
 
 
 EXPORTED_SYMBOLS = ['Relations'];
@@ -123,7 +123,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var analysisXML = XmlUtil.fromString( xml );
 		
-		//lav en linje der matcher på source, og hvis litteraturtolkninger så gør en ting, ellers gør noget andet - eller lav en match-case
+
 		var child;
 		var personName;
 		var personNames = [];
@@ -131,11 +131,12 @@ var Relations = function() {
 		var analysedTitles = [];
 		var query;
 				
+				//Litteraturtolkninger
 	  if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
-        //fremfind efternavn og fornavne
-        //for each (child in analysisXML.*.*.*.(@tag=='600').*.(@code=='a')) //efternavn
+        
+				//find firstname, lastname and birth year of the creators of the analysed works
         for each (child in analysisXML.*.*.*.(@tag=='600')) {
-          var first = String(child.*.(@code=='h'));  //skal child nu laves om til XmlUtil.fromString for at kunne tage fat i subfield??
+          var first = String(child.*.(@code=='h'));  
           var last = String(child.*.(@code=='a'));
 					var born = String(child.*.(@code=='c'));
 					last = " " + last;
@@ -146,7 +147,7 @@ var Relations = function() {
 					Log.info("kwc1 personName: " + personName);
           personNames.push (personName);
         }
-				
+				//find titles of the analysed works
 				for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
 					analysedTitle = String(child);
           analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
@@ -164,6 +165,12 @@ var Relations = function() {
 							
 					var results = FedoraCQLSearch.search(query); 
 				  //var results = FedoraPIDSearch.creator( personNames[i] );
+									if (results.length < 1) {
+											query = "creator \u003D " + personNames[x] + " AND " + "subject \u003D " + analysedTitles[y];  
+											Log.info("kwc4 query: " + query);
+											results = FedoraCQLSearch.search(query); 	
+									}
+
 
         	for (var ii = 0; ii < results.length; ++ii) {
           		var result = results[ii]; //
@@ -176,11 +183,8 @@ var Relations = function() {
         		}	 
 					}
         }
-			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
-			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
-
 			
-			
+			//Litteratursiden
 		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
       var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
