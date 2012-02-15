@@ -152,7 +152,7 @@ var Relations = function() {
 						Log.info("kwc9 analysedTitle before: " + analysedTitle);
 					analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
 						Log.info("kwc10 analysedTitle after: " + analysedTitle);
-					analysedTitle = String(analysedTitle).replace(/¤/g, "");
+					analysedTitle = String(analysedTitle).replace(/\u00A4/g, "");
 					Log.info("kwc11 analysedTitle tryself: " + analysedTitle);
 					
 					analysedTitles.push (analysedTitle);
