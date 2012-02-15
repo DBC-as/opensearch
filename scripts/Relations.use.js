@@ -165,7 +165,7 @@ var Relations = function() {
 			//		for (xx = 0, yy = 0; xx < personNames.length && yy < analysedTitles.length; ++xx, ++yy ) {
 			//			query = "\"creator \u003D " + personNames[xx] + " AND " + "title \u003D " + analysedTitles[yy] + "\""; 
 						
-					query = "\"title \u003D " + "Henry" + "\"";  // + " AND " + "title \u003D " + "De\*" + "\"";
+					query = "title \u003D " + "Henry";  // + " AND " + "title \u003D " + "De\*" + "\"";
 					
          	
 					Log.info("kwc6 query: " + query);
