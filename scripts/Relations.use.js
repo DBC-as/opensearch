@@ -116,76 +116,69 @@ var Relations = function() {
 
   };
   
-  that.isAnalysisOf = function ( xml, pid ) {
+that.isAnalysisOf = function ( xml, pid ) {
 
     Log.info ("Start isAnalysisOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var analysisXML = XmlUtil.fromString( xml );
-		
-
-		var child;
-		var personName;
-		var personNames = [];
-		var analysedTitle; 
-		var analysedTitles = [];
-		var query;
-				
-				//Litteraturtolkninger
-	  if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
-        
-				//find firstname, lastname and birth year of the creators of the analysed works
-        for each (child in analysisXML.*.*.*.(@tag=='600')) {
-          var first = String(child.*.(@code=='h'));  
-          var last = String(child.*.(@code=='a'));
-					var born = String(child.*.(@code=='c'));
-					last = " " + last;
-          personName = first + last;
-					if (born !== ""){
-						personName = personName + " \(" + born + "\)";
-					}
-					Log.info("kwc1 personName: " + personName);
-          personNames.push (personName);
+            
+    var child;
+    var personName;
+    var personNames = [];
+    var analysedTitle;
+    var analysedTitles = [];
+    var query;
+                        
+     //Litteraturtolkninger
+    if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
+    
+		 //find firstname, lastname and birth year of the creators of the analysed works
+			for each (child in analysisXML.*.*.*.(@tag=='600')) {
+      	var first = String(child.*.(@code=='h')); 
+        var last = String(child.*.(@code=='a'));
+        var born = String(child.*.(@code=='c'));
+        last = " " + last;
+        personName = first + last;
+        if (born !== ""){
+        	personName = personName + " \(" + born + "\)";
         }
-				//find titles of the analysed works
-				for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
-					analysedTitle = String(child);
-          analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
-		      analysedTitles.push (analysedTitle);
-				}
-        for (var x = 0; x < personNames.length; ++x ) {
-					Log.info("kwc2 personName: " + personNames[x]);
-        
-					for (var y = 0; y < analysedTitles.length; ++y){
-					Log.info("kwc3 analysedTitle: " + analysedTitles[y]);
+        Log.info("kwc1 personName: " + personName);
+        personNames.push (personName);
+      }
+      //find titles of the analysed works
+      for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
+      	analysedTitle = String(child);
+        analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
+        analysedTitles.push (analysedTitle);
+      }
+      for (var x = 0; x < personNames.length; ++x ) {
+      	Log.info("kwc2 personName: " + personNames[x]);
+       
+        for (var y = 0; y < analysedTitles.length; ++y){
+        	Log.info("kwc3 analysedTitle: " + analysedTitles[y]);
 
-					query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y];  
-							
-					Log.info("kwc4 query: " + query);
-							
-					var results = FedoraCQLSearch.search(query); 
-				  //var results = FedoraPIDSearch.creator( personNames[i] );
-									if (results.length < 1) {
-											query = "creator \u003D " + personNames[x] + " AND " + "subject \u003D " + analysedTitles[y];  
-											Log.info("kwc4 query: " + query);
-											results = FedoraCQLSearch.search(query); 	
-									}
+          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
+                                         
+          Log.info("kwc4 query: " + query);
+                                          
+          var results = FedoraCQLSearch.search(query);
+          //var results = FedoraPIDSearch.creator( personNames[i] );
 
+          for (var ii = 0; ii < results.length; ++ii) {
+          	var result = results[ii]; //
 
-        	for (var ii = 0; ii < results.length; ++ii) {
-          		var result = results[ii]; //
+            Log.info("kwc5 result: " + result);           
 
-          		Log.info("kwc5 result: " + result);            
-
-          		if (!String(result).match(/work:.*/)) {
-          			DbcAddiRelations.isAnalysisOf(pid, result);
-          		}
-        		}	 
-					}
+            if (!String(result).match(/work:.*/)) {
+            	DbcAddiRelations.isAnalysisOf(pid, result);
+            }
+          }     
         }
-			
-			//Litteratursiden
-		}  else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+      }
+                  
+      //Litteratursiden
+    } else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
       var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       var results = FedoraPIDSearch.identifier( relation );
@@ -204,6 +197,7 @@ var Relations = function() {
     Log.info ("End isAnalysisOf" );
 
   };
+
   
   that.references = function ( xml, pid ) {
 
