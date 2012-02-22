@@ -22,6 +22,7 @@ var DcCreator = function(){
 
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
+		var child;
 
     //Used until better implementation in Java
     if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
@@ -52,7 +53,7 @@ var DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
-    var child;
+    
 
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("dkdcplus:subtitles") && !String(child.@xsi::type).match("dkdcplus:spoken")) {
