@@ -30,7 +30,9 @@ var DcCreator = function(){
     }
 
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
+			Log.debug( "kwc-before");
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
+			Log.debug( "kwc-after");
     }
 		
     //part titles from collections (e.g. poems, fairy tales, short stories)
