@@ -34,22 +34,7 @@ var DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
 			Log.debug( "kwc-after");
     }
-		
-    //part titles from collections (e.g. poems, fairy tales, short stories)
-		
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="530").subfield.(@code=="t")) {
-			Log.debug( "kwc530, 530: " + child);
-      if (String(child) !== "") {
-        dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
-	  }
-    }
-		
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="534").subfield.(@code=="t")) {
-			Log.debug( "kwc534, 534: " + child);
-      if (String(child) !== "") {
-        dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
-	  }
-    }		
+			
     
 	  if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
@@ -166,6 +151,24 @@ var DcCreator = function(){
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
+
+    //part titles from collections (e.g. poems, fairy tales, short stories)
+		
+		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="530").subfield.(@code=="t")) {
+			Log.debug( "kwc530, 530: " + child);
+      if (String(child) !== "") {
+        dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
+	  }
+    }
+		
+		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="534").subfield.(@code=="t")) {
+			Log.debug( "kwc534, 534: " + child);
+      if (String(child) !== "") {
+        dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
+	  }
+    }			
+		
+		
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
