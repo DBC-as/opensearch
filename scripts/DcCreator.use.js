@@ -35,12 +35,14 @@ var DcCreator = function(){
     //part titles from collections (e.g. poems, fairy tales, short stories)
 		
 		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="530").subfield.(@code=="t")) {
+			Log.debug( "kwc1, 530: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  }
     }
 		
 		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="534").subfield.(@code=="t")) {
+			Log.debug( "kwc2, 534: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  }
