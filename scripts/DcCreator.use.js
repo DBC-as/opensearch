@@ -34,13 +34,13 @@ var DcCreator = function(){
 		
     //part titles from collections (e.g. poems, fairy tales, short stories)
 		
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="530").subfield.(@code=="a")) {
+		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="530").subfield.(@code=="t")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  }
     }
 		
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="534").subfield.(@code=="a")) {
+		for each (child in originalXml.marcx::collection.record.datafield.(@tag=="534").subfield.(@code=="t")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  }
