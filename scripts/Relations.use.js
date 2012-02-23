@@ -163,12 +163,22 @@ that.isAnalysisOf = function ( xml, pid ) {
           Log.info("kwc4 query: " + query);
                                           
           var results = FedoraCQLSearch.search(query);
-          //var results = FedoraPIDSearch.creator( personNames[i] );
+
+          if (results.length < 1) {
+          Log.info("kwc5 no matches on query");
+					
+          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+					
+          Log.info("kwc6 parttitle query" + query);
+					
+					results = FedoraCQLSearch.search(query);
+										 											
+					}
 
           for (var ii = 0; ii < results.length; ++ii) {
           	var result = results[ii]; //
 
-            Log.info("kwc5 result: " + result);           
+            Log.info("kwc7 result: " + result);           
 
             if (!String(result).match(/work:.*/)) {
             	DbcAddiRelations.isAnalysisOf(pid, result);
