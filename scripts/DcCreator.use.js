@@ -25,7 +25,7 @@ var DcCreator = function(){
 		var child;
 
     //Used until better implementation in Java
-    if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+    if (String(originalXml.*.*.*.(@tag=="004").*.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElementNoNormalize("DELETED OBJECT", "type", dc);
     }
 
@@ -37,14 +37,14 @@ var DcCreator = function(){
 
     //part titles from collections (e.g. poems, fairy tales, short stories)
 		
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag == "530").subfield.(@code == "t")) {
+		for each (child in originalXml.*.*.*.(@tag == "530").*.(@code == "t")) {
 			Log.debug( "kwc530, 530: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  }
     }
 		                   
-		for each (child in originalXml.marcx::collection.record.datafield.(@tag == "534").subfield.(@code == "t")) {
+		for each (child in originalXml.*.*.*.(@tag == "534").*.(@code == "t")) {
 			Log.debug( "kwc534, 534: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
@@ -121,13 +121,13 @@ var DcCreator = function(){
       }
     }
 
-    for each (child in originalXml.marcx::collection.record.datafield.(@tag == "014").subfield.(@code == "a")) {
+    for each (child in originalXml.*.*.*.(@tag == "014").*.(@code == "a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child).replace( /-/g, ""), "relation", dc );
 	  }
     }
 
-    for each (child in originalXml.marcx::collection.record.datafield.(@tag == "016").subfield.(@code == "a")) {
+    for each (child in originalXml.*.*.*.(@tag == "016").*.(@code == "a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
 	  }
