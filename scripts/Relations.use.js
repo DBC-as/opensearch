@@ -186,6 +186,11 @@ that.isAnalysisOf = function ( xml, pid ) {
 							Log.info("kwc41 personName with born: " + personNames[x]);
 							var personNameNoBirth = personNames[x].split("\(",1);
 							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
+							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
+							var extraResults = FedoraCQLSearch.search(query);
+							results.push.apply(results, extraResults); //adds the values of extraResults to results
+							Log.info("kwc43 results with no birth: " + results[results.length]);
+							// a.push.apply(a, b)
 						}
 	
 	          if (results.length < 1) {
