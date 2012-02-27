@@ -182,7 +182,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 	                                          
 	          var results = FedoraCQLSearch.search(query);
 						
-						if (personNames[x].match(/\(/)){
+						if (String(personNames[x]).match(/\(/)){
 							Log.info("kwc41 personName with born: " + personNames[x]);
 							var personNameNoBirth = personNames[x].split("\(",1);
 							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
