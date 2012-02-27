@@ -168,7 +168,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 						}
 					}
 				}
-					
+			// search for creator + title		
 			} else {
 	      for (var x = 0; x < personNames.length; ++x ) {
 	      	Log.info("kwc2 personName: " + personNames[x]);
@@ -181,6 +181,12 @@ that.isAnalysisOf = function ( xml, pid ) {
 	          Log.info("kwc4 query: " + query);
 	                                          
 	          var results = FedoraCQLSearch.search(query);
+						
+						if (personNames[x].match(/\(/)){
+							Log.info("kwc41 personName with born: " + personNames[x]);
+							var personNameNoBirth = personNames[x].split("\(",1);
+							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
+						}
 	
 	          if (results.length < 1) {
 	          Log.info("kwc5 no matches on query");
