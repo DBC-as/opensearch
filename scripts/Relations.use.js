@@ -152,41 +152,59 @@ that.isAnalysisOf = function ( xml, pid ) {
         analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
         analysedTitles.push (analysedTitle);
       }
-      for (var x = 0; x < personNames.length; ++x ) {
-      	Log.info("kwc2 personName: " + personNames[x]);
-       
-        for (var y = 0; y < analysedTitles.length; ++y){
-        	Log.info("kwc3 analysedTitle: " + analysedTitles[y]);
-
-          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
-                                         
-          Log.info("kwc4 query: " + query);
-                                          
-          var results = FedoraCQLSearch.search(query);
-
-          if (results.length < 1) {
-          Log.info("kwc5 no matches on query");
+			// if no analysed titles, search for creator (only if it contains a birth year)
+			if (analysedTitles.length < 1) {
+				for (var x = 0; x < personNames.length; ++x) {
+					if (String(personNames[x]).match(/\(/)) {
+						query = "creator \u003D " + personNames[x];
+						var results = FedoraCQLSearch.search(query);
+						for (var ii = 0; ii < results.length; ++ii) {
+							var result = results[ii]; //
+							Log.info("kwc7 result: " + result);
 					
-          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-					
-          Log.info("kwc6 parttitle query" + query);
-					
-					results = FedoraCQLSearch.search(query);
-										 											
+							if (!String(result).match(/work:.*/)) {
+								DbcAddiRelations.isAnalysisOf(pid, result);
+							}
+						}
 					}
-
-          for (var ii = 0; ii < results.length; ++ii) {
-          	var result = results[ii]; //
-
-            Log.info("kwc7 result: " + result);           
-
-            if (!String(result).match(/work:.*/)) {
-            	DbcAddiRelations.isAnalysisOf(pid, result);
-            }
-          }     
-        }
-      }
-                  
+				}
+					
+			} else {
+	      for (var x = 0; x < personNames.length; ++x ) {
+	      	Log.info("kwc2 personName: " + personNames[x]);
+	       
+	        for (var y = 0; y < analysedTitles.length; ++y){
+	        	Log.info("kwc3 analysedTitle: " + analysedTitles[y]);
+	
+	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
+	                                         
+	          Log.info("kwc4 query: " + query);
+	                                          
+	          var results = FedoraCQLSearch.search(query);
+	
+	          if (results.length < 1) {
+	          Log.info("kwc5 no matches on query");
+						
+	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+						
+	          Log.info("kwc6 parttitle query" + query);
+						
+						results = FedoraCQLSearch.search(query);
+											 											
+						}
+	
+	          for (var ii = 0; ii < results.length; ++ii) {
+	          	var result = results[ii]; //
+	
+	            Log.info("kwc7 result: " + result);           
+	
+	            if (!String(result).match(/work:.*/)) {
+	            	DbcAddiRelations.isAnalysisOf(pid, result);
+	            }
+	          }     
+	        }
+	      }
+      }            
       //Litteratursiden
     } else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
       var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
