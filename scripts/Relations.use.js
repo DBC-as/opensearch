@@ -186,10 +186,12 @@ that.isAnalysisOf = function ( xml, pid ) {
 							Log.info("kwc41 personName with born: " + personNames[x]);
 							var personNameNoBirth = personNames[x].split("\(",1);
 							Log.info("kwc42 type: " + typeof personNameNoBirth);
-							personNameNoBirth = String(personNameNoBirth).trim();
+							personNameNoBirth = String(personNameNoBirth);
 							Log.info("kwc43 type: " + typeof personNameNoBirth);
+							personNameNoBirth = personNameNoBirth.trim();
+							Log.info("kwc44 type: " + typeof personNameNoBirth);
 							
-							Log.info("kwc44 personName with born taken away: " + personNameNoBirth);
+							Log.info("kwc45 personName with born taken away: " + personNameNoBirth);
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
 							results.push.apply(results, extraResults); //adds the values of extraResults to results
