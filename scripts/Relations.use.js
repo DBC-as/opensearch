@@ -1,9 +1,9 @@
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
-use ( "DbcAddiRelations" );
-use ( "DbcBibRelations" );
-use ( "Dcterms" );
-use ( "Normalize" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
+use ( "DbcAddiRelations.use.js" );
+use ( "DbcBibRelations.use.js" );
+use ( "Dcterms.use.js" );
+use ( "Normalize.use.js" );
 
 
 EXPORTED_SYMBOLS = ['Relations'];
