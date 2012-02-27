@@ -185,7 +185,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 						if (String(personNames[x]).match(/\(/)){
 							Log.info("kwc41 personName with born: " + personNames[x]);
 							var personNameNoBirth = personNames[x].split("\(",1);
-							personNameNoBirth.trim();
+							personNameNoBirth = String(personNameNoBirth).trim();
 							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
