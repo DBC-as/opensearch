@@ -184,7 +184,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 						
 						if (String(personNames[x]).match(/\(/)){
 							Log.info("kwc41 personName with born: " + personNames[x]);
-							var personNameNoBirth = personNames[x].split("\(",1);
+							var personNameNoBirth = String(personNames[x].split("\(",1));
 							Log.info("kwc42 type: " + typeof personNameNoBirth);
 							personNameNoBirth = String(personNameNoBirth);
 							Log.info("kwc43 type: " + typeof personNameNoBirth);
