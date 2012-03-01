@@ -198,6 +198,14 @@ that.isAnalysisOf = function ( xml, pid ) {
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
+							
+							function isArray(a)  {  
+							return Object.prototype.toString.apply(a) === '[object Array]'; } 
+							
+							var checkingArray = isArray(extraResults);
+							Log.info("kwc46 extraResults is array?: " + checkingArray);
+						
+							
 							results.push.apply(results, extraResults); //adds the values of extraResults to results
 							Log.info("kwc43 results with no birth: " + results[results.length]);
 							// a.push.apply(a, b)
