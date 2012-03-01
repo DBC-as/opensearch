@@ -197,7 +197,8 @@ that.isAnalysisOf = function ( xml, pid ) {
 							Log.info("kwc45 personName with born taken away: " + personNameNoBirth);
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
-							var extraResults = FedoraCQLSearch.search(query);
+							var extraResults = new Array(); 
+							extraResults = FedoraCQLSearch.search(query);
 							
 							function isArray(a)  {  
 							return Object.prototype.toString.apply(a) === '[object Array]'; } 
