@@ -197,19 +197,13 @@ that.isAnalysisOf = function ( xml, pid ) {
 							Log.info("kwc45 personName with born taken away: " + personNameNoBirth);
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
-							var extraResults = new Array(); 
-							extraResults = FedoraCQLSearch.search(query);
-							
-							function isArray(a)  {  
-							return Object.prototype.toString.apply(a) === '[object Array]'; } 
-							
-							var checkingArray = isArray(extraResults);
-							Log.info("kwc46 extraResults is array?: " + checkingArray);
-						
-							
-							results.push.apply(results, extraResults); //adds the values of extraResults to results
+							var extraResults = FedoraCQLSearch.search(query);
+
+							for (var t=0;t< extraResults.length;t++) {
+								results.push(extraResults[t]);  //adds the values of extraResults to results
+							}
+
 							Log.info("kwc43 results with no birth: " + results[results.length]);
-							// a.push.apply(a, b)
 						}
 	
 	          if (results.length < 1) {
