@@ -201,6 +201,8 @@ that.isAnalysisOf = function ( xml, pid ) {
 
 							for (var t=0;t< extraResults.length;t++) {
 								results.push(extraResults[t]);  //adds the values of extraResults to results
+							 //virker heller ikke - så må jeg vel prøve at lave relationen med det samme i stedet for at tilføje til results
+							 //eventuelt lave en ny variabel først ligesom nede ved dbcaddirelations - ikke at jeg tror det gør en forskel
 							}
 
 							Log.info("kwc43 results with no birth: " + results[results.length]);
