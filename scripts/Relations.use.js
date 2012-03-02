@@ -219,7 +219,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 							
 							Log.info("kwc62 personName with born taken away: " + personNameNoBirth);
 							
-							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
+							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
 	          	for (var yy = 0; yy < extraResults.length; ++yy) {
 	          		var extraResult = extraResults[yy]; 
