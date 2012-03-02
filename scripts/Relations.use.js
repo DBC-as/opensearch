@@ -201,7 +201,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 	    	      }  
 							Log.info("kwc43 results with no birth: " + extraResults[extraResults.length]);
 						}
-	
+						//if no match on normal title, search for part title
 	          if (results.length < 1) {
 	          Log.info("kwc5 no matches on query");
 						
@@ -210,6 +210,27 @@ that.isAnalysisOf = function ( xml, pid ) {
 	          Log.info("kwc6 parttitle query" + query);
 						
 						results = FedoraCQLSearch.search(query);
+						
+						//search for creator without birth year + title, if creator has birth year
+						if (String(personNames[x]).match(/\(/)){
+							Log.info("kwc41 personName with born: " + personNames[x]);
+							var personNameNoBirth = String(personNames[x].split("\(",1));
+							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
+							
+							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
+							
+							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
+							var extraResults = FedoraCQLSearch.search(query);
+	          	for (var xx = 0; xx < results.length; ++xx) {
+	          		var extraResult = extraResults[xx]; 
+								Log.info("kwc43 extraResult: " + extraResult);           
+		            if (!String(extraResult).match(/work:.*/)) {
+		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+	  	          }
+	    	      }  
+							Log.info("kwc43 results with no birth: " + extraResults[extraResults.length]);
+						}
+						
 											 											
 						}
 	
