@@ -182,30 +182,24 @@ that.isAnalysisOf = function ( xml, pid ) {
 	                                          
 						var results = FedoraCQLSearch.search(query);
 						
+						//search for creator without birth year + title, if creator has birth year
 						if (String(personNames[x]).match(/\(/)){
 							Log.info("kwc41 personName with born: " + personNames[x]);
 							var personNameNoBirth = String(personNames[x].split("\(",1));
 							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-
 							
-						/*	Log.info("kwc42 type: " + typeof(personNameNoBirth));
-							personNameNoBirth = String(personNameNoBirth);
-							Log.info("kwc43 type: " + typeof personNameNoBirth);
-							personNameNoBirth = personNameNoBirth.trim();
-							Log.info("kwc44 type: " + typeof personNameNoBirth); */
-							
-							Log.info("kwc45 personName with born taken away: " + personNameNoBirth);
+							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
-
-							for (var t=0;t< extraResults.length;t++) {
-								results.push(extraResults[t]);  //adds the values of extraResults to results
-							 //virker heller ikke - så må jeg vel prøve at lave relationen med det samme i stedet for at tilføje til results
-							 //eventuelt lave en ny variabel først ligesom nede ved dbcaddirelations - ikke at jeg tror det gør en forskel
-							}
-
-							Log.info("kwc43 results with no birth: " + results[results.length]);
+	          	for (var xx = 0; xx < results.length; ++xx) {
+	          		var extraResult = extraResults[xx]; 
+								Log.info("kwc43 extraResult: " + extraResult);           
+		            if (!String(extraResult).match(/work:.*/)) {
+		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+	  	          }
+	    	      }  
+							Log.info("kwc43 results with no birth: " + extraResults[extraResults.length]);
 						}
 	
 	          if (results.length < 1) {
