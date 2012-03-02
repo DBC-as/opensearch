@@ -213,17 +213,17 @@ that.isAnalysisOf = function ( xml, pid ) {
 						
 						//search for creator without birth year + title, if creator has birth year
 						if (String(personNames[x]).match(/\(/)){
-							Log.info("kwc41 personName with born: " + personNames[x]);
+							Log.info("kwc61 personName with born: " + personNames[x]);
 							var personNameNoBirth = String(personNames[x].split("\(",1));
 							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
 							
-							Log.info("kwc42 personName with born taken away: " + personNameNoBirth);
+							Log.info("kwc62 personName with born taken away: " + personNameNoBirth);
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
-	          	for (var yy = 0; yy < results.length; ++yy) {
+	          	for (var yy = 0; yy < extraResults.length; ++yy) {
 	          		var extraResult = extraResults[yy]; 
-								Log.info("kwc43 extraResult: " + extraResult);           
+								Log.info("kwc63 extraResult: " + extraResult);           
 		            if (!String(extraResult).match(/work:.*/)) {
 		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
 	  	          }
