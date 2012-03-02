@@ -192,7 +192,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 							
 							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
 							var extraResults = FedoraCQLSearch.search(query);
-	          	for (var xx = 0; xx < results.length; ++xx) {
+	          	for (var xx = 0; xx < extraResults.length; ++xx) {
 	          		var extraResult = extraResults[xx]; 
 								Log.info("kwc43 extraResult: " + extraResult);           
 		            if (!String(extraResult).match(/work:.*/)) {
