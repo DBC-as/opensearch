@@ -27,6 +27,7 @@ var Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var reviewXML = XmlUtil.fromString( xml );
+		var child;
 
     var identifier = String(reviewXML.*.*.*.(@tag=='014').*.(@code=='a'));
 
@@ -62,6 +63,29 @@ var Relations = function() {
         }
       }
     }
+		
+		if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXml.dkabm::record.dc::type).match(/Anmeldelse/) ) {
+			var reviewedCreator = reviewXML.dkabm::record.dc::subject[0];
+			var reviewedTitle = reviewXML.dkabm::record.dc::subject[1];
+			Log.debug( "LSK - reviewedCreator: " + reviewedCreator );
+			Log.debug( "LSK - reviewedTitle: " + reviewedTitle );
+			var query = "creator = " + reviewedCreator + " AND title = " + reviewedTitle;
+			Log.debug( "LSK - query: " + query );
+			
+			var results = FedoraCQLSearch.search( query );
+			
+			for ( var j = 0; j < results.length; ++j ) {
+				var result = results[j]
+				
+				Log.info( "result: " + result );
+				
+				if (!String(result).match(/work:.*/)) {
+					DbcAddiRelations.isReviewOf( pid, result );
+				}
+			}
+			
+			
+		}
 
     Log.info ("End isReviewOf" );
 
