@@ -125,7 +125,7 @@ var Relations = function() {
 
 				var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 				var title = String(katalogXML.dkabm::record.dc::title[0]);
-				var query = "subject = " + creator + " AND title = " + title;
+				var query = "subject = " + creator + " AND subject = " + title;
 				Log.debug("LSK query: " + query);
 				
 				var results = FedoraCQLSearch.search( query );
