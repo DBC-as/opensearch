@@ -20,7 +20,7 @@
       <args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
-				<arg name="skipUnchangedPosts" value="true"/>
+				<arg name="skipUnchangedPosts" value="false"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
@@ -584,7 +584,7 @@
     	<args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
-				<arg name="skipUnchangedPosts" value="true"/>
+				<arg name="skipUnchangedPosts" value="false"/>
       </args>
 		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
@@ -595,6 +595,12 @@
 	      <arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>		
   </workflow>
   <workflow format="portraet" submitter="150016">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -962,6 +968,12 @@
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
       </args>
 		</plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>		
 	</workflow>
   <workflow format="ucviden" submitter="150029">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -3289,7 +3301,7 @@
     	<args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
-				<arg name="skipUnchangedPosts" value="true"/>
+				<arg name="skipUnchangedPosts" value="false"/>
       </args>
 		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -3323,7 +3335,7 @@
     	<args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
-				<arg name="skipUnchangedPosts" value="true"/>
+				<arg name="skipUnchangedPosts" value="false"/>
       </args>
 		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
