@@ -46,25 +46,25 @@ var Relations = function() {
       }
     }
 
-    if (i === 0) {
-      if (String(reviewXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
-        var relation = "ISBN:" + String(reviewXML.dkabm::record.dcterms::references);
-
-        var results = FedoraPIDSearch.identifier( relation );
-
-        for ( var i = 0; i < results.length; ++i ) {
-          var result = results[i];
-
-          Log.info( "result: " + result );
-
-          if (!String(result).match(/work:.*/)) {
-            DbcAddiRelations.isReviewOf( pid, result );
-          }
-        }
-      }
-    }
+//    if (i === 0) {
+//      if (String(reviewXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+//        var relation = "ISBN:" + String(reviewXML.dkabm::record.dcterms::references);
+//
+//        var results = FedoraPIDSearch.identifier( relation );
+//
+//        for ( var i = 0; i < results.length; ++i ) {
+//          var result = results[i];
+//
+//          Log.info( "result: " + result );
+//
+//          if (!String(result).match(/work:.*/)) {
+//            DbcAddiRelations.isReviewOf( pid, result );
+//          }
+//        }
+//      }
+//    }
 		
-		if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXml.dkabm::record.dc::type).match(/Anmeldelse/) ) {
+		if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
 			var reviewedCreator = reviewXML.dkabm::record.dc::subject[0];
 			var reviewedTitle = reviewXML.dkabm::record.dc::subject[1];
 			Log.debug( "LSK - reviewedCreator: " + reviewedCreator );
