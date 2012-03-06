@@ -184,7 +184,7 @@ var DcCreator = function(){
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")  && !String(child.@xsi::type).match("dkdcplus:genre")) {
-        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "subject", dc );
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
     
