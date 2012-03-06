@@ -590,7 +590,7 @@ that.isAnalysisOf = function ( xml, pid ) {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXml = XmlUtil.fromString( xml );
     
-    var creator = String(manifestationXml.dkabm::record.dc::creator[0]);
+    var creator = String(manifestationXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
         
     if (creator !== "undefined") {
       var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( creator ) );
