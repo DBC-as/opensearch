@@ -600,7 +600,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 
         Log.info( "result: " + result );
 
-        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/)) && !String(result).match(/image/)) {
+        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/) || String(result).match(/150005:.*/)) && !String(result).match(/image/)) {
           DbcAddiRelations.hasCreatorDescription( pid, result );
         }
       }
