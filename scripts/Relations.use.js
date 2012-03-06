@@ -115,14 +115,6 @@ var Relations = function() {
 
     if (i === 0) {
 
-//      if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
-//        var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
-
-//        Log.info( "Identifier: " + identifier );    
-//        Log.info( "pid: " + pid );
-
-//        var results = FedoraPIDSearch.relation( identifier );
-
 				var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 				var title = String(katalogXML.dkabm::record.dc::title[0]);
 				var query = "subject = " + creator + " AND subject = " + title;
@@ -252,21 +244,43 @@ that.isAnalysisOf = function ( xml, pid ) {
 	      }
       }
 			            
-      //Litteratursiden
-    } else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
-      var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
+      //Litteratursiden		
+		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
+			var analysedCreator = analysisXML.dkabm::record.dc::subject[0];
+			var analysedTitle = analysisXML.dkabm::record.dc::subject[1];
+			Log.debug( "LSK - analysedCreator: " + analysedCreator );
+			Log.debug( "LSK - analysedTitle: " + analysedTitle );
+			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
+			Log.debug( "LSK - query: " + query );
+			
+			var results = FedoraCQLSearch.search( query );
+			
+			for ( var j = 0; j < results.length; ++j ) {
+				var result = results[j]
+				
+				Log.info( "result: " + result );
+				
+				if (!String(result).match(/work:.*/)) {
+					DbcAddiRelations.isAnalysisOf( pid, result );
+				}
+			}
+			
+ //   } else if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+ //     var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
-      var results = FedoraPIDSearch.identifier( relation );
+ //     var results = FedoraPIDSearch.identifier( relation );
 
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
+ //     for ( var i = 0; i < results.length; ++i ) {
+ //       var result = results[i];
 
-        Log.info( "result: " + result );
+ //       Log.info( "result: " + result );
 
-        if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.isAnalysisOf( pid, result );
-        }
-      }
+ //       if (!String(result).match(/work:.*/)) {
+ //         DbcAddiRelations.isAnalysisOf( pid, result );
+ //       }
+ //     }
+
+
     }
 
     Log.info ("End isAnalysisOf" );
