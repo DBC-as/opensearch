@@ -55,7 +55,7 @@ const DbcAddiRelations = function() {
     */
     that.hasAnalysis = function ( pid1, pid2 ){
         Log.info( "Start hasAnalysis" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#isAnalysisOf", pid1);
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isAnalysisOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasAnalysis", pid2 );
         Log.info( "End hasAnalysis" );
     };
@@ -103,7 +103,7 @@ const DbcAddiRelations = function() {
     */
     that.isAnalysisOf = function ( pid1, pid2 ){
         Log.info( "Start isAnalysisOf" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalysis", pid1);
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#hasAnalysis", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isAnalysisOf", pid2 );
         Log.info( "End isAnalysisOf" );
     };

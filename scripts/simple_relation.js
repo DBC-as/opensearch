@@ -1,4 +1,4 @@
-use ( "Relations" );
+use ( "Relations.use.js" );
 
 function isReviewOf ( submitter, format, language, xml, pid ) {
   Relations.isReviewOf ( xml, pid );
@@ -10,6 +10,10 @@ function hasReview ( submitter, format, language, xml, pid ) {
 
 function isAnalysisOf ( submitter, format, language, xml, pid ) {
   Relations.isAnalysisOf ( xml, pid );
+}
+
+function hasAnalysis ( submitter, format, language, xml, pid ) {
+  Relations.hasAnalysis ( xml, pid );
 }
 
 function hasTrack ( submitter, format, language, xml, pid ) {

@@ -117,7 +117,7 @@ var Relations = function() {
 
 				var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 				var title = String(katalogXML.dkabm::record.dc::title[0]);
-				var query = "subject = " + creator + " AND subject = " + title;
+				var query = "subject = " + creator + " AND subject = " + title + " AND type = anmeldelse";
 				Log.debug("LSK query: " + query);
 				
 				var results = FedoraCQLSearch.search( query );
@@ -137,7 +137,7 @@ var Relations = function() {
 
   };
   
-that.isAnalysisOf = function ( xml, pid ) {
+	that.isAnalysisOf = function ( xml, pid ) {
 
     Log.info ("Start isAnalysisOf" );
 
@@ -285,6 +285,34 @@ that.isAnalysisOf = function ( xml, pid ) {
     }
 
     Log.info ("End isAnalysisOf" );
+
+  };
+	
+	that.hasAnalysis = function ( xml, pid) {
+
+    Log.info ("Start hasAnalysis" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var katalogXML = XmlUtil.fromString( xml );
+
+		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
+		var title = String(katalogXML.dkabm::record.dc::title[0]);
+		var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
+		Log.debug("RLO query: " + query);
+			
+		var results = FedoraCQLSearch.search( query );
+			
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );				
+
+      if (String(result).match(/150005:.*/)) {
+        DbcAddiRelations.hasAnalysis( pid, result );
+      }
+    }
+
+    Log.info ("End hasAnalysis" );
 
   };
 
