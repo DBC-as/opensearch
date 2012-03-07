@@ -1,9 +1,9 @@
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
-use ( "DbcAddiRelations" );
-use ( "DbcBibRelations" );
-use ( "Dcterms" );
-use ( "Normalize" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
+use ( "DbcAddiRelations.use.js" );
+use ( "DbcBibRelations.use.js" );
+use ( "Dcterms.use.js" );
+use ( "Normalize.use.js" );
 
 
 EXPORTED_SYMBOLS = ['Relations'];
@@ -575,7 +575,9 @@ that.isAnalysisOf = function ( xml, pid ) {
     
     var child;
 
-    var creator = String(creatorXML.dkabm::record.dc::title[0]);
+    var creator = "NOBIRTH:" + String(creatorXML.dkabm::record.dc::title[0]);
+		
+		Log.debug("CREATOR (TITLE): " + creator);
 
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
@@ -606,6 +608,8 @@ that.isAnalysisOf = function ( xml, pid ) {
     var manifestationXml = XmlUtil.fromString( xml );
     
     var creator = String(manifestationXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
+		
+		Log.debug ("CREATOR: " + creator);
         
     if (creator !== "undefined") {
       var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( creator ) );
@@ -615,7 +619,7 @@ that.isAnalysisOf = function ( xml, pid ) {
 
         Log.info( "result: " + result );
 
-        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/) || String(result).match(/150005:.*/)) && !String(result).match(/image/)) {
+        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/) || String(result).match(/150012:.*/)) && !String(result).match(/image/)) {
           DbcAddiRelations.hasCreatorDescription( pid, result );
         }
       }

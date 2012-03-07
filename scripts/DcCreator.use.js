@@ -1,8 +1,8 @@
 EXPORTED_SYMBOLS = ['DcCreator'];
 
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
-use ( "Normalize" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
+use ( "Normalize.use.js" );
 
 var DcCreator = function(){
 
@@ -55,6 +55,9 @@ var DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
+		if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "NOBIRTH:" + String(originalXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, ""), "creator", dc );
+    }
     
 
     for each (child in originalXml.dkabm::record.dc::language) {
