@@ -575,16 +575,22 @@ that.isAnalysisOf = function ( xml, pid ) {
     
     var child;
 
-    var creator = "NOBIRTH:" + String(creatorXML.dkabm::record.dc::title[0]);
+    var creatorNoBirth = "NOBIRTH:" + String(creatorXML.dkabm::record.dc::title[0]);
+		var creator = String(creatorXML.dkabm::record.dc::title[0]);
 		
+		Log.debug("CREATORNOBIRTH (TITLE): " + creatorNoBirth);
 		Log.debug("CREATOR (TITLE): " + creator);
 
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
 
     if (creator !== "undefined") {
-      var results = FedoraPIDSearch.creator(creator);
+      var results = FedoraPIDSearch.creator(creatorNoBirth);
       
+			if (results.length === 0) {
+				results = FedoraPIDSearch.creator(creator);
+			}
+			
       for (var i = 0; i < results.length; ++i) {
         var result = results[i];
         
