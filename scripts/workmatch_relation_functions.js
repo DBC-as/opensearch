@@ -1,8 +1,8 @@
 
 //importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
 
-use ( "DcCreator" );
-use ( "Normalize" );
+use ( "DcCreator.use.js" );
+use ( "Normalize.use.js" );
 
 
 // Takes a string representation of a marcxchange posts dc-stream
@@ -56,8 +56,8 @@ function checkmatch( newObject, workObject )
     var workTitle = Normalize.removeSpecialCharacters( String(workObjectXml.dc::title).toLowerCase() );
     var newSource = Normalize.removeSpecialCharacters( String(newObjectXml.dc::source).toLowerCase() );
     var workSource = Normalize.removeSpecialCharacters( String(workObjectXml.dc::source).toLowerCase() );
-    var newCreator = String(newObjectXml.dc::creator).toLowerCase();
-    var workCreator = String(workObjectXml.dc::creator).toLowerCase();
+    var newCreator = String(newObjectXml.dc::creator[0]).toLowerCase();
+    var workCreator = String(workObjectXml.dc::creator[0]).toLowerCase();
     var newType = String(newObjectXml.dc::type).toLowerCase();
     var workType = String(workObjectXml.dc::type).toLowerCase();
 
