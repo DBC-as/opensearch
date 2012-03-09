@@ -613,6 +613,12 @@
         <arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>		
+	<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>	
   </workflow>
   <workflow format="portraet" submitter="150016">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -966,7 +972,7 @@
       </args>
     </plugin>
   </workflow>	
-	<workflow format="ebogsbib" submitter="150028">
+  <workflow format="ebogsbib" submitter="150028">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -978,15 +984,30 @@
     	<args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeleteObjectMarc"/>
+		<arg name="skipUnchangedPosts" value="true"/>
       </args>
 		</plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+          <arg name="javascript" value="workmatch_relation_functions.js"/>
+	      <arg name="searchfunction" value="generateSearchPairs"/>
+	      <arg name="matchfunction" value="checkmatch"/>
+	      <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>   
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasReview"/>
       </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
     </plugin>		
-	</workflow>
+  </workflow>
   <workflow format="ucviden" submitter="150029">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
@@ -1204,6 +1225,42 @@
       </args>
     </plugin>
   </workflow>		
+    <workflow format="ebrary" submitter="150035">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromMarc"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+      <args>
+        <arg name="javascript" value="store_functions.js"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
+		<arg name="skipUnchangedPosts" value="true"/>
+      </args>
+		</plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	    <arg name="searchfunction" value="generateSearchPairs"/>
+	    <arg name="matchfunction" value="checkmatch"/>
+	    <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOpenUrl"/>
+      </args>
+    </plugin>
+  </workflow>
 	<workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
