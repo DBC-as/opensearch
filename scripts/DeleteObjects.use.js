@@ -22,7 +22,7 @@ var DeleteObjects = function() {
     Log.info ("Start checkDeleteObjectMarc" );
 
     var originalXml = XmlUtil.fromString( xml );
-  	if (String(originalXml.marcx::collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+  	if (String(originalXml.marcx::collection.*.*.(@tag=="004").subfield.(@code=="r")) === "d") {
     	return true;
 		} else {
 			return false;
