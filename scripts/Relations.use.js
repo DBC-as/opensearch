@@ -308,8 +308,7 @@ var Relations = function() {
       var result = results[i];
 
       Log.info( "result: " + result );				
-
-      if (String(result).match(/150005:.*/)) {
+      if (String(result).match(/150005:.*/) || String(result).match(/870974:.*/)) {
         DbcAddiRelations.hasAnalysis( pid, result );
       }
     }
