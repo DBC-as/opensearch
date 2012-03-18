@@ -297,7 +297,9 @@ var Relations = function() {
 
 		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 		var title = String(katalogXML.dkabm::record.dc::title[0]);
-		var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
+		//var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
+		var query = "subject = " + creator + " AND subject = " + title + " AND ( label = analyse OR label = littolk )";
+	
 		Log.debug("RLO query: " + query);
 			
 		var results = FedoraCQLSearch.search( query );
