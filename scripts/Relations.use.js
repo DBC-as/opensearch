@@ -895,9 +895,13 @@ var Relations = function() {
       	}
 			}
 		
-		if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
-      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
-      DbcAddiRelations.hasOnlineAccess( pid, url );
+		var infomedia = 0;	
+		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
+      if (String(child) === "Infomedia" && infomedia === 0) {
+        var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
+     		DbcAddiRelations.hasOnlineAccess( pid, url );
+				infomedia++;
+      }
     }
 
     Log.info ("End hasOnlineAccess" );
