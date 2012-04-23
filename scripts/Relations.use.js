@@ -174,23 +174,25 @@ var Relations = function() {
         analysedTitles.push (analysedTitle);
       }
 			// if no analysed titles, search for creator (only if it contains a birth year)
-			if (analysedTitles.length < 1) {
-				for (var x = 0; x < personNames.length; ++x) {
-					if (String(personNames[x]).match(/\(/)) {
-						query = "creator \u003D " + personNames[x];
-						var results = FedoraCQLSearch.search(query);
-						
-						//add relations based on the results
-						for (var ii = 0; ii < results.length; ++ii) {
-							var result = results[ii]; //
-							if (!String(result).match(/work:.*/)) {
-								DbcAddiRelations.isAnalysisOf(pid, result);
-							}
-						}
-					}
-				}
-			// search for creator + title		
-			} else {
+			//temporarily removed because too many relations were created
+//			if (analysedTitles.length < 1) {
+//				for (var x = 0; x < personNames.length; ++x) {
+//					if (String(personNames[x]).match(/\(/)) {
+//						query = "creator \u003D " + personNames[x];
+//						var results = FedoraCQLSearch.search(query);
+//						
+//						//add relations based on the results
+//						for (var ii = 0; ii < results.length; ++ii) {
+//							var result = results[ii]; //
+//							if (!String(result).match(/work:.*/)) {
+//								DbcAddiRelations.isAnalysisOf(pid, result);
+//							}
+//						}
+//					}
+//				}
+//			// search for creator + title		
+//			} else { 
+			
 	      for (var x = 0; x < personNames.length; ++x ) {
 	        for (var y = 0; y < analysedTitles.length; ++y){
 	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
@@ -242,7 +244,7 @@ var Relations = function() {
 	          }     
 	        }
 	      }
-      }
+     // } //removed creator only search
 			            
       //Litteratursiden		
 		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
