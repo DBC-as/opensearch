@@ -665,6 +665,76 @@ var Relations = function() {
     Log.info ("End hasCreatorDescription" );
 
   };
+	
+	that.isPublisherDescriptionOf = function ( xml, pid ) {
+
+    Log.info ("Start isPublisherDescriptionOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var inputXml = XmlUtil.fromString( xml );
+    
+		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: (.*) af .*/, "$1");
+		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: .* af (.*)/, "NOBIRTH:$1").replace(/  /, " ");
+	
+	  Log.info( "isPublisherDescriptionOf PID: " + pid );
+    Log.info( "isPublisherDescriptionOf TITLE: " + title );
+		Log.info( "isPublisherDescriptionOf CREATOR: " + creator );
+    
+			
+		var query = "creator = " + creator + " AND title = " + title;
+		Log.debug("QUERY: " + query);
+				
+		var results = FedoraCQLSearch.search( query );
+			
+    for (var i = 0; i < results.length; ++i) {
+      var result = results[i];
+        
+      Log.info("result: " + result);
+        
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasPublisherDescription(result, pid);
+      }
+    }
+
+    Log.info ("End isPublisherDescriptionOf" );
+
+  };
+
+  that.hasPublisherDescription = function ( xml, pid ) {
+
+    Log.info ("Start hasPublisherDescription" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var inputXml = XmlUtil.fromString( xml );
+    
+		var title = String(inputXml.dkabm::record.dc::title[0]);
+		
+		var child;
+
+		var creator = (String(inputXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, ""));
+	
+	  Log.info( "hasPublisherDescription PID: " + pid );
+    Log.info( "hasPublisherDescription TITLE: " + title );
+		Log.info( "hasPublisherDescription CREATOR: " + creator );
+		
+		var query = "subject = " + creator + " AND subject = " + title;
+		Log.debug("QUERY: " + query);
+				
+		var results = FedoraCQLSearch.search( query );
+			
+    for (var i = 0; i < results.length; ++i) {
+      var result = results[i];
+        
+      Log.info("result: " + result);
+        
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasPublisherDescription(pid, result);
+      }
+    }
+    
+    Log.info ("End hasPublisherDescription" );
+
+  };
 
   that.isSubjectDescriptionOf = function ( xml, pid ) {
 
