@@ -756,7 +756,7 @@ var Relations = function() {
         
         Log.info("result: " + result);
         
-        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/) && !String(result).match(/150033:.*/)) {
+        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/) && !String(result).match(/150033:.*/) && !String(result).match(/150040:.*/)) {
           DbcAddiRelations.hasSubjectDescription(result, pid);
         }
       }
@@ -789,7 +789,7 @@ var Relations = function() {
 	
 	        Log.info( "result: " + result );
 	
-	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/) || String(result).match(/150033:.*/)) {
+	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/) || String(result).match(/150033:.*/) || String(result).match(/150040:.*/)) {
 	          DbcAddiRelations.hasSubjectDescription( pid, result );
 	        }
 	      }
@@ -891,7 +891,7 @@ var Relations = function() {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
-		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Samfundsfaget|Religionsfaget|Dansk historie|Danske Dyr/)) {
+		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Samfundsfaget|Religionsfaget|Dansk historie|Danske Dyr|Verdens Dyr/)) {
 				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.dc::identifier));
 		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
 				for each (child in manifestationXML.dkabm::record.dc::identifier) {
