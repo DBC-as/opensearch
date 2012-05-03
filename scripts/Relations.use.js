@@ -674,7 +674,7 @@ var Relations = function() {
     var inputXml = XmlUtil.fromString( xml );
     
 		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: (.*) af .*/, "$1");
-		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: .* af (.*)/, "NOBIRTH:$1").replace(/  /, " ");
+		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: .* af (.*)/, "NOBIRTH:$1").replace(/  /g, " ");
 	
 	  Log.info( "isPublisherDescriptionOf PID: " + pid );
     Log.info( "isPublisherDescriptionOf TITLE: " + title );
@@ -685,6 +685,27 @@ var Relations = function() {
 		Log.debug("QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
+			
+    for (var i = 0; i < results.length; ++i) {
+      var result = results[i];
+        
+      Log.info("result: " + result);
+        
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasPublisherDescription(result, pid);
+      }
+    }
+		
+		var child;
+		
+		for each (child in inputXml.dkabm::record.ac::identifier) {
+      var identifier = "ISBN:" + String(child).replace(/\|150039/, "");
+    } 
+		
+		query = "identifier = " + identifier;
+		Log.debug("IDENTIFIER QUERY: " + query);
+				
+		results = FedoraCQLSearch.search( query );
 			
     for (var i = 0; i < results.length; ++i) {
       var result = results[i];
@@ -721,7 +742,7 @@ var Relations = function() {
 		Log.debug("QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
-			
+    
     for (var i = 0; i < results.length; ++i) {
       var result = results[i];
         
@@ -729,6 +750,31 @@ var Relations = function() {
         
       if (!String(result).match(/work:.*/)) {
         DbcAddiRelations.hasPublisherDescription(pid, result);
+      }
+    }
+		
+		var child;
+		
+		for each (child in inputXml.dkabm::record.dc::identifier) {
+      if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
+        Log.debug ( "Attribute: " + String(child.@xsi::type));
+        Log.debug ( "Child: " + child );
+        var identifier = String(child).replace(/ /g, "");
+      }
+    } 
+		
+		query = "identifier = 150039:" + identifier;
+		Log.debug("IDENTIFIER QUERY: " + query);
+				
+		results = FedoraCQLSearch.search( query );
+			
+    for (var i = 0; i < results.length; ++i) {
+      var result = results[i];
+        
+      Log.info("result: " + result);
+        
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasPublisherDescription( pid, result );
       }
     }
     
