@@ -64,7 +64,7 @@
 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasPublisherDescription"/>
+        <arg name="entryfunction" value="hasDescriptionFromPublisher"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -131,7 +131,7 @@
 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasPublisherDescription"/>
+        <arg name="entryfunction" value="hasDescriptionFromPublisher"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -1340,7 +1340,7 @@
 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isPublisherDescriptionOf"/>
+        <arg name="entryfunction" value="isDescriptionFromPublisherOf"/>
       </args>
     </plugin>
   </workflow>
