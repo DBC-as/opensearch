@@ -115,11 +115,11 @@ const DbcAddiRelations = function() {
         Log.info( "End hasRingtone" );
     };
 
-		that.hasPublisherDescription = function ( pid1, pid2 ){
-        Log.info( "Start hasPublisherDescription" );
-        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasPublisherDescription", pid2 );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isPublisherDescriptionOf", pid1 );
-				Log.info( "End hasPublisherDescription" );
+		that.hasDescriptionFromPublisher = function ( pid1, pid2 ){
+        Log.info( "Start hasDescriptionFromPublisher" );
+        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasDescriptionFromPublisher", pid2 );
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isDescriptionFromPublisherOf", pid1 );
+				Log.info( "End hasDescriptionFromPublisher" );
     };
 
     that.hasSubjectDescription = function ( pid1, pid2 ){

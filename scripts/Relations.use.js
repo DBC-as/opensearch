@@ -666,22 +666,21 @@ var Relations = function() {
 
   };
 	
-	that.isPublisherDescriptionOf = function ( xml, pid ) {
+	that.isDescriptionFromPublisherOf = function ( xml, pid ) {
 
-    Log.info ("Start isPublisherDescriptionOf" );
+    Log.info ("Start isDescriptionFromPublisherOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var inputXml = XmlUtil.fromString( xml );
     
-		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: (.*) af .*/, "$1");
-		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagsomtale af: .* af (.*)/, "NOBIRTH:$1").replace(/  /g, " ");
+		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: (.*) af .*/, "$1");
+		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: .* af (.*)/, "NOBIRTH:$1").replace(/  /g, " ").replace(/ m\.fl\./, "");
 	
-	  Log.info( "isPublisherDescriptionOf PID: " + pid );
-    Log.info( "isPublisherDescriptionOf TITLE: " + title );
-		Log.info( "isPublisherDescriptionOf CREATOR: " + creator );
-    
-			
-		var query = "creator = " + creator + " AND title = " + title;
+	  Log.info( "isDescriptionFromPublisherOf PID: " + pid );
+    Log.info( "isDescriptionFromPublisherOf TITLE: " + title );
+		Log.info( "isDescriptionFromPublisherOf CREATOR: " + creator );
+    		
+		var query = "title = " + title + " AND ( creator = " + creator + " OR contributor = " + creator.replace(/NOBIRTH:/, "") + " )";
 		Log.debug("QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
@@ -692,7 +691,7 @@ var Relations = function() {
       Log.info("result: " + result);
         
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasPublisherDescription(result, pid);
+        DbcAddiRelations.hasDescriptionFromPublisher(result, pid);
       }
     }
 		
@@ -713,17 +712,17 @@ var Relations = function() {
       Log.info("result: " + result);
         
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasPublisherDescription(result, pid);
+        DbcAddiRelations.hasDescriptionFromPublisher(result, pid);
       }
     }
 
-    Log.info ("End isPublisherDescriptionOf" );
+    Log.info ("End isDescriptionFromPublisherOf" );
 
   };
 
-  that.hasPublisherDescription = function ( xml, pid ) {
+  that.hasDescriptionFromPublisher = function ( xml, pid ) {
 
-    Log.info ("Start hasPublisherDescription" );
+    Log.info ("Start hasDescriptionFromPublisher" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var inputXml = XmlUtil.fromString( xml );
@@ -731,12 +730,13 @@ var Relations = function() {
 		var title = String(inputXml.dkabm::record.dc::title[0]);
 		
 		var child;
+		var result;
 
-		var creator = (String(inputXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, ""));
+		var creator = String(inputXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
 	
-	  Log.info( "hasPublisherDescription PID: " + pid );
-    Log.info( "hasPublisherDescription TITLE: " + title );
-		Log.info( "hasPublisherDescription CREATOR: " + creator );
+	  Log.info( "hasDescriptionFromPublisher PID: " + pid );
+    Log.info( "hasDescriptionFromPublisher TITLE: " + title );
+		Log.info( "hasDescriptionFromPublisher CREATOR: " + creator );
 		
 		var query = "subject = " + creator + " AND subject = " + title;
 		Log.debug("QUERY: " + query);
@@ -744,16 +744,35 @@ var Relations = function() {
 		var results = FedoraCQLSearch.search( query );
     
     for (var i = 0; i < results.length; ++i) {
-      var result = results[i];
+      result = results[i];
         
       Log.info("result: " + result);
         
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasPublisherDescription(pid, result);
+        DbcAddiRelations.hasDescriptionFromPublisher(pid, result);
       }
     }
 		
-		var child;
+		for each (child in inputXml.dkabm::record.dc::contributor) {
+			creator = String(child).replace(/ \(f\. .*\)/, "");
+			
+			Log.info( "hasDescriptionFromPublisher CONTRIBUTOR: " + creator );
+			
+			query = "subject = " + creator + " AND subject = " + title;
+			Log.debug("QUERY: " + query);
+				
+			results = FedoraCQLSearch.search( query );
+    
+    	for (i = 0; i < results.length; ++i) {
+      	result = results[i];
+        
+      	Log.info("result: " + result);
+        
+      	if (!String(result).match(/work:.*/)) {
+        	DbcAddiRelations.hasDescriptionFromPublisher(pid, result);
+      	}
+    	}
+		}
 		
 		for each (child in inputXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
@@ -768,17 +787,17 @@ var Relations = function() {
 				
 		results = FedoraCQLSearch.search( query );
 			
-    for (var i = 0; i < results.length; ++i) {
-      var result = results[i];
+    for (i = 0; i < results.length; ++i) {
+      result = results[i];
         
       Log.info("result: " + result);
         
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasPublisherDescription( pid, result );
+        DbcAddiRelations.hasDescriptionFromPublisher( pid, result );
       }
     }
     
-    Log.info ("End hasPublisherDescription" );
+    Log.info ("End hasDescriptionFromPublisher" );
 
   };
 

@@ -44,12 +44,12 @@ function hasCreatorDescription ( submitter, format, language, xml, pid ) {
   Relations.hasCreatorDescription ( xml, pid );
 }
 
-function isPublisherDescriptionOf ( submitter, format, language, xml, pid ) {
-  Relations.isPublisherDescriptionOf ( xml, pid );
+function isDescriptionFromPublisherOf ( submitter, format, language, xml, pid ) {
+  Relations.isDescriptionFromPublisherOf ( xml, pid );
 }
 
-function hasPublisherDescription ( submitter, format, language, xml, pid ) {
-  Relations.hasPublisherDescription ( xml, pid );
+function hasDescriptionFromPublisher ( submitter, format, language, xml, pid ) {
+  Relations.hasDescriptionFromPublisher ( xml, pid );
 }
 
 function isSubjectDescriptionOf ( submitter, format, language, xml, pid ) {
