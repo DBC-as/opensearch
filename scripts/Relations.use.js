@@ -249,8 +249,9 @@ var Relations = function() {
       //Litteratursiden		
 		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
 			var analysedCreator = analysisXML.dkabm::record.dc::subject[0];
+			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
 			var analysedTitle = analysisXML.dkabm::record.dc::subject[1];
-//			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
+			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
 			Log.debug( "LSK - analysedCreator: " + analysedCreator );
 			Log.debug( "LSK - analysedTitle: " + analysedTitle );
 			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
