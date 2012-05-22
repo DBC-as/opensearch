@@ -39,6 +39,7 @@ var Relations = function() {
     for ( var i = 0; i < results.length; ++i ) {
       var result = results[i];
 
+			Log.debug( "LSK - result: " + result);
       Log.info( "result: " + result );
 
       if (!String(result).match(/work:.*/)) {
