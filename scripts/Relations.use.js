@@ -300,6 +300,7 @@ var Relations = function() {
 
 		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 		creator = Normalize.removeSpecialCharacters(creator);
+		creator = creator.replace(/(.*) $/, "$1");
 		var title = String(katalogXML.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
 		//var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
