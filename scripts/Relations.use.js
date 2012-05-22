@@ -49,9 +49,7 @@ var Relations = function() {
 
     if (i === 0) {
 			if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
-				var reviewedCreator = reviewXML.dkabm::record.dc::subject[0];
-				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);
-				reviewedCreator = reviewedCreator.replace(/(.*) $/, "$1");				
+				var reviewedCreator = reviewXML.dkabm::record.dc::subject[0];				
 				var reviewedTitle = reviewXML.dkabm::record.dc::subject[1];
 				reviewedTitle = Normalize.removeSpecialCharacters(reviewedTitle);
 				Log.debug( "LSK - reviewedCreator: " + reviewedCreator );
