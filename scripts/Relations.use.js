@@ -1120,7 +1120,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
 
     if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var id = String(manifestationXML.*.*.*.(@tag=='856')[0].*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
       DbcAddiRelations.hasOnlineAccess( pid, url );
     }
@@ -1137,7 +1137,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
 
     if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var id = String(manifestationXML.*.*.*.(@tag=='856')[0].*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
       DbcAddiRelations.hasOnlineAccess( pid, url );
     }
@@ -1154,7 +1154,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
 
     if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSB/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var id = String(manifestationXML.*.*.*.(@tag=='856')[0].*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/bibliotek/filmdetails.aspx?id=" + id);
       DbcAddiRelations.hasOnlineAccess( pid, url );
     }
