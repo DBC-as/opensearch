@@ -254,7 +254,7 @@ var Relations = function() {
 			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
 			var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
 // normalizing seems to cause errors when tested at kuju
-			AnalysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
+			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
 			Log.debug( "LSK - analysedCreator: " + analysedCreator );
 			Log.debug( "LSK - analysedTitle: " + analysedTitle );
 			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
