@@ -9,9 +9,7 @@ var Normalize = function(){
 
   that.removeSpecialCharacters = function ( string ) {
 
-    //var newString = string.replace(/\?|!|\*|'|\u00A4/g, "");
-		var newString = string.replace(/'/g, "");
-		newString = newString.replace(/  /g, " ");
+    var newString = string.replace(/\?|!|\*|'|\u00A4/g, "");
 		
 		return newString
 
