@@ -49,9 +49,9 @@ var Relations = function() {
 
     if (i === 0) {
 			if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
-				var reviewedCreator = reviewXML.dkabm::record.dc::subject[0];	
+				var reviewedCreator = String(reviewXML.dkabm::record.dc::subject[0]);	
 				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);			
-				var reviewedTitle = reviewXML.dkabm::record.dc::subject[1];
+				var reviewedTitle = String(reviewXML.dkabm::record.dc::subject[1]);
 // normalizing seems to cause error when tested at kuju
 				reviewedTitle = Normalize.removeSpecialCharacters(reviewedTitle);
 				Log.debug( "LSK - reviewedCreator: " + reviewedCreator );
@@ -250,9 +250,9 @@ var Relations = function() {
 			            
       //Litteratursiden		
 		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
-			var analysedCreator = analysisXML.dkabm::record.dc::subject[0];
+			var analysedCreator = String(analysisXML.dkabm::record.dc::subject[0]);
 			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
-			var analysedTitle = analysisXML.dkabm::record.dc::subject[1];
+			var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
 // normalizing seems to cause errors when tested at kuju
 			newAnalysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
 			Log.debug( "LSK - analysedCreator: " + analysedCreator );
