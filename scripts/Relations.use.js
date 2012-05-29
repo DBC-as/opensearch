@@ -254,10 +254,10 @@ var Relations = function() {
 			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
 			var analysedTitle = analysisXML.dkabm::record.dc::subject[1];
 // normalizing seems to cause errors when tested at kuju
-			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
+			newAnalysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
 			Log.debug( "LSK - analysedCreator: " + analysedCreator );
-			Log.debug( "LSK - analysedTitle: " + analysedTitle );
-			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
+			Log.debug( "LSK - analysedTitle: " + newAnalysedTitle );
+			var query = "creator = " + analysedCreator + " AND title = " + newAnalysedTitle;
 			Log.debug( "LSK - query: " + query );
 			
 			var results = FedoraCQLSearch.search( query );
