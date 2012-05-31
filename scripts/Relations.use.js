@@ -683,26 +683,28 @@ var Relations = function() {
     	
 		var type = "";
 		
+		Log.debug ("TYPE OF PUBLICATION: " + String(inputXml.ting::originalData.wformat));
+		
 		switch (String(inputXml.ting::originalData.wformat)){
 			case "Netlydbog":
-				type = " ( type = Lydbog (b\u00E5nd) OR type = lydbog (net) OR type = Lydbog (cd) OR type = Lydbog (cd-mp3) )"
+				type = "( type = Lydbog (b\u00E5nd) OR type = lydbog (net) OR type = Lydbog (cd) OR type = Lydbog (cd-mp3) )"
 				break;
 			case "eReolen":
-				type = " ( type = Ebog OR type = bog OR type = bog stor skrift )"
+				type = "( type = Ebog OR type = bog OR type = bog stor skrift )"
 				break;
 			default: 
 				break;
 		}	
 		
-		var query = "title = " + title + " AND ( creator = " + creator + " OR contributor = " + creator.replace(/NOBIRTH:/, "") + " )" + type;
-		Log.debug("QUERY: " + query);
+		var query = "title = " + title + " AND ( creator = " + creator + " OR contributor = " + creator.replace(/NOBIRTH:/, "") + " )" + " AND " + type;
+		Log.debug(pid + " - IS DESCRIPTION FROM PUBLISHER QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
 			
     for (var i = 0; i < results.length; ++i) {
       var result = results[i];
         
-      Log.info("result: " + result);
+      Log.info("IS DESCRIPTION FROM PUBLISHER RESULT: " + result);
         
       if (!String(result).match(/work:.*/)) {
         DbcAddiRelations.hasDescriptionFromPublisher(result, pid);
@@ -716,14 +718,14 @@ var Relations = function() {
     } 
 		
 		query = "identifier = " + identifier;
-		Log.debug("IDENTIFIER QUERY: " + query);
+		Log.debug("IS DESCRIPTION FROM PUBLISHER IDENTIFIER QUERY: " + query);
 				
 		results = FedoraCQLSearch.search( query );
 			
     for (var i = 0; i < results.length; ++i) {
       var result = results[i];
         
-      Log.info("result: " + result);
+      Log.info("IS DESCRIPTION FROM PUBLISHER RESULT: " + result);
         
       if (!String(result).match(/work:.*/)) {
         DbcAddiRelations.hasDescriptionFromPublisher(result, pid);
