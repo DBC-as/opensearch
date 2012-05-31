@@ -674,8 +674,10 @@ var Relations = function() {
     
 		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: (.*) af .*/, "$1");
 		title = Normalize.removeSpecialCharacters(title);
+		Log.debug( "LSK: Normalized title: " + title );
 		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: .* af (.*)/, "NOBIRTH:$1").replace(/  /g, " ").replace(/ m\.fl\./, "");
 		creator = Normalize.removeSpecialCharacters(creator);
+		Log.debug( "LSK: Normalized creator: " + creator );
 		
 	  Log.info( "isDescriptionFromPublisherOf PID: " + pid );
     Log.info( "isDescriptionFromPublisherOf TITLE: " + title );
@@ -745,12 +747,14 @@ var Relations = function() {
     
 		var title = String(inputXml.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
+		Log.debug( "LSK - DESC FROM PUB: Normalized title: " + title );
 		
 		var child;
 		var result;
 
 		var creator = String(inputXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
 		creator = Normalize.removeSpecialCharacters(creator);
+		Log.debug( "LSK - DESC FROM PUB: Normalized creator: " + creator );
 	
 	  Log.info( "hasDescriptionFromPublisher PID: " + pid );
     Log.info( "hasDescriptionFromPublisher TITLE: " + title );
