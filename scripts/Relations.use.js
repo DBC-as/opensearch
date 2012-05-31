@@ -115,6 +115,7 @@ var Relations = function() {
 
 			var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 			creator = creator.replace(/(.*) $/, "$1");
+			Log.debug ( "LSK: creator inden normalisering: " + creator );
 			creator = Normalize.removeSpecialCharacters(creator);
 			Log.debug( "LSK: Normaliseret creator: " + creator);
 			var title = String(katalogXML.dkabm::record.dc::title[0]);
@@ -286,6 +287,7 @@ var Relations = function() {
     var katalogXML = XmlUtil.fromString( xml );
 
 		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
+		Log.debug( "LSK: creator inden normalisering: " + creator );
 		creator = Normalize.removeSpecialCharacters(creator);
 		creator = creator.replace(/(.*) $/, "$1");
 		Log.debug( "LSK: Normaliseret creator: " + creator);
@@ -640,6 +642,7 @@ var Relations = function() {
     var manifestationXml = XmlUtil.fromString( xml );
     
     var creator = String(manifestationXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
+		Log.debug( "LSK: creator inden normalisering: " + creator );
 		creator = Normalize.removeSpecialCharacters(creator);
 		
 		Log.debug ("CREATOR: " + creator);
