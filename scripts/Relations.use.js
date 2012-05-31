@@ -689,10 +689,10 @@ var Relations = function() {
 		
 		switch (String(inputXml.ting::originalData.wformat)){
 			case "Netlydbog":
-				type = "( type = Lydbog (b\u00E5nd) OR type = lydbog (net) OR type = Lydbog (cd) OR type = Lydbog (cd-mp3) )"
+				type = "( type = Lydbog (b\u00E5nd) OR type = Lydbog (net) OR type = Lydbog (cd) OR type = Lydbog (cd-mp3) )"
 				break;
 			case "eReolen":
-				type = "( type = Ebog OR type = bog OR type = bog stor skrift )"
+				type = "( type = Ebog OR type = Bog OR type = Bog stor skrift OR type = Netdokument )"
 				break;
 			default: 
 				break;
