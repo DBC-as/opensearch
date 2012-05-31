@@ -680,8 +680,21 @@ var Relations = function() {
 	  Log.info( "isDescriptionFromPublisherOf PID: " + pid );
     Log.info( "isDescriptionFromPublisherOf TITLE: " + title );
 		Log.info( "isDescriptionFromPublisherOf CREATOR: " + creator );
-    		
-		var query = "title = " + title + " AND ( creator = " + creator + " OR contributor = " + creator.replace(/NOBIRTH:/, "") + " )";
+    	
+		var type = "";
+		
+		switch (String(inputXml.ting::originalData.wformat)){
+			case "Netlydbog":
+				type = " ( type = Lydbog (bånd) OR type = lydbog (net) OR type = Lydbog (cd) OR type = Lydbog (cd-mp3) )"
+				break;
+			case "eReolen":
+				type = " ( type = Ebog OR type = bog OR type = bog stor skrift )"
+				break;
+			default: 
+				break;
+		}	
+		
+		var query = "title = " + title + " AND ( creator = " + creator + " OR contributor = " + creator.replace(/NOBIRTH:/, "") + " )" + type;
 		Log.debug("QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
