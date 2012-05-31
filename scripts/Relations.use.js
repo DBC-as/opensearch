@@ -777,6 +777,8 @@ var Relations = function() {
 		
 		for each (child in inputXml.dkabm::record.dc::contributor) {
 			creator = String(child).replace(/ \(f\. .*\)/, "");
+			creator = Normalize.removeSpecialCharacters(creator);
+			Log.debug( "LSK - DESC FROM PUB: Normaliseret creator" + creator );
 			
 			Log.info( "hasDescriptionFromPublisher CONTRIBUTOR: " + creator );
 			
