@@ -47,11 +47,9 @@ var Relations = function() {
     if (i === 0) {
 			if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
 				var reviewedCreator = String(reviewXML.dkabm::record.dc::subject[0]);	
-				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);
-				Log.debug( "LSK: Normaliseret reviewedCreator: " + reviewedCreator);			
+				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);	
 				var reviewedTitle = String(reviewXML.dkabm::record.dc::subject[1]);
 				reviewedTitle = Normalize.removeSpecialCharacters(reviewedTitle);
-				Log.debug( "LSK: Normaliseret reviewedTitle: " + reviewedTitle);
 				var query = "creator = " + reviewedCreator + " AND title = " + reviewedTitle;
 				Log.debug( "query: " + query );
 			
@@ -116,10 +114,8 @@ var Relations = function() {
 			var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 			creator = creator.replace(/(.*) $/, "$1");
 			creator = Normalize.removeSpecialCharacters(creator);
-			Log.debug( "LSK: Normaliseret creator: " + creator);
 			var title = String(katalogXML.dkabm::record.dc::title[0]);
 			title = Normalize.removeSpecialCharacters(title);
-			Log.debug( "LSK: Normaliseret title: " + title );
 			var query = "subject = " + creator + " AND subject = " + title + " AND type = anmeldelse";
 			
 			Log.info( "query: " + query );
@@ -254,10 +250,8 @@ var Relations = function() {
 		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
 			var analysedCreator = String(analysisXML.dkabm::record.dc::subject[0]);
 			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
-			Log.debug( "LSK: Normaliseret analyzedCreator: " + analyzedCreator);
 			var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
 			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
-			Log.debug( "LSK: Normaliseret analyzedTitle: " + analyzedTitle);
 			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
 			Log.info( "query: " + query );
 			
@@ -288,10 +282,8 @@ var Relations = function() {
 		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 		creator = Normalize.removeSpecialCharacters(creator);
 		creator = creator.replace(/(.*) $/, "$1");
-		Log.debug( "LSK: Normaliseret creator: " + creator);
 		var title = String(katalogXML.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
-		Log.debug( "LSK: Normaliseret title: " + title);
 		//var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
 		var query = "subject = " + creator + " AND subject = " + title + " AND ( label = analyse OR label = littolk )";
 	
@@ -605,7 +597,6 @@ var Relations = function() {
 		
 		Log.debug("CREATORNOBIRTH (TITLE): " + creatorNoBirth);
 		Log.debug("CREATOR (TITLE): " + creator);
-		Log.debug( "LSK: Normaliseret creator: " + creator );
 
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
@@ -643,11 +634,9 @@ var Relations = function() {
 		creator = Normalize.removeSpecialCharacters(creator);
 		
 		Log.debug ("CREATOR: " + creator);
-		Log.debug ( "LSK: Normaliseret creator: " + creator );
         
     if (creator !== "undefined") {
       var results = FedoraPIDSearch.title( Normalize.removeSpecialCharacters( creator ) );
-			Log.debug ( "LSK: Normaliseret result " + result );
 
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
@@ -674,10 +663,8 @@ var Relations = function() {
     
 		var title = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: (.*) af .*/, "$1");
 		title = Normalize.removeSpecialCharacters(title);
-		Log.debug( "LSK: Normalized title: " + title );
 		var creator = String(inputXml.dkabm::record.dc::title[0]).replace(/Forlagets beskrivelse af: .* af (.*)/, "NOBIRTH:$1").replace(/  /g, " ").replace(/ m\.fl\./, "");
 		creator = Normalize.removeSpecialCharacters(creator);
-		Log.debug( "LSK: Normalized creator: " + creator );
 		
 	  Log.info( "isDescriptionFromPublisherOf PID: " + pid );
     Log.info( "isDescriptionFromPublisherOf TITLE: " + title );
@@ -747,14 +734,12 @@ var Relations = function() {
     
 		var title = String(inputXml.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
-		Log.debug( "LSK - DESC FROM PUB: Normalized title: " + title );
 		
 		var child;
 		var result;
 
 		var creator = String(inputXml.dkabm::record.dc::creator[0]).replace(/ \(f\. .*\)/, "");
 		creator = Normalize.removeSpecialCharacters(creator);
-		Log.debug( "LSK - DESC FROM PUB: Normalized creator: " + creator );
 	
 	  Log.info( "hasDescriptionFromPublisher PID: " + pid );
     Log.info( "hasDescriptionFromPublisher TITLE: " + title );
@@ -778,7 +763,6 @@ var Relations = function() {
 		for each (child in inputXml.dkabm::record.dc::contributor) {
 			creator = String(child).replace(/ \(f\. .*\)/, "");
 			creator = Normalize.removeSpecialCharacters(creator);
-			Log.debug( "LSK - DESC FROM PUB: Normaliseret creator" + creator );
 			
 			Log.info( "hasDescriptionFromPublisher CONTRIBUTOR: " + creator );
 			
@@ -834,7 +818,6 @@ var Relations = function() {
 
     var title = String(subjectXML.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
-		Log.debug ( "LSK: Normaliseret title: " + title );
 
     Log.info( "Title: " + title );    
     Log.info( "pid: " + pid );
@@ -877,7 +860,6 @@ var Relations = function() {
 	
 	      for ( var i = 0; i < results.length; ++i ) {
 	        var result = results[i];
-					Log.debug( "LSK: Normaliseret result: " + result );
 	
 	        Log.info( "result: " + result );
 	
