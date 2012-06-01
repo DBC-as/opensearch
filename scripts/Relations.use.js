@@ -745,7 +745,20 @@ var Relations = function() {
     Log.info( "hasDescriptionFromPublisher TITLE: " + title );
 		Log.info( "hasDescriptionFromPublisher CREATOR: " + creator );
 		
-		var query = "subject = " + creator + " AND subject = " + title;
+		var type = "";
+		
+		switch (String(inputXml.dkabm::record.dc::type)) {
+			case "Lydbog (b\u00E5nd)": case "Lydbog (net)": case "Lydbog (cd)": case "Lydbog (cd-mp3)":
+				type = " type = PUBLISHERDESCRIPTION:Netlydbog";
+				break;
+			case "Ebog": case "Bog": case "Bog stor skrift": case "Netdokument":
+				type = " type = PUBLISHERDESCRIPTION:eReolen";
+				break;
+			default:
+				return;
+		}
+		
+		var query = "subject = " + creator + " AND subject = " + title + " AND type = " + type;
 		Log.debug("QUERY: " + query);
 				
 		var results = FedoraCQLSearch.search( query );
@@ -755,18 +768,17 @@ var Relations = function() {
         
       Log.info("result: " + result);
         
-      if (!String(result).match(/work:.*/)) {
+      if (String(result).match(/150039:.*/)) {
         DbcAddiRelations.hasDescriptionFromPublisher(pid, result);
       }
     }
 		
 		for each (child in inputXml.dkabm::record.dc::contributor) {
 			creator = String(child).replace(/ \(f\. .*\)/, "");
-			creator = Normalize.removeSpecialCharacters(creator);
 			
 			Log.info( "hasDescriptionFromPublisher CONTRIBUTOR: " + creator );
 			
-			query = "subject = " + creator + " AND subject = " + title;
+			query = "subject = " + creator + " AND subject = " + title + " AND type = " + type;
 			Log.debug("QUERY: " + query);
 				
 			results = FedoraCQLSearch.search( query );
@@ -776,7 +788,7 @@ var Relations = function() {
         
       	Log.info("result: " + result);
         
-      	if (!String(result).match(/work:.*/)) {
+      	if (!String(result).match(/150039:.*/)) {
         	DbcAddiRelations.hasDescriptionFromPublisher(pid, result);
       	}
     	}

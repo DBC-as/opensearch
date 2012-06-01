@@ -204,6 +204,10 @@ var DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "type", dc );
       }
     }
+		
+		for each (child in originalXml.ting::originalData.wformat) {
+      dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PUBLISHERDESCRIPTION:" + String(child), "type", dc );
+    }
 
     for each (child in originalXml.dkabm::record.dc::contributor) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "contributor", dc );
