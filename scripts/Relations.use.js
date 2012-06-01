@@ -749,10 +749,10 @@ var Relations = function() {
 		
 		switch (String(inputXml.dkabm::record.dc::type)) {
 			case "Lydbog (b\u00E5nd)": case "Lydbog (net)": case "Lydbog (cd)": case "Lydbog (cd-mp3)":
-				type = " type = PUBLISHERDESCRIPTION:Netlydbog";
+				type = "PUBLISHERDESCRIPTION:Netlydbog";
 				break;
 			case "Ebog": case "Bog": case "Bog stor skrift": case "Netdokument":
-				type = " type = PUBLISHERDESCRIPTION:eReolen";
+				type = "PUBLISHERDESCRIPTION:eReolen";
 				break;
 			default:
 				return;
