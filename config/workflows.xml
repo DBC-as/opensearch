@@ -635,7 +635,13 @@
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasReview"/>
       </args>
-    </plugin>		
+    </plugin>	
+	<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasPublisherDescription"/>
+      </args>
+    </plugin>	
 	<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
@@ -992,6 +998,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+	<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasPublisherDescription"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
