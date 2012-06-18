@@ -640,11 +640,10 @@ var Relations = function() {
 
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
-				Log.debug ( "LSK: Normaliseret result " + result );
 
         Log.info( "result: " + result );
 
-        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/) || String(result).match(/150012:.*/)) && !String(result).match(/image/)) {
+        if ((String(result).match(/150016:.*/) || String(result).match(/150005:.*/)) && !String(result).match(/image/)) {
           DbcAddiRelations.hasCreatorDescription( pid, result );
         }
       }
