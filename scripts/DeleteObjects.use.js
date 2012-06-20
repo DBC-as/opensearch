@@ -1,5 +1,6 @@
-use ( "XmlUtil" );
-use ( "XmlNamespaces" );
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
+use ( "Log.use.js" );
 
 EXPORTED_SYMBOLS = ['DeleteObjects'];
 
@@ -55,7 +56,6 @@ var DeleteObjects = function() {
 		}
 
   };
-	
 	
 	return that;
 

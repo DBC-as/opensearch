@@ -1,13 +1,14 @@
-use ( "DcCreator" );
+use ( "DcCreator.use.js" );
+use ( "Log.use.js" );
 
 function buildxml_beta( xml )
 {
 
-    Log.info( "RLO: Entering javascript" );
+    Log.info( "Entering javascript" );
 
     var dc = DcCreator.createDcFromMarc ( xml ); 
 
-    Log.info( "RLO: Leaving javascript" );
+    Log.info( "Leaving javascript" );
 
     return dc;
 
@@ -16,11 +17,11 @@ function buildxml_beta( xml )
 function dcFromMarc( xml )
 {
 
-    Log.info( "RLO: Entering javascript dcFromMarc" );
+    Log.info( "Entering javascript dcFromMarc" );
 
     var dc = DcCreator.createDcFromMarc ( xml ); 
 
-    Log.info( "RLO: Leaving javascript" );
+    Log.info( "Leaving javascript" );
 
     return dc;
 
@@ -29,11 +30,11 @@ function dcFromMarc( xml )
 function dcFromDkabm( xml )
 {
 
-    Log.info( "RLO: Entering javascript dcFromDkabm" );
+    Log.info( "Entering javascript dcFromDkabm" );
 
     var dc = DcCreator.createDcFromDkabm ( xml ); 
 
-    Log.info( "RLO: Leaving javascript" );
+    Log.info( "Leaving javascript" );
 
     return dc;
 
@@ -42,11 +43,11 @@ function dcFromDkabm( xml )
 function dcFromOso( xml )
 {
 
-    Log.info( "RLO: Entering javascript dcFromOso" );
+    Log.info( "Entering javascript dcFromOso" );
 
     var dc = DcCreator.createDcFromOso ( xml ); 
 
-    Log.info( "RLO: Leaving javascript" );
+    Log.info( "Leaving javascript" );
 
     return dc;
 

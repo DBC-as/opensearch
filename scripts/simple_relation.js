@@ -76,10 +76,6 @@ function isOnlineAccessOf ( submitter, format, language, xml, pid ) {
   Relations.isOnlineAccessOf ( xml, pid );
 }
 
-function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
-  Relations.hasSpecificOnlineAccess ( xml, pid );
-}
-
 function hasFilmstribenFSSOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasFilmstribenFSSOnlineAccess ( xml, pid );
 }
@@ -94,22 +90,6 @@ function hasFilmstribenFSBOnlineAccess ( submitter, format, language, xml, pid )
 
 function hasCreatorHomePage ( submitter, format, language, xml, pid ) {
   Relations.hasCreatorHomePage ( xml, pid );
-}
-
-function references ( submitter, format, language, xml, pid ) {
-  Relations.references ( xml, pid );
-}
-
-function isReferencedBy ( submitter, format, language, xml, pid ) {
-  Relations.isReferencedBy ( xml, pid );
-}
-
-function hasCreator ( submitter, format, language, xml, pid ) {
-  Relations.hasCreator ( xml, pid );
-}
-
-function isCreatorOf ( submitter, format, language, xml, pid ) {
-  Relations.isCreatorOf ( xml, pid );
 }
 
 function hasOpenUrl ( submitter, format, language, xml, pid ) {

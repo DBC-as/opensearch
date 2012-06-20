@@ -1,8 +1,5 @@
 EXPORTED_SYMBOLS = ['Normalize'];
 
-use ( "XmlUtil.use.js" );
-use ( "XmlNamespaces.use.js" );
-
 var Normalize = function(){
 
   var that = {};

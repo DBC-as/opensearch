@@ -35,21 +35,21 @@ var DcCreator = function(){
 			Log.debug( "kwc-after");
     }
 
+/* Under development for Litteraturtolkninger
     //part titles from collections (e.g. poems, fairy tales, short stories)
-		
 		for each (child in originalXml.*.*.*.(@tag == "530").*.(@code == "t")) {
 			Log.debug( "kwc530, 530: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
-	  }
-    }
-		                   
+	  	}
+    }                 
 		for each (child in originalXml.*.*.*.(@tag == "534").*.(@code == "t")) {
 			Log.debug( "kwc534, 534: " + child);
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
-	  }
+	  	}
     }				
+*/
 	    
 	  if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
@@ -127,13 +127,13 @@ var DcCreator = function(){
     for each (child in originalXml.*.*.*.(@tag == "014").*.(@code == "a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child).replace( /-/g, ""), "relation", dc );
-	  }
+	  	}
     }
 
     for each (child in originalXml.*.*.*.(@tag == "016").*.(@code == "a")) {
       if (String(child) !== "") {
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
-	  }
+	  	}
     }
 
     var dcString = String(dcXml);
@@ -170,8 +170,6 @@ var DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
 		
-		
-		
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
@@ -183,7 +181,6 @@ var DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(child), "language", dc );
       }
     }
-
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")  && !String(child.@xsi::type).match("dkdcplus:genre")) {
@@ -388,11 +385,11 @@ var DcCreator = function(){
       }
     }
 
-    Log.debug( "RLO, DCXML: " + dcXml);
+    Log.debug( "DCXML: " + dcXml);
 
     var dcString = String(dcXml);
 
-    Log.debug( "RLO, DCSTRING: " + dcString);
+    Log.debug( "DCSTRING: " + dcString);
 
     return dcString;
 
@@ -424,11 +421,11 @@ var DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.oso::object.oso::type), "type", dc );
       }
       
-    Log.debug( "RLO, DCXML: " + dcXml);
+    Log.debug( "DCXML: " + dcXml);
 
     var dcString = String(dcXml);
 
-    Log.debug( "RLO, DCSTRING: " + dcString);
+    Log.debug( "DCSTRING: " + dcString);
 
     return dcString;
 

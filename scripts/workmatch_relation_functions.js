@@ -3,7 +3,7 @@
 
 use ( "DcCreator.use.js" );
 use ( "Normalize.use.js" );
-
+use ( "Log.use.js" );
 
 // Takes a string representation of a marcxchange posts dc-stream
 // and makes into an xml object where values are selected from. 
@@ -12,6 +12,7 @@ use ( "Normalize.use.js" );
 //\Todo: Find a better way to handle the return values 
 //logging can be made through use of the "Log" object which is part of the namespace
 // the methods Log.debug, Log.info, Log.error, Log.fatal are available
+
 function generateSearchPairs( dcXML, originalXML, resultArray )
 {
     var XML_org = new XML( originalXML );

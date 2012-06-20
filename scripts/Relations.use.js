@@ -2,7 +2,7 @@ use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
 use ( "DbcAddiRelations.use.js" );
 use ( "DbcBibRelations.use.js" );
-use ( "Dcterms.use.js" );
+use ( "Log.use.js" );
 use ( "Normalize.use.js" );
 
 
@@ -151,103 +151,85 @@ var Relations = function() {
     var analysedTitles = [];
     var query;
                         
-     //Litteraturtolkninger
-    if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
+     //Litteraturtolkninger under development
+//    if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
     
 		 //find firstname, lastname and birth year of the creators of the analysed works
-			for each (child in analysisXML.*.*.*.(@tag=='600')) {
-      	var first = String(child.*.(@code=='h')); 
-        var last = String(child.*.(@code=='a'));
-        var born = String(child.*.(@code=='c'));
-        last = " " + last;
-        personName = first + last;
-        if (born !== ""){
-        	personName = personName + " \(" + born + "\)";
-        }
-        Log.info("kwc1 personName: " + personName);
-        personNames.push (personName);
-      }
+//			for each (child in analysisXML.*.*.*.(@tag=='600')) {
+//      	var first = String(child.*.(@code=='h')); 
+//        var last = String(child.*.(@code=='a'));
+//        var born = String(child.*.(@code=='c'));
+//        last = " " + last;
+//        personName = first + last;
+//        if (born !== ""){
+//        	personName = personName + " \(" + born + "\)";
+//        }
+//        Log.info("kwc1 personName: " + personName);
+//        personNames.push (personName);
+//      }
       //find titles of the analysed works
-      for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
-      	analysedTitle = String(child);
-        analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
-        analysedTitles.push (analysedTitle);
-      }
-			// if no analysed titles, search for creator (only if it contains a birth year)
-			//temporarily removed because too many relations were created
-//			if (analysedTitles.length < 1) {
-//				for (var x = 0; x < personNames.length; ++x) {
-//					if (String(personNames[x]).match(/\(/)) {
-//						query = "creator \u003D " + personNames[x];
-//						var results = FedoraCQLSearch.search(query);
-//						
-//						//add relations based on the results
-//						for (var ii = 0; ii < results.length; ++ii) {
-//							var result = results[ii]; //
-//							if (!String(result).match(/work:.*/)) {
-//								DbcAddiRelations.isAnalysisOf(pid, result);
-//							}
-//						}
-//					}
-//				}
-//			// search for creator + title		
-//			} else { 
-			
-	      for (var x = 0; x < personNames.length; ++x ) {
-	        for (var y = 0; y < analysedTitles.length; ++y){
-	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
-						var results = FedoraCQLSearch.search(query);
-						
-						//search for creator without birth year + title, if creator has birth year
-						if (String(personNames[x]).match(/\(/)){
-							var personNameNoBirth = String(personNames[x].split("\(",1));
-							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
-							var extraResults = FedoraCQLSearch.search(query);
-							
-							//add relations based on the results
-	          	for (var xx = 0; xx < extraResults.length; ++xx) {
-	          		var extraResult = extraResults[xx]; 
-								Log.info("kwc43 extraResult: " + extraResult);           
-		            if (!String(extraResult).match(/work:.*/)) {
-		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-	  	          }
-	    	      }  
-						}
-						//if no match on normal title, search for part title
-	          if (results.length < 1) {
-	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-						results = FedoraCQLSearch.search(query);
-						
-						//search for creator without birth year + part title, if creator has birth year
-							if (String(personNames[x]).match(/\(/)){
-								var personNameNoBirth = String(personNames[x].split("\(",1));
-								personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-								query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-								var extraResults = FedoraCQLSearch.search(query);
+//      for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
+//      	analysedTitle = String(child);
+//        analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
+//        analysedTitles.push (analysedTitle);
+//      }
 		
-								//add relations based on the results
-	          		for (var yy = 0; yy < extraResults.length; ++yy) {
-	          			var extraResult = extraResults[yy]; 
-		            	if (!String(extraResult).match(/work:.*/)) {
-		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-	  	          	}
-	    	      	}  
-							}
-						}
-							//add relations based on the results
-		          for (var ii = 0; ii < results.length; ++ii) {
-	          	var result = results[ii]; //
-	            if (!String(result).match(/work:.*/)) {
-	            	DbcAddiRelations.isAnalysisOf(pid, result);
-	            }
-	          }     
-	        }
-	      }
-     // } //removed creator only search
+//      for (var x = 0; x < personNames.length; ++x ) {
+//       for (var y = 0; y < analysedTitles.length; ++y){
+//          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
+//					var results = FedoraCQLSearch.search(query);
+//					
+//					//search for creator without birth year + title, if creator has birth year
+//					if (String(personNames[x]).match(/\(/)){
+//						var personNameNoBirth = String(personNames[x].split("\(",1));
+//						personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
+//						query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
+//						var extraResults = FedoraCQLSearch.search(query);
+//						
+						//add relations based on the results
+//          	for (var xx = 0; xx < extraResults.length; ++xx) {
+//          		var extraResult = extraResults[xx]; 
+//							Log.info("kwc43 extraResult: " + extraResult);           
+//	            if (!String(extraResult).match(/work:.*/)) {
+//	            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+//  	          }
+//    	      }  
+//					}
+					//if no match on normal title, search for part title
+//          if (results.length < 1) {
+//	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+//						results = FedoraCQLSearch.search(query);
+						
+					//search for creator without birth year + part title, if creator has birth year
+//						if (String(personNames[x]).match(/\(/)){
+//							var personNameNoBirth = String(personNames[x].split("\(",1));
+//							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
+//							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+//							var extraResults = FedoraCQLSearch.search(query);
+
+						//add relations based on the results
+//          		for (var yy = 0; yy < extraResults.length; ++yy) {
+//	         			var extraResult = extraResults[yy]; 
+//	            	if (!String(extraResult).match(/work:.*/)) {
+//		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+//	 	          	}
+//	   	      	}  
+//						}
+//						}
+						//add relations based on the results
+//	          for (var ii = 0; ii < results.length; ++ii) {
+//	          	var result = results[ii]; //
+//	            if (!String(result).match(/work:.*/)) {
+//	            	DbcAddiRelations.isAnalysisOf(pid, result);
+//	            }
+//	          }     
+//	        }
+//	      }
 			            
-      //Litteratursiden		
-		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
+      //Litteratursiden - first line to use when litteraturtolkninger is ready		
+//		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
+		//Litteratursiden
+		if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
 			var analysedCreator = String(analysisXML.dkabm::record.dc::subject[0]);
 			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
 			var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
@@ -284,7 +266,6 @@ var Relations = function() {
 		creator = creator.replace(/(.*) $/, "$1");
 		var title = String(katalogXML.dkabm::record.dc::title[0]);
 		title = Normalize.removeSpecialCharacters(title);
-		//var query = "subject = " + creator + " AND subject = " + title + " AND type = netdokument";
 		var query = "subject = " + creator + " AND subject = " + title + " AND ( label = analyse OR label = littolk )";
 	
 		Log.info("query: " + query);
@@ -301,112 +282,6 @@ var Relations = function() {
     }
 
     Log.info ("End hasAnalysis" );
-
-  };
-
-  
-  that.references = function ( xml, pid ) {
-
-    Log.info ("Start references" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var referenceXML = XmlUtil.fromString( xml );
-
-    var child;
-    for each (child in referenceXML.ting::originalData.link) {
-      var relation = "150026:" + String(child.@objectExtId).replace(/:/, "");
-    
-      var results = FedoraPIDSearch.identifier( relation );
-    
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-    
-        Log.info( "result: " + result );
-    
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
-        }
-      }
-    }
-
-    Log.info ("End references" );
-
-  };
-  
-  that.isReferencedBy = function ( xml, pid ) {
-
-    Log.info ("Start isReferencedBy" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var referenceXML = XmlUtil.fromString( xml );
-
-    var relation = String(referenceXML.oso::object.oso::identifier).replace(/(.*)\|.*/, "$1");
-  
-    var results = FedoraPIDSearch.relation( relation );
-  
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-  
-        Log.info( "result: " + result );
-  
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( result, pid );
-        }
-      }
-
-    Log.info ("End isReferencedBy" );
-
-  };
-  
-  that.hasCreator = function ( xml, pid ) {
-
-    Log.info ("Start creator" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var referenceXML = XmlUtil.fromString( xml );
-
-    if (String(referenceXML.ting::originalData.link.@objectType) === "Kunstner") {
-      var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
-  
-      var results = FedoraPIDSearch.identifier( relation );
-  
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-  
-        Log.info( "result: " + result );
-  
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.creator( pid, result );
-        }
-      }
-    }
-
-    Log.info ("End creator" );
-
-  };
-  
-  that.isCreatorOf = function ( xml, pid ) {
-
-    Log.info ("Start isCreatorOf" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var referenceXML = XmlUtil.fromString( xml );
-
-    var creator = String(referenceXML.ting::originalData.navn).replace(/(.*), (.*)/, "$2 $1");
-
-    var results = FedoraPIDSearch.creator( creator );
-
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-
-      Log.info( "result: " + result );
-
-      if (String(result).match(/150026:.*/)) {
-        Dcterms.creator( result, pid );
-      }
-    }
-
-    Log.info ("End isCreatorOf" );
 
   };
 
@@ -841,7 +716,7 @@ var Relations = function() {
         
         Log.info("result: " + result);
         
-        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/) && !String(result).match(/150033:.*/) && !String(result).match(/150040:.*/)) {
+        if (!String(result).match(/work:.*/) && !String(result).match(/150012:.*/) && !String(result).match(/150017:.*/) && !String(result).match(/150033:.*/) && !String(result).match(/150040:.*/)) {
           DbcAddiRelations.hasSubjectDescription(result, pid);
         }
       }
@@ -874,7 +749,7 @@ var Relations = function() {
 	
 	        Log.info( "result: " + result );
 	
-	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/) || String(result).match(/150033:.*/) || String(result).match(/150040:.*/)) {
+	        if (String(result).match(/150012:.*/) || String(result).match(/150017:.*/) || String(result).match(/150033:.*/) || String(result).match(/150040:.*/)) {
 	          DbcAddiRelations.hasSubjectDescription( pid, result );
 	        }
 	      }
@@ -984,12 +859,13 @@ var Relations = function() {
 							DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + child);
 					}
 				}
-		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
-				for each (child in manifestationXML.dkabm::record.dc::identifier) {
-        if (String(child.@xsi::type).match("dcterms:URI")) {
-          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
-        }
-      }
+// 1001 Fortællinger under development
+//		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
+//				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+//        if (String(child.@xsi::type).match("dcterms:URI")) {
+//          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+//        }
+//      }
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
 				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1dlink");
 
@@ -1023,40 +899,42 @@ var Relations = function() {
           	DbcAddiRelations.hasOnlineAccess( pid, result );
         	}
       	}
-			} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
-				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1speak");
+			} 
+// 1001 Fortællinger under development
+//			else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
+//				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1speak");
 
-    		Log.info( "Identifier hasOnlineAccess: " + identifier );
-    		Log.info( "pid hasOnlineAccess: " + pid );
+//    		Log.info( "Identifier hasOnlineAccess: " + identifier );
+//    		Log.info( "pid hasOnlineAccess: " + pid );
 
-    		var results = FedoraPIDSearch.pid( identifier );
+//    		var results = FedoraPIDSearch.pid( identifier );
 
-      	for ( var i = 0; i < results.length; ++i ) {
-        	var result = results[i];
+//      	for ( var i = 0; i < results.length; ++i ) {
+//        	var result = results[i];
 
-        	Log.info( "result: " + result );
+//        	Log.info( "result: " + result );
 
-        	if (!String(result).match(/work:.*/)) {
-          	DbcAddiRelations.hasOnlineAccess( pid, result );
-        	}
-      	}
-				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1text");
+//        	if (!String(result).match(/work:.*/)) {
+//          	DbcAddiRelations.hasOnlineAccess( pid, result );
+//        	}
+//      	}
+//				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1text");
 
-    		Log.info( "Identifier hasOnlineAccess: " + identifier );
-    		Log.info( "pid hasOnlineAccess: " + pid );
+//    		Log.info( "Identifier hasOnlineAccess: " + identifier );
+//    		Log.info( "pid hasOnlineAccess: " + pid );
 
-    		var results = FedoraPIDSearch.pid( identifier );
+//    		var results = FedoraPIDSearch.pid( identifier );
 
-      	for ( var i = 0; i < results.length; ++i ) {
-        	var result = results[i];
+//      	for ( var i = 0; i < results.length; ++i ) {
+//        	var result = results[i];
 
-        	Log.info( "result: " + result );
+//        	Log.info( "result: " + result );
 
-        	if (!String(result).match(/work:.*/)) {
-          	DbcAddiRelations.hasOnlineAccess( pid, result );
-        	}
-      	}
-			}
+//        	if (!String(result).match(/work:.*/)) {
+//          	DbcAddiRelations.hasOnlineAccess( pid, result );
+//        	}
+//      	}
+//			}
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
@@ -1111,40 +989,42 @@ var Relations = function() {
         	DbcAddiRelations.hasOnlineAccess( result, pid );
       	}
     	}
-		} else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
-			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
+		} 
+// 1001 Fortællinger under development		
+//		else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
+//			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
 
-	    Log.info( "Identifier: " + identifier );
-	    Log.info( "pid: " + pid );
+//	    Log.info( "Identifier: " + identifier );
+//	    Log.info( "pid: " + pid );
 	
-	    var results = FedoraPIDSearch.pid( identifier );
+//	    var results = FedoraPIDSearch.pid( identifier );
 
-	    for ( var i = 0; i < results.length; ++i ) {
-	      var result = results[i];
+//	    for ( var i = 0; i < results.length; ++i ) {
+//	      var result = results[i];
 	
-	      Log.info( "result: " + result );
+//	      Log.info( "result: " + result );
 
-	      if (!String(result).match(/work:.*/)) {
-	        DbcAddiRelations.hasOnlineAccess( result, pid );
-	      }
-	    }
-			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)text\|(.*)/, "$2:$1");
+//	      if (!String(result).match(/work:.*/)) {
+//	        DbcAddiRelations.hasOnlineAccess( result, pid );
+//	      }
+//	    }
+//			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)text\|(.*)/, "$2:$1");
 
-    	Log.info( "Identifier: " + identifier );
-    	Log.info( "pid: " + pid );
+//    	Log.info( "Identifier: " + identifier );
+//    	Log.info( "pid: " + pid );
 
-    	var results = FedoraPIDSearch.pid( identifier );
+//    	var results = FedoraPIDSearch.pid( identifier );
 
-    	for ( var i = 0; i < results.length; ++i ) {
-      	var result = results[i];
+//    	for ( var i = 0; i < results.length; ++i ) {
+//      	var result = results[i];
 
-      	Log.info( "result: " + result );
+//      	Log.info( "result: " + result );
 
-      	if (!String(result).match(/work:.*/)) {
-        	DbcAddiRelations.hasOnlineAccess( result, pid );
-      	}
-	    }
-		}	
+//      	if (!String(result).match(/work:.*/)) {
+//        	DbcAddiRelations.hasOnlineAccess( result, pid );
+//      	}
+//	    }
+//		}	
 
 	    Log.info ("End isOnlineAccessOf" );
 
@@ -1201,28 +1081,6 @@ var Relations = function() {
 
   };
 
-  that.hasSpecificOnlineAccess = function( xml, pid ) {
-
-    Log.info ("Start hasSpecificOnlineAccess" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var manifestationXML = XmlUtil.fromString( xml );
-
-    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-      var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
-      DbcAddiRelations.hasRemoteAccess( pid, url );
-    }
-    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSB/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-      var url = String("http://www.filmstriben.dk/bibliotek/filmdetails.aspx?id=" + id);
-      DbcAddiRelations.hasOnSiteAccess( pid, url );
-    }
-
-    Log.info ("End hasSpecificOnlineAccess" );
-
-  };
-  
   that.hasCreatorHomePage = function( xml, pid ) {
 
     Log.info ("Start hasCreatorHomePage" );

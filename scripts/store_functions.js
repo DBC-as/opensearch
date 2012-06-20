@@ -1,4 +1,4 @@
-use ( "DeleteObjects" );
+use ( "DeleteObjects.use.js" );
 
 // A function can be implemented here to determine if the object for a record
 // should be marked as deleted in the database.
