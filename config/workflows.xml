@@ -882,12 +882,6 @@
         <arg name="entryfunction" value="hasCreatorDescription"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasCreator"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="reference" submitter="150026">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -906,12 +900,6 @@
 	      <arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="references"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="artist" submitter="150026">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -922,18 +910,6 @@
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isCreatorOf"/>
-      </args>
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isReferencedBy"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="filmstrib" submitter="150027">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
