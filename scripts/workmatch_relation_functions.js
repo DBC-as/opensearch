@@ -3,7 +3,6 @@
 
 use ( "DcCreator.use.js" );
 use ( "Normalize.use.js" );
-use ( "Log.use.js" );
 
 // Takes a string representation of a marcxchange posts dc-stream
 // and makes into an xml object where values are selected from. 

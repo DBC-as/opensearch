@@ -2,7 +2,6 @@ use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
 use ( "DbcAddiRelations.use.js" );
 use ( "DbcBibRelations.use.js" );
-use ( "Log.use.js" );
 use ( "Normalize.use.js" );
 
 

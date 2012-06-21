@@ -1,4 +1,3 @@
-use ( "Log.use.js" );
 
 EXPORTED_SYMBOLS = [ "DbcAddiRelations" ];
 
