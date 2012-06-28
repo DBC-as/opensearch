@@ -1367,6 +1367,14 @@
         <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
       </args>
 		</plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	      <arg name="searchfunction" value="generateSearchPairs"/>
+	      <arg name="matchfunction" value="checkmatch"/>
+	      <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>		
 <!-- 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
