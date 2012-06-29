@@ -865,6 +865,12 @@ var Relations = function() {
 //          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
 //        }
 //      }
+//		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
+//				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+//        if (String(child.@xsi::type).match("dcterms:URI")) {
+//          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+//        }
+//      }
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
 				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1dlink");
 
@@ -899,41 +905,6 @@ var Relations = function() {
         	}
       	}
 			} 
-// 1001 Fortællinger under development
-//			else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
-//				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1speak");
-
-//    		Log.info( "Identifier hasOnlineAccess: " + identifier );
-//    		Log.info( "pid hasOnlineAccess: " + pid );
-
-//    		var results = FedoraPIDSearch.pid( identifier );
-
-//      	for ( var i = 0; i < results.length; ++i ) {
-//        	var result = results[i];
-
-//        	Log.info( "result: " + result );
-
-//        	if (!String(result).match(/work:.*/)) {
-//          	DbcAddiRelations.hasOnlineAccess( pid, result );
-//        	}
-//      	}
-//				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1text");
-
-//    		Log.info( "Identifier hasOnlineAccess: " + identifier );
-//    		Log.info( "pid hasOnlineAccess: " + pid );
-
-//    		var results = FedoraPIDSearch.pid( identifier );
-
-//      	for ( var i = 0; i < results.length; ++i ) {
-//        	var result = results[i];
-
-//        	Log.info( "result: " + result );
-
-//        	if (!String(result).match(/work:.*/)) {
-//          	DbcAddiRelations.hasOnlineAccess( pid, result );
-//        	}
-//      	}
-//			}
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
