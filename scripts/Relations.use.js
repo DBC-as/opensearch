@@ -878,7 +878,8 @@ var Relations = function() {
 					}					
 				}
 				for each (child in manifestationXML.ting::originalData.MetadataRecord.track.license) {
-					if (String(child).match(streaming)) {
+					Log.debug("LSK: license element som string" + String(child));
+					if (String(child).match(/streaming/)) {
 						var id = (manifestationXml.dkabm::record.ac::identifier).replace(/(.*)|.*/, "$1");
 						DbcAddiRelations.hasOnlineAccess ( pid, "http://stream.bibzoom.dk/wst/#/p/" + id );
 					}
