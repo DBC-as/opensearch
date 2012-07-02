@@ -858,7 +858,7 @@ var Relations = function() {
 							DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + child);
 					}
 				}
-// 1001 Fort�llinger under development
+// 1001 Fortaellinger under development
 //		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
 //				for each (child in manifestationXML.dkabm::record.dc::identifier) {
 //        if (String(child.@xsi::type).match("dcterms:URI")) {
@@ -872,39 +872,18 @@ var Relations = function() {
 //        }
 //      }
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
-				var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1dlink");
-
-    		Log.info( "Identifier: " + identifier );
-    		Log.info( "pid: " + pid );
-
-    		var results = FedoraPIDSearch.pid( identifier );
-
-      	for ( var i = 0; i < results.length; ++i ) {
-        	var result = results[i];
-
-        	Log.info( "result: " + result );
-
-        	if (!String(result).match(/work:.*/)) {
-          	DbcAddiRelations.hasOnlineAccess( pid, result );
-        	}
-      	}
-				identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1slink");
-
-    		Log.info( "Identifier: " + identifier );
-    		Log.info( "pid: " + pid );
-
-    		var results = FedoraPIDSearch.pid( identifier );
-
-      	for ( var i = 0; i < results.length; ++i ) {
-        	var result = results[i];
-
-        	Log.info( "result: " + result );
-
-        	if (!String(result).match(/work:.*/)) {
-          	DbcAddiRelations.hasOnlineAccess( pid, result );
-        	}
-      	}
-			} 
+				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+					if (String(child.@xsi::type).match("dcterms:URI")) {	
+						DbcAddiRelations.hasOnlineAccess ( pid, String(child) );
+					}					
+				}
+				for each (child in manifestationXML.ting::originalData.MetadataRecord.track.license) {
+					if (String(child).match(streaming)) {
+						var id = (manifestationXml.dkabm::record.ac::identifier).replace(/(.*)|.*/, "$1");
+						DbcAddiRelations.hasOnlineAccess ( pid, "http://stream.bibzoom.dk/wst/#/p/" + id );
+					}
+				}
+			}		
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
@@ -960,7 +939,7 @@ var Relations = function() {
       	}
     	}
 		} 
-// 1001 Fort�llinger under development		
+// 1001 Fortaellinger under development		
 //		else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
 //			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
 
