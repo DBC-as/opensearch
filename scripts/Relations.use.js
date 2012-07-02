@@ -858,19 +858,20 @@ var Relations = function() {
 							DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + child);
 					}
 				}
-// 1001 Fortaellinger under development
-//		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
-//				for each (child in manifestationXML.dkabm::record.dc::identifier) {
-//        if (String(child.@xsi::type).match("dcterms:URI")) {
-//          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
-//        }
-//      }
-//		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
-//				for each (child in manifestationXML.dkabm::record.dc::identifier) {
-//        if (String(child.@xsi::type).match("dcterms:URI")) {
-//          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
-//        }
-//      }
+// 1001 Fortaellinger
+		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
+				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+        }
+      }
+		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/s[0-9]+\|150031/)) {
+				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+        }
+      }
+//Bibzoom tracks			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
 				for each (child in manifestationXML.dkabm::record.dc::identifier) {
 					if (String(child.@xsi::type).match("dcterms:URI")) {	
@@ -884,7 +885,14 @@ var Relations = function() {
 						DbcAddiRelations.hasOnlineAccess ( pid, "http://stream.bibzoom.dk/wst/#/p/" + id );
 					}
 				}
-			}		
+			} else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(album\)/i)) {
+				for each (child in manifestationXML.dkabm::record.dc::identifier) {
+					if (String(child.@xsi::type).match("dcterms:URI")) {	
+						DbcAddiRelations.hasOnlineAccess ( pid, String(child) );
+					}					
+				}
+			}			
+						
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
@@ -896,87 +904,6 @@ var Relations = function() {
     }
 
     Log.info ("End hasOnlineAccess" );
-
-  };
-
-  that.isOnlineAccessOf = function ( xml, pid ) {
-
-    Log.info ("Start isOnlineAccessOf" );
-
-    // Converting the xml-string to an XMLObject which e4x can handle:
-    var imageXML = XmlUtil.fromString( xml );
-
-		if (String(imageXML.dkabm::record.ac::source).match(/bibzoom \(tracks\)/i)) {
-    	var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)dlink\|(.*)/, "$2:$1");
-
-    	Log.info( "Identifier: " + identifier );
-    	Log.info( "pid: " + pid );
-
-    	var results = FedoraPIDSearch.pid( identifier );
-
-    	for ( var i = 0; i < results.length; ++i ) {
-      	var result = results[i];
-
-      	Log.info( "result: " + result );
-
-      	if (!String(result).match(/work:.*/)) {
-        	DbcAddiRelations.hasOnlineAccess( result, pid );
-      	}
-    	}
-			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)slink\|(.*)/, "$2:$1");
-
-    	Log.info( "Identifier: " + identifier );
-    	Log.info( "pid: " + pid );
-
-    	var results = FedoraPIDSearch.pid( identifier );
-
-    	for ( var i = 0; i < results.length; ++i ) {
-      	var result = results[i];
-
-      	Log.info( "result: " + result );
-
-      	if (!String(result).match(/work:.*/)) {
-        	DbcAddiRelations.hasOnlineAccess( result, pid );
-      	}
-    	}
-		} 
-// 1001 Fortaellinger under development		
-//		else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
-//			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
-
-//	    Log.info( "Identifier: " + identifier );
-//	    Log.info( "pid: " + pid );
-	
-//	    var results = FedoraPIDSearch.pid( identifier );
-
-//	    for ( var i = 0; i < results.length; ++i ) {
-//	      var result = results[i];
-	
-//	      Log.info( "result: " + result );
-
-//	      if (!String(result).match(/work:.*/)) {
-//	        DbcAddiRelations.hasOnlineAccess( result, pid );
-//	      }
-//	    }
-//			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)text\|(.*)/, "$2:$1");
-
-//    	Log.info( "Identifier: " + identifier );
-//    	Log.info( "pid: " + pid );
-
-//    	var results = FedoraPIDSearch.pid( identifier );
-
-//    	for ( var i = 0; i < results.length; ++i ) {
-//      	var result = results[i];
-
-//      	Log.info( "result: " + result );
-
-//      	if (!String(result).match(/work:.*/)) {
-//        	DbcAddiRelations.hasOnlineAccess( result, pid );
-//      	}
-//	    }
-//		}	
-
-	    Log.info ("End isOnlineAccessOf" );
 
   };
   
