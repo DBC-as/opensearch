@@ -840,7 +840,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
     
     var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb|Spil og Medier|Netlydbog|eReolen/)) {
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb|Spil og Medier|Netlydbog|eReolen|Safari Books Online/)) {
       for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
           DbcAddiRelations.hasOnlineAccess( pid, String(child) );
@@ -858,7 +858,7 @@ var Relations = function() {
 							DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + child);
 					}
 				}
-// 1001 Fortællinger under development
+// 1001 Fortï¿½llinger under development
 //		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/t[0-9]+\|150031/)) {
 //				for each (child in manifestationXML.dkabm::record.dc::identifier) {
 //        if (String(child.@xsi::type).match("dcterms:URI")) {
@@ -960,7 +960,7 @@ var Relations = function() {
       	}
     	}
 		} 
-// 1001 Fortællinger under development		
+// 1001 Fortï¿½llinger under development		
 //		else if (String(imageXML.dkabm::record.ac::identifier).match(/.*\|150031/)) {
 //			identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)speak\|(.*)/, "$2:$1");
 
