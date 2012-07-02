@@ -1360,13 +1360,12 @@
 	      <arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>		
-<!-- 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+ 		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
--->
   </workflow>
 		<workflow format="katalog" submitter="150045">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
