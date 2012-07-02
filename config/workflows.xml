@@ -543,6 +543,12 @@
 	      <arg name="entryfunction" value="hasTrack"/>
       </args>
     </plugin>
+		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	      <arg name="javascript" value="simple_relation.js"/>
+	      <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>		
   </workflow>
   <workflow format="nmtrack" submitter="150014">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
