@@ -879,20 +879,19 @@ var Relations = function() {
 					}					
 				}
 				for each (child in manifestationXML.ting::originalData.MetadataRecord.track.license) {
-					Log.debug("LSK: license element som string" + String(child));
 					if (String(child).match(/streaming/)) {
 						var id = (String(manifestationXML.dkabm::record.ac::identifier)).replace(/(.*)\|.*/, "$1");
 						DbcAddiRelations.hasOnlineAccess ( pid, "http://stream.bibzoom.dk/wst/#/p/" + id );
 					}
 				}
+//Bibzoom album
 			} else if (String(manifestationXML.dkabm::record.ac::source).match(/bibzoom \(album\)/i)) {
 				for each (child in manifestationXML.dkabm::record.dc::identifier) {
 					if (String(child.@xsi::type).match("dcterms:URI")) {	
 						DbcAddiRelations.hasOnlineAccess ( pid, String(child) );
 					}					
 				}
-			}			
-						
+			}									
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
