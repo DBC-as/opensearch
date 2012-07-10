@@ -110,12 +110,20 @@ var Relations = function() {
 
     if (i === 0) {
       if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
-        var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
+ 				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
+ 
+ 				var query = "relation = " + isbn + " AND type = anmeldelse";
+			
+			Log.info( "LSK: query: " + query );
+ 
+ 
+ //     var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
 
-        Log.info( "Identifier: " + identifier );    
-        Log.info( "pid: " + pid );
+//			Log.info( "Identifier: " + identifier );    
+//			Log.info( "pid: " + pid );
 
-        var results = FedoraPIDSearch.relation( identifier );
+				var results = FedoraCQLSearch.search( query );
+ //       var results = FedoraPIDSearch.relation( identifier );
 
         for ( var i = 0; i < results.length; ++i ) {
           var result = results[i];
@@ -126,7 +134,7 @@ var Relations = function() {
             DbcAddiRelations.isReviewOf( result, pid );
           }
         }
-      }
+      }				
     }
 		
 		if (i === 0) {
@@ -149,7 +157,7 @@ var Relations = function() {
       	if (String(result).match(/150005:.*/)) {
       		DbcAddiRelations.isReviewOf( result, pid );
       	}
-    	}			
+    	}					
     }
 
     Log.info ("End hasReview" );
