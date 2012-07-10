@@ -109,34 +109,34 @@ var Relations = function() {
     }
 
     if (i === 0) {
-//      if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
-// 				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
-// 
-// 				var query = "relation = " + isbn + " AND type = anmeldelse";
-			
-//			Log.info( "query: " + query );
-
-//				var results = FedoraCQLSearch.search( query );
-
-//        for ( var i = 0; i < results.length; ++i ) {
-//          var result = results[i];
-
-//          Log.info( "result: " + result );
-
-//          if (String(result).match(/150005:.*/)) {
-//            DbcAddiRelations.isReviewOf( result, pid );
-//          }
-//        }
-//      }				
-//    }
+      if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
+ 				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
+ 
+ 				var query = "relation = " + isbn + " AND type = anmeldelse";
 		
-//		if (i === 0) {
+			Log.info( "query: " + query );
+
+				var results = FedoraCQLSearch.search( query );
+
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+
+          Log.info( "result: " + result );
+
+          if (String(result).match(/150005:.*/)) {
+            DbcAddiRelations.isReviewOf( result, pid );
+          }
+        }
+      }				
+    }
+		
+		if (i === 0) {
 			var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 			creator = creator.replace(/(.*) $/, "$1");
 			creator = Normalize.removeSpecialCharacters(creator);
 			var title = String(katalogXML.dkabm::record.dc::title[0]);
 			title = Normalize.removeSpecialCharacters(title);
-			var query = (("subject = " + creator + " AND subject = " + title) + " OR relation = " + isbn) + " AND type = anmeldelse";
+			var query = "subject = " + creator + " AND subject = " + title + " AND type = anmeldelse";
 			
 			Log.info( "query: " + query );
 			
