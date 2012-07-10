@@ -269,24 +269,23 @@ var Relations = function() {
 				}
 			}
 			
-			if ( j === 0 ) {
-				if (String(analysisXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {				
-      		var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
+			if ( j === 0 ) {	
+      	var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
-      		var results = FedoraPIDSearch.identifier( relation );
+      	var results = FedoraPIDSearch.identifier( relation );
 
-      		for ( var i = 0; i < results.length; ++i ) {
-       			var result = results[i];
+      	for ( var i = 0; i < results.length; ++i ) {
+       		var result = results[i];
 
-        		Log.info( "result: " + result );
+        	Log.info( "result: " + result );
 
-        		if (!String(result).match(/work:.*/)) {
-          		DbcAddiRelations.isAnalysisOf( pid, result );
-        		}
-      		}			
-				} 			
-    	}
-		}
+        	if (!String(result).match(/work:.*/)) {
+          	DbcAddiRelations.isAnalysisOf( pid, result );
+        	}
+      	}			
+			} 			
+    }
+		
 
     Log.info ("End isAnalysisOf" );
 
