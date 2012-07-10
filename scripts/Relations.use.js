@@ -114,16 +114,9 @@ var Relations = function() {
  
  				var query = "relation = " + isbn + " AND type = anmeldelse";
 			
-			Log.info( "LSK: query: " + query );
- 
- 
- //     var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
-
-//			Log.info( "Identifier: " + identifier );    
-//			Log.info( "pid: " + pid );
+			Log.info( "query: " + query );
 
 				var results = FedoraCQLSearch.search( query );
- //       var results = FedoraPIDSearch.relation( identifier );
 
         for ( var i = 0; i < results.length; ++i ) {
           var result = results[i];
