@@ -250,26 +250,6 @@ var Relations = function() {
 //		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
 		//Litteratursiden
 		if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
-			var analysedCreator = String(analysisXML.dkabm::record.dc::subject[0]);
-			analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
-			var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
-			analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
-			var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
-			Log.info( "query: " + query );
-			
-			var results = FedoraCQLSearch.search( query );
-			
-			for ( var j = 0; j < results.length; ++j ) {
-				var result = results[j]
-				
-				Log.info( "result: " + result );
-				
-				if (!String(result).match(/work:.*/)) {
-					DbcAddiRelations.isAnalysisOf( pid, result );
-				}
-			}
-			
-			if ( j === 0 ) {	
       	var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       	var results = FedoraPIDSearch.identifier( relation );
@@ -282,7 +262,27 @@ var Relations = function() {
         	if (!String(result).match(/work:.*/)) {
           	DbcAddiRelations.isAnalysisOf( pid, result );
         	}
-      	}			
+      	}
+			
+			if ( j === 0 ) {	
+				var analysedCreator = String(analysisXML.dkabm::record.dc::subject[0]);
+				analysedCreator = Normalize.removeSpecialCharacters(analysedCreator);
+				var analysedTitle = String(analysisXML.dkabm::record.dc::subject[1]);
+				analysedTitle = Normalize.removeSpecialCharacters(analysedTitle);
+				var query = "creator = " + analysedCreator + " AND title = " + analysedTitle;
+				Log.info( "query: " + query );
+			
+				var results = FedoraCQLSearch.search( query );
+			
+				for ( var j = 0; j < results.length; ++j ) {
+					var result = results[j]
+				
+					Log.info( "result: " + result );
+				
+					if (!String(result).match(/work:.*/)) {
+						DbcAddiRelations.isAnalysisOf( pid, result );
+					}
+				}							
 			} 			
     }
 		
