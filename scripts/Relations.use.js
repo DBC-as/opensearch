@@ -878,7 +878,7 @@ var Relations = function() {
     var manifestationXML = XmlUtil.fromString( xml );
     
     var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb|Spil og Medier|Netlydbog|eReolen|Safari Books Online/)) {
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb|Spil og Medier|Netlydbog|eReolen|Safari Books Online|Historisk Atlas/)) {
       for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
           DbcAddiRelations.hasOnlineAccess( pid, String(child) );
