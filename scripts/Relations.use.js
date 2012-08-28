@@ -872,7 +872,7 @@ var Relations = function() {
   
   that.hasOnlineAccess = function( xml, pid ) {
 
-    Log.info ("Start hasOnlineAccess" );
+    Log.info ( "Start hasOnlineAccess" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
@@ -884,8 +884,8 @@ var Relations = function() {
           DbcAddiRelations.hasOnlineAccess( pid, String(child) );
         }
       }
-		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Gale/)) {
-				DbcAddiRelations.hasOnlineAccess ( pid, "[URL]/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[URL-suffix]");			
+		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/|150023/)) {
+				DbcAddiRelations.hasOnlineAccess ( pid, "http://ic.galegroup.com/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[GALESUFFIX]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
 		} else if (String(manifestationXML.dkabm::record.ac::source).match(/Samfundsfaget|Religionsfaget|Dansk historie|Danske Dyr|Verdens Dyr/)) {
