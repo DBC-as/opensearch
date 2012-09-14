@@ -49,8 +49,8 @@ var Relations = function() {
 
         var results = FedoraPIDSearch.identifier( relation );
 
-        for ( var i = 0; i < results.length; ++i ) {
-          var result = results[i];
+        for ( var j = 0; j < results.length; ++j ) {
+          var result = results[j];
 
           Log.info( "result: " + result );
 
@@ -68,8 +68,8 @@ var Relations = function() {
 			
 				var results = FedoraCQLSearch.search( query );
 			
-				for ( var j = 0; j < results.length; ++j ) {
-					var result = results[j]
+				for ( var k = 0; k < results.length; ++k ) {
+					var result = results[k]
 				
 					Log.info( "result: " + result );
 				
