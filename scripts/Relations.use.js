@@ -884,7 +884,7 @@ var Relations = function() {
           DbcAddiRelations.hasOnlineAccess( pid, String(child) );
         }
       }
-		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/|150023/)) {
+		} else if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|150023/)) {
 				DbcAddiRelations.hasOnlineAccess ( pid, "http://ic.galegroup.com/ic/scic/ReferenceDetailsPage/ReferenceDetailsWindow?displayGroupName=Reference&disableHighlighting=false&prodId=SCIC&action=e&windowstate=normal&catId=&documentId=GALE%7C" + String(manifestationXML.dkabm::record.dc::identifier) + "&mode=view[GALESUFFIX]");			
     } else if (String(manifestationXML.dkabm::record.ac::source).match(/Ebsco|Ebrary/)){
       	DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
