@@ -1348,7 +1348,7 @@
     <plugin class="dk.dbc.opensearch.plugins.Store">
     	<args>
         <arg name="javascript" value="store_functions.js"/>
-        <arg name="entryfunction" value="isDeleteObjectOupsStatus"/>
+        <arg name="entryfunction" value="isDeleteObjectMarc"/>
       </args>
 		</plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
