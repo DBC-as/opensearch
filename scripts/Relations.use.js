@@ -862,7 +862,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var trackXML = XmlUtil.fromString( xml );
 
-    var url = String( "http://static.shop2download.com/samples/" + trackXML.*.*.*.soundClip);
+    var url = String( "http://static.shop2download.com/samples/" + trackXML.*.*.soundClip);
 
     DbcAddiRelations.hasSoundClip( pid, url );
 
