@@ -89,7 +89,7 @@ var Relations = function() {
 
     Log.info ("Start hasReview" );
 
-     Converting the xml-string to an XMLObject which e4x can handle:
+    // Converting the xml-string to an XMLObject which e4x can handle:
     var katalogXML = XmlUtil.fromString( xml );
 
     var identifier = String(katalogXML.*.*.*.(@tag=='001').*.(@code=='a'));
