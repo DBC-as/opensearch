@@ -136,6 +136,14 @@ var DcCreator = function(){
 	  	}
     }
 
+    for each (child in originalXml.*.*.*.(@tag == "017").*.(@code == "a")) {
+      if (String(child) !== "") {
+        attributes = DcCreator.createAttribute( "dkdcplus:full");
+        dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc, attributes );
+      }
+    }
+
+
     var dcString = String(dcXml);
 
     return dcString;
@@ -297,16 +305,78 @@ var DcCreator = function(){
 
   };
 
-	that.createElementNoNormalize = function ( elementValue, elementName, namespace ) {
+	that.createElementNoNormalize = function ( elementValue, elementName, namespace, attributes ) {
     
 		var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
     if (namespace !== undefined) {
       element.setNamespace( namespace );
     }
+    if (attributes !== undefined) {
+      for (var a in attributes) {
+        if ( attributes.hasOwnProperty(a)) {
+          var attributeName = attributes[a].attributeName;
+          element.@[attributeName] = attributes[a].attributeValue;
+          if (attributes[a].attributeNamespace !== undefined) {
+            element.@[attributeName].setNamespace( attributes[a].attributeNamespace );
+          }
+        }
+      }
+    }
 
     return element;
 
   };
+
+
+  that.createAttribute = function ( value ) {
+
+    var attributes = [];
+    var attribute = {
+      attributeName: "type",
+      attributeValue: value,
+      attributeNamespace: xsi
+    };
+    attributes.push( attribute );
+    
+    return attributes;
+
+  };
+
+//xmltodkabm 
+/*  that.createAttribute = function(attributeValue){
+
+    var attributes = [];
+    var attribute = XmlElements.createAttribute( "type", attributeValue, xsi );
+    attributes.push( attribute );
+
+    return attributes;
+
+  }; */
+
+//XmlElements.use.js
+/*  that.createElement = function ( elementValue, elementName, namespace, attributes ) {
+    
+    var element = <{elementName}>{elementValue}</{elementName}>;
+    if (namespace !== undefined) {
+      element.setNamespace( namespace );
+    }
+    if (attributes !== undefined) {
+      for (var a in attributes) {
+        if ( attributes.hasOwnProperty(a)) {
+          var attributeName = attributes[a].attributeName;
+          element.@[attributeName] = attributes[a].attributeValue;
+          if (attributes[a].attributeNamespace !== undefined) {
+            element.@[attributeName].setNamespace( attributes[a].attributeNamespace );
+          }
+        }
+      }
+    }
+
+    return element;
+
+  };
+
+*/
 
   that.createWorkDc = function ( xml ) {
 
