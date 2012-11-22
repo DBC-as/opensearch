@@ -43,7 +43,7 @@ var Relations = function() {
       }
     }
 
-    if (i === 0) {
+    //if (i === 0) {
 			if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
         var relation = "ISBN:" + String(reviewXML.dkabm::record.dcterms::references);
 
@@ -58,7 +58,8 @@ var Relations = function() {
             DbcAddiRelations.isReviewOf( pid, result );
           }
         }			
-			} if (j === 0) {
+			} 
+      //if (j === 0) {
 				var reviewedCreator = String(reviewXML.dkabm::record.dc::subject[0]);	
 				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);	
 				var reviewedTitle = String(reviewXML.dkabm::record.dc::subject[1]);
@@ -77,8 +78,8 @@ var Relations = function() {
 						DbcAddiRelations.isReviewOf( pid, result );
 					}
 				}	
-      }
-    }
+      //}
+    //}
 
     Log.info ("End isReviewOf" );
 
@@ -108,7 +109,7 @@ var Relations = function() {
       }
     }
 
-    if (i === 0) {
+    //if (i === 0) {
       if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
  				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
  
@@ -128,9 +129,9 @@ var Relations = function() {
           }
         }
       }				
-    }
+    //}
 		
-		if (i === 0) {
+		//if (i === 0) {
 			var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 			creator = creator.replace(/(.*) $/, "$1");
 			creator = Normalize.removeSpecialCharacters(creator);
@@ -151,7 +152,7 @@ var Relations = function() {
       		DbcAddiRelations.isReviewOf( result, pid );
       	}
     	}					
-    }
+    //}
 
     Log.info ("End hasReview" );
 
