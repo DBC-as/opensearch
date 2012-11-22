@@ -138,7 +138,7 @@ var DcCreator = function(){
 
     for each (child in originalXml.*.*.*.(@tag == "017").*.(@code == "a")) {
       if (String(child) !== "") {
-        attributes = DcCreator.createAttribute( "dkdcplus:full");
+        var attributes = DcCreator.createAttribute( "dkdcplus:full");
         dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc, attributes );
       }
     }
