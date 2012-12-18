@@ -35,7 +35,7 @@ var DcCreator = function(){
 			Log.debug( "kwc-after");
     }
 
-/* Under development for Litteraturtolkninger
+// Under development for Litteraturtolkninger
     //part titles from collections (e.g. poems, fairy tales, short stories)
 		for each (child in originalXml.*.*.*.(@tag == "530").*.(@code == "t")) {
 			Log.debug( "kwc530, 530: " + child);
@@ -49,7 +49,7 @@ var DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElement( "PART TITLE: " + String(child), "title", dc );
 	  	}
     }				
-*/
+
 	    
 	  if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElementNoNormalize( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
