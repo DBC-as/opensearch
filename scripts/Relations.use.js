@@ -173,84 +173,84 @@ var Relations = function() {
     var query;
                         
      //Litteraturtolkninger under development
-//    if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
+    if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
     
 		 //find firstname, lastname and birth year of the creators of the analysed works
-//			for each (child in analysisXML.*.*.*.(@tag=='600')) {
-//      	var first = String(child.*.(@code=='h')); 
-//        var last = String(child.*.(@code=='a'));
-//        var born = String(child.*.(@code=='c'));
-//        last = " " + last;
-//        personName = first + last;
-//        if (born !== ""){
-//        	personName = personName + " \(" + born + "\)";
-//        }
-//        Log.info("kwc1 personName: " + personName);
-//        personNames.push (personName);
-//      }
+			for each (child in analysisXML.*.*.*.(@tag=='600')) {
+      	var first = String(child.*.(@code=='h')); 
+        var last = String(child.*.(@code=='a'));
+        var born = String(child.*.(@code=='c'));
+        last = " " + last;
+        personName = first + last;
+        if (born !== ""){
+        	personName = personName + " \(" + born + "\)";
+        }
+        Log.info("kwc1 personName: " + personName);
+        personNames.push (personName);
+      }
       //find titles of the analysed works
-//      for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
-//      	analysedTitle = String(child);
-//        analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
-//        analysedTitles.push (analysedTitle);
-//      }
+      for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
+      	analysedTitle = String(child);
+        analysedTitle = Normalize.removeSpecialCharacters(analysedTitle); //normalizing because the field title in dc stream in which we search is normalized
+        analysedTitles.push (analysedTitle);
+      }
 		
-//      for (var x = 0; x < personNames.length; ++x ) {
-//       for (var y = 0; y < analysedTitles.length; ++y){
-//          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
-//					var results = FedoraCQLSearch.search(query);
-//					
-//					//search for creator without birth year + title, if creator has birth year
-//					if (String(personNames[x]).match(/\(/)){
-//						var personNameNoBirth = String(personNames[x].split("\(",1));
-//						personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-//						query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
-//						var extraResults = FedoraCQLSearch.search(query);
-//						
+      for (var x = 0; x < personNames.length; ++x ) {
+       for (var y = 0; y < analysedTitles.length; ++y){
+          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
+					var results = FedoraCQLSearch.search(query);
+					
+					//search for creator without birth year + title, if creator has birth year
+					if (String(personNames[x]).match(/\(/)){
+						var personNameNoBirth = String(personNames[x].split("\(",1));
+						personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
+						query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
+						var extraResults = FedoraCQLSearch.search(query);
+						
 						//add relations based on the results
-//          	for (var xx = 0; xx < extraResults.length; ++xx) {
-//          		var extraResult = extraResults[xx]; 
-//							Log.info("kwc43 extraResult: " + extraResult);           
-//	            if (!String(extraResult).match(/work:.*/)) {
-//	            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-//  	          }
-//    	      }  
-//					}
+          	for (var xx = 0; xx < extraResults.length; ++xx) {
+          		var extraResult = extraResults[xx]; 
+							Log.info("kwc43 extraResult: " + extraResult);           
+	            if (!String(extraResult).match(/work:.*/)) {
+	            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+  	          }
+    	      }  
+					}
 					//if no match on normal title, search for part title
-//          if (results.length < 1) {
-//	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-//						results = FedoraCQLSearch.search(query);
+          if (results.length < 1) {
+	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+						results = FedoraCQLSearch.search(query);
 						
 					//search for creator without birth year + part title, if creator has birth year
-//						if (String(personNames[x]).match(/\(/)){
-//							var personNameNoBirth = String(personNames[x].split("\(",1));
-//							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-//							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-//							var extraResults = FedoraCQLSearch.search(query);
+						if (String(personNames[x]).match(/\(/)){
+							var personNameNoBirth = String(personNames[x].split("\(",1));
+							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
+							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+							var extraResults = FedoraCQLSearch.search(query);
 
 						//add relations based on the results
-//          		for (var yy = 0; yy < extraResults.length; ++yy) {
-//	         			var extraResult = extraResults[yy]; 
-//	            	if (!String(extraResult).match(/work:.*/)) {
-//		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-//	 	          	}
-//	   	      	}  
-//						}
-//						}
+          		for (var yy = 0; yy < extraResults.length; ++yy) {
+	         			var extraResult = extraResults[yy]; 
+	            	if (!String(extraResult).match(/work:.*/)) {
+		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
+	 	          	}
+	   	      	}  
+						}
+						}
 						//add relations based on the results
-//	          for (var ii = 0; ii < results.length; ++ii) {
-//	          	var result = results[ii]; //
-//	            if (!String(result).match(/work:.*/)) {
-//	            	DbcAddiRelations.isAnalysisOf(pid, result);
-//	            }
-//	          }     
-//	        }
-//	      }
+	          for (var ii = 0; ii < results.length; ++ii) {
+	          	var result = results[ii]; //
+	            if (!String(result).match(/work:.*/)) {
+	            	DbcAddiRelations.isAnalysisOf(pid, result);
+	            }
+	          }     
+	        }
+	      }
 			            
       //Litteratursiden - first line to use when litteraturtolkninger is ready		
-//		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
+		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
 		//Litteratursiden
-		if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
+//		if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
       	var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       	var results = FedoraPIDSearch.identifier( relation );
