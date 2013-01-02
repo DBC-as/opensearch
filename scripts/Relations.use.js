@@ -42,6 +42,17 @@ var Relations = function() {
         DbcAddiRelations.isReviewOf( pid, result);
       }
     }
+	//search for later editions of a book, because the review only has identifier from the first Edition
+	var results = FedoraPIDSearch.relation("FirstEd:" + identifier);
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.isReviewOf( pid, result);
+      }
+    }
+	
 
     if (i === 0) {
 			if ( String(reviewXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(reviewXML.dkabm::record.dc::type).match(/Anmeldelse/) ) {
