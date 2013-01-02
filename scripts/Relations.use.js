@@ -120,6 +120,23 @@ var Relations = function() {
       }
     }
 
+    var identifierFirstEd = String(katalogXML.*.*.*.(@tag=='017').*.(@code=='a'));
+
+    Log.info( "FirstEdIdentifier: " + identifierFirstEd );   
+
+
+    var results = FedoraPIDSearch.relation( identifierFirstEd );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.isReviewOf( result, pid );
+      }
+    }
+
     if (i === 0) {
       if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
  				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
