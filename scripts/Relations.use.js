@@ -70,7 +70,7 @@ var Relations = function() {
           }
         }			
 			} 
-      if (j === 0) {
+//      if (j === 0) {
 				var reviewedCreator = String(reviewXML.dkabm::record.dc::subject[0]);	
 				reviewedCreator = Normalize.removeSpecialCharacters(reviewedCreator);	
 				var reviewedTitle = String(reviewXML.dkabm::record.dc::subject[1]);
@@ -89,7 +89,7 @@ var Relations = function() {
 						DbcAddiRelations.isReviewOf( pid, result );
 					}
 				}	
-      }
+//      }
     }
 
     Log.info ("End isReviewOf" );
