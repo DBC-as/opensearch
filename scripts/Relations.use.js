@@ -137,7 +137,7 @@ var Relations = function() {
       }
     }
 
-    if (i === 0) {
+//    if (i === 0) {
       if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
  				var isbn = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
  
@@ -157,9 +157,9 @@ var Relations = function() {
           }
         }
       }				
-    }
+//    }
 		
-		if (i === 0) {
+//		if (i === 0) {
 			var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
 			creator = creator.replace(/(.*) $/, "$1");
 			creator = Normalize.removeSpecialCharacters(creator);
@@ -180,7 +180,7 @@ var Relations = function() {
       		DbcAddiRelations.isReviewOf( result, pid );
       	}
     	}					
-    }
+//    }
 
     Log.info ("End hasReview" );
 
