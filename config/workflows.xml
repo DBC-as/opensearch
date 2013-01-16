@@ -343,12 +343,6 @@
         <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
-		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasOpenUrl"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="ebscoart" submitter="150010">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -844,12 +838,6 @@
         <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
-		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasOpenUrl"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="vaerk" submitter="150026">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -1169,12 +1157,6 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasOnlineAccess"/>
-      </args>
-    </plugin>
-		<plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasOpenUrl"/>
       </args>
     </plugin>
   </workflow>
