@@ -960,7 +960,7 @@ var Relations = function() {
       } else if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|830060/)) {
         for each (child in manifestationXML.dkabm::record.dc::identifier) {
           if (String(child.@xsi::type).match("dcterms:URI") && String(child).match(/ebrary\.com/)) {  
-            DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(child) );
+            DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, "") );
           }         
         }
       } 
