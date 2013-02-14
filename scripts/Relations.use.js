@@ -956,7 +956,15 @@ var Relations = function() {
 						DbcAddiRelations.hasOnlineAccess ( pid, String(child) );
 					}					
 				}
-			}									
+//ebrary katalog ebooks
+      } else if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|830060/)) {
+        for each (child in manifestationXML.dkabm::record.dc::identifier) {
+          if (String(child.@xsi::type).match("dcterms:URI") && String(child).match(/ebrary\.com/)) {  
+            DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(child) );
+          }         
+        }
+      } 
+
 		
 		var infomedia = 0;	
 		for each (child in manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) {
