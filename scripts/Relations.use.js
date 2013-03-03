@@ -237,7 +237,7 @@ var Relations = function() {
           	for (var xx = 0; xx < extraResults.length; ++xx) {
           		var extraResult = extraResults[xx]; 
 							Log.info("kwc43 extraResult: " + extraResult);           
-	            if (!String(extraResult).match(/work:.*/)) {
+	            if (!String(extraResult).match(/work:.*/) && !String(extraResult).match(/870974:.*/) && !String(extraResult).match(/150005:.*/)) {
 	            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
   	          }
     	      }  
@@ -257,7 +257,7 @@ var Relations = function() {
 						//add relations based on the results
           		for (var yy = 0; yy < extraResults.length; ++yy) {
 	         			var extraResult = extraResults[yy]; 
-	            	if (!String(extraResult).match(/work:.*/)) {
+	            	if (!String(extraResult).match(/work:.*/) && !String(extraResult).match(/870974:.*/) && !String(extraResult).match(/150005:.*/)) {
 		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
 	 	          	}
 	   	      	}  
@@ -266,7 +266,7 @@ var Relations = function() {
 						//add relations based on the results
 	          for (var ii = 0; ii < results.length; ++ii) {
 	          	var result = results[ii]; //
-	            if (!String(result).match(/work:.*/)) {
+	            if (!String(result).match(/work:.*/) && !String(result).match(/870974:.*/) && !String(result).match(/150005:.*/)) {
 	            	DbcAddiRelations.isAnalysisOf(pid, result);
 	            }
 	          }     
@@ -286,7 +286,7 @@ var Relations = function() {
 
         	Log.info( "result: " + result );
 
-        	if (!String(result).match(/work:.*/)) {
+        	if (!String(result).match(/work:.*/) && !String(result).match(/870974:.*/) && !String(result).match(/150005:.*/)) {
           	DbcAddiRelations.isAnalysisOf( pid, result );
         	}
       	}
@@ -306,7 +306,7 @@ var Relations = function() {
 				
 					Log.info( "result: " + result );
 				
-					if (!String(result).match(/work:.*/)) {
+					if (!String(result).match(/work:.*/) && !String(result).match(/870974:.*/) && !String(result).match(/150005:.*/)) {
 						DbcAddiRelations.isAnalysisOf( pid, result );
 					}
 				}							
