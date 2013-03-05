@@ -351,19 +351,19 @@ var Relations = function() {
     for each (var child in katalogXML.*.*.*.(@tag=='530').*.(@code=='t')) {
         var partTitle = String(child);
         partTitle = Normalize.removeSpecialCharacters(partTitle); //normalizing because the field title in dc stream in which we search is normalized
-        Log.debug("KWC1 partTitle before push=", partTitle);
+        Log.debug("KWC1 partTitle before push=" + partTitle);
         titles.push (partTitle);
     }
     var creators = [];
     for each (child in katalogXML.dkabm::record.dc::creator) {
       creator = String(child);
       creator = Normalize.removeSpecialCharacters(creator);
-      Log.debug("KWC2 creator birthyear before push=", creator);
+      Log.debug("KWC2 creator birthyear before push=" + creator);
       creators.push (creator); //creator with possible birth year
 
       if (creator.match(/\(/)) { //if creator had birth year remove it, and add to creators
 				creator = creator.replace(/(.*)\(.*\)/, "$1");
-      Log.debug("KWC3 creator no birth before push=", creator);
+      Log.debug("KWC3 creator no birth before push=" + creator);
         creators.push (creator); //creator without birth year			
       }
       
@@ -371,7 +371,7 @@ var Relations = function() {
     for (var x = 0; x < titles.length; ++x ) {
      for (var y = 0; y < creators.length; ++y){
         var query = "subject = " + titles[x] + " AND subject = " + creators[y] + " AND ( label = analyse OR label = littolk )";
-        Log.debug("KWC4 hasAnalysis query part titles=", query);
+        Log.debug("KWC4 hasAnalysis query part titles=" + query);
         var results = FedoraCQLSearch.search(query);
 
         //add relations based on the results
