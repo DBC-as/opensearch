@@ -325,7 +325,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var katalogXML = XmlUtil.fromString( xml );
 
-		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1");
+		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1"); //remove birth year from creator (kwc note: why?)
 		creator = Normalize.removeSpecialCharacters(creator);
 		creator = creator.replace(/(.*) $/, "$1");
 		var title = String(katalogXML.dkabm::record.dc::title[0]);
@@ -344,7 +344,46 @@ var Relations = function() {
         DbcAddiRelations.hasAnalysis( pid, result );
       }
     }
+    //TODO maybe? add search for creator with birth year. 
+    
+    //search based on part titles like fairy tales, poems and short stories
+    var titles = [];
+    for each (var child in katalogXML.*.*.*.(@tag=='530').*.(@code=='t')) {
+        var partTitle = String(child);
+        partTitle = Normalize.removeSpecialCharacters(partTitle); //normalizing because the field title in dc stream in which we search is normalized
+        Log.debug("KWC1 partTitle before push=", partTitle);
+        titles.push (partTitle);
+    }
+    var creators = [];
+    for each (child in katalogXML.dkabm::record.dc::creator) {
+      creator = String(child);
+      creator = Normalize.removeSpecialCharacters(creator);
+      Log.debug("KWC2 creator birthyear before push=", creator);
+      creators.push (creator); //creator with possible birth year
 
+      if (creator.match(/\(/)) { //if creator had birth year remove it, and add to creators
+				creator = creator.replace(/(.*)\(.*\)/, "$1");
+      Log.debug("KWC3 creator no birth before push=", creator);
+        creators.push (creator); //creator without birth year			
+      }
+      
+    }    
+    for (var x = 0; x < titles.length; ++x ) {
+     for (var y = 0; y < creators.length; ++y){
+        var query = "subject = " + titles[x] + " AND subject = " + creators[y] + " AND ( label = analyse OR label = littolk )";
+        Log.debug("KWC4 hasAnalysis query part titles=", query);
+        var results = FedoraCQLSearch.search(query);
+
+        //add relations based on the results
+        for (var ii = 0; ii < results.length; ++ii) {
+          var result = results[ii]; //
+          if (String(result).match(/150005:.*/) || String(result).match(/870974:.*/)) {
+            DbcAddiRelations.hasAnalysis(pid, result);
+          }
+        } 
+     }
+    }
+    //End search based on part titles like fairy tales, poems and short stories
     Log.info ("End hasAnalysis" );
 
   };
