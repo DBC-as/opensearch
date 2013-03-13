@@ -354,7 +354,7 @@ var Relations = function() {
         var title = String(child);
         title = Normalize.removeSpecialCharacters(title); //normalizing because the field title in dc stream in which we search is normalized
         Log.debug("KWC1 title before push=" + title);
-        titles.push (partTitle);
+        titles.push (title);
     }
 
 
