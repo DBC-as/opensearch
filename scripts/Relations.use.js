@@ -366,7 +366,7 @@ var Relations = function() {
     }
     var creators = [];
     for each (child in katalogXML.dkabm::record.dc::creator) {
-      creator = String(child);
+      var creator = String(child);
       creator = Normalize.removeSpecialCharacters(creator);
       Log.debug("KWC3 creator birthyear before push=" + creator);
       creators.push (creator); //creator with possible birth year
