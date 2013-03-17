@@ -198,7 +198,7 @@ var Relations = function() {
     var analysedTitles = [];
     var query;
                         
-     //Litteraturtolkninger under development
+     //Litteraturtolkninger
     if (String(analysisXML.dkabm::record.ac::source).match(/Litteraturtolkninger/)) {
     
 		 //find firstname, lastname and birth year of the creators of the analysed works
@@ -209,14 +209,11 @@ var Relations = function() {
         last = " " + last;
         creator = first + last;
         creators.push(creator); //no birth year
-        Log.debug("kwc1 creator no birth year: " + creator);
         if (born !== ""){
         	creator = creator + " \(" + born + "\)";
-          Log.debug("kwc2 creator with birth year: " + creator);
           creators.push (creator);
         }
         creator = "NOBIRTH:" + first + last;     
-        Log.debug("kwc3 creator NOBIRTH: " + creator);
         creators.push (creator); //creator NOBIRTH
       }
       //find titles of the analysed works
@@ -247,10 +244,8 @@ var Relations = function() {
 	        }
 	      }
 			            
-      //Litteratursiden - first line to use when litteraturtolkninger is ready		
+      //Litteratursiden
 		} else if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
-		//Litteratursiden
-//		if ( String(analysisXML.dkabm::record.ac::source).match(/Litteratursiden/) && String(analysisXML.dkabm::record.dc::title).match(/Analyse af/) ) {
       	var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       	var results = FedoraPIDSearch.identifier( relation );
@@ -298,7 +293,6 @@ var Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var katalogXML = XmlUtil.fromString( xml );
-    
 
     var titles = [];
 
@@ -320,14 +314,12 @@ var Relations = function() {
     for each (child in katalogXML.dkabm::record.dc::creator) {
       var creator = String(child);
       creator = Normalize.removeSpecialCharacters(creator);
-      Log.debug("KWC3 creator birthyear before push=" + creator);
       creators.push (creator); //creator with possible birth year
 
       if (creator.match(/\(/)) { //if creator had birth year remove it, and add to creators
 				creator = creator.replace(/(.*)\(.*\)/, "$1");
-      Log.debug("KWC4 creator no birth before push=" + creator);
-        creators.push (creator); //creator without birth year  //TODO is this then necessary? 
-        creator = "NOBIRTH:" + creator;			
+        creators.push (creator); //creator without birth year 
+        creator = "NOBIRTH:" + creator;			//TODO is this pointless since the dc stream for subject does not contain "NOBIRTH" should it be added?
         creators.push (creator); //creator NOBIRTH
       }
       
@@ -335,7 +327,6 @@ var Relations = function() {
     for (var x = 0; x < titles.length; ++x ) {
      for (var y = 0; y < creators.length; ++y){
         var query = "subject = " + titles[x] + " AND subject = " + creators[y] + " AND ( label = analyse OR label = littolk )";
-        Log.debug("KWC5 hasAnalysis query part titles=" + query);
         var results = FedoraCQLSearch.search(query);
 
         //add relations based on the results
