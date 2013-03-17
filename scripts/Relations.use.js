@@ -192,8 +192,8 @@ var Relations = function() {
     var analysisXML = XmlUtil.fromString( xml );
             
     var child;
-    var personName;
-    var personNames = [];
+    var creator;
+    var creators = [];
     var analysedTitle;
     var analysedTitles = [];
     var query;
@@ -207,12 +207,17 @@ var Relations = function() {
         var last = String(child.*.(@code=='a'));
         var born = String(child.*.(@code=='c'));
         last = " " + last;
-        personName = first + last;
+        creator = first + last;
+        creators.push(creator); //no birth year
+        Log.debug("kwc1 creator no birth year: " + creator);
         if (born !== ""){
-        	personName = personName + " \(" + born + "\)";
+        	creator = creator + " \(" + born + "\)";
+          Log.debug("kwc2 creator with birth year: " + creator);
+          creators.push (creator);
         }
-        Log.info("kwc1 personName: " + personName);
-        personNames.push (personName);
+        creator = "NOBIRTH:" + first + last;     
+        Log.debug("kwc3 creator NOBIRTH: " + creator);
+        creators.push (creator); //creator NOBIRTH
       }
       //find titles of the analysed works
       for each (child in analysisXML.*.*.*.(@tag=='666').*.(@code=='t')) {
@@ -221,51 +226,20 @@ var Relations = function() {
         analysedTitles.push (analysedTitle);
       }
 		
-      for (var x = 0; x < personNames.length; ++x ) {
+      for (var x = 0; x < creators.length; ++x ) {
        for (var y = 0; y < analysedTitles.length; ++y){
-          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D " + analysedTitles[y]; 
+          query = "creator \u003D " + creators[x] + " AND " + "title \u003D " + analysedTitles[y]; 
 					var results = FedoraCQLSearch.search(query);
 					
-					//search for creator without birth year + title, if creator has birth year
-					if (String(personNames[x]).match(/\(/)){
-						var personNameNoBirth = String(personNames[x].split("\(",1));
-						personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-						query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D " + analysedTitles[y];
-						var extraResults = FedoraCQLSearch.search(query);
-						
-						//add relations based on the results
-          	for (var xx = 0; xx < extraResults.length; ++xx) {
-          		var extraResult = extraResults[xx]; 
-							Log.info("kwc43 extraResult: " + extraResult);           
-	            if (!String(extraResult).match(/work:.*/) && !String(extraResult).match(/870974:.*/) && !String(extraResult).match(/150005:.*/)) {
-	            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-  	          }
-    	      }  
-					}
 					//if no match on normal title, search for part title
           if (results.length < 1) {
-	          query = "creator \u003D " + personNames[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
+	          query = "creator \u003D " + creators[x] + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
 						results = FedoraCQLSearch.search(query);
 						
-					//search for creator without birth year + part title, if creator has birth year
-						if (String(personNames[x]).match(/\(/)){
-							var personNameNoBirth = String(personNames[x].split("\(",1));
-							personNameNoBirth = personNameNoBirth.replace(/\s+$/, '');
-							query = "creator \u003D " + personNameNoBirth + " AND " + "title \u003D PART TITLE: " + analysedTitles[y];
-							var extraResults = FedoraCQLSearch.search(query);
-
-						//add relations based on the results
-          		for (var yy = 0; yy < extraResults.length; ++yy) {
-	         			var extraResult = extraResults[yy]; 
-	            	if (!String(extraResult).match(/work:.*/) && !String(extraResult).match(/870974:.*/) && !String(extraResult).match(/150005:.*/)) {
-		            	DbcAddiRelations.isAnalysisOf(pid, extraResult);
-	 	          	}
-	   	      	}  
-						}
 						}
 						//add relations based on the results
-	          for (var ii = 0; ii < results.length; ++ii) {
-	          	var result = results[ii]; //
+	          for (var i = 0; i < results.length; ++i) {
+	          	var result = results[i]; //
 	            if (!String(result).match(/work:.*/) && !String(result).match(/870974:.*/) && !String(result).match(/150005:.*/)) {
 	            	DbcAddiRelations.isAnalysisOf(pid, result);
 	            }
@@ -324,30 +298,8 @@ var Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var katalogXML = XmlUtil.fromString( xml );
-
-//		var creator = String(katalogXML.dkabm::record.dc::creator[0]).replace(/(.*)\(.*\)/, "$1"); //remove birth year from creator (kwc note: why?)
-//		creator = Normalize.removeSpecialCharacters(creator);
-//		creator = creator.replace(/(.*) $/, "$1");
-//		var title = String(katalogXML.dkabm::record.dc::title[0]);
-//		title = Normalize.removeSpecialCharacters(title);
-//		var query = "subject = " + creator + " AND subject = " + title + " AND ( label = analyse OR label = littolk )";
-//	
-//		Log.info("query: " + query);
-//			
-//		var results = FedoraCQLSearch.search( query );
-//			
-//    for ( var i = 0; i < results.length; ++i ) {
-//      var result = results[i];
-//
-//      Log.info( "result: " + result );				
-//      if (String(result).match(/150005:.*/) || String(result).match(/870974:.*/)) {
-//        DbcAddiRelations.hasAnalysis( pid, result );
-//      }
-//    }
-		
-    //TODO maybe? add search for creator with birth year. 
     
-    //search based on part titles like fairy tales, poems and short stories
+
     var titles = [];
 
     for each (var child in katalogXML.dkabm::record.dc::title) {
@@ -357,7 +309,7 @@ var Relations = function() {
         titles.push (title);
     }
 
-
+    //search based on part titles like fairy tales, poems and short stories
     for each (var child in katalogXML.*.*.*.(@tag=='530').*.(@code=='t')) {
         var partTitle = String(child);
         partTitle = Normalize.removeSpecialCharacters(partTitle); //normalizing because the field title in dc stream in which we search is normalized
@@ -374,7 +326,9 @@ var Relations = function() {
       if (creator.match(/\(/)) { //if creator had birth year remove it, and add to creators
 				creator = creator.replace(/(.*)\(.*\)/, "$1");
       Log.debug("KWC4 creator no birth before push=" + creator);
-        creators.push (creator); //creator without birth year			
+        creators.push (creator); //creator without birth year  //TODO is this then necessary? 
+        creator = "NOBIRTH:" + creator;			
+        creators.push (creator); //creator NOBIRTH
       }
       
     }    
@@ -385,8 +339,8 @@ var Relations = function() {
         var results = FedoraCQLSearch.search(query);
 
         //add relations based on the results
-        for (var ii = 0; ii < results.length; ++ii) {
-          var result = results[ii]; //
+        for (var i = 0; i < results.length; ++i) {
+          var result = results[i]; //
           if (String(result).match(/150005:.*/) || String(result).match(/870974:.*/)) {
             DbcAddiRelations.hasAnalysis(pid, result);
           }
