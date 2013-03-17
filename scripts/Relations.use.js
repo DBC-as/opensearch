@@ -299,7 +299,6 @@ var Relations = function() {
     for each (var child in katalogXML.dkabm::record.dc::title) {
         var title = String(child);
         title = Normalize.removeSpecialCharacters(title); //normalizing because the field title in dc stream in which we search is normalized
-        Log.debug("KWC1 title before push=" + title);
         titles.push (title);
     }
 
@@ -307,7 +306,6 @@ var Relations = function() {
     for each (var child in katalogXML.*.*.*.(@tag=='530').*.(@code=='t')) {
         var partTitle = String(child);
         partTitle = Normalize.removeSpecialCharacters(partTitle); //normalizing because the field title in dc stream in which we search is normalized
-        Log.debug("KWC2 partTitle before push=" + partTitle);
         titles.push (partTitle);
     }
     var creators = [];
