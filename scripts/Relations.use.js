@@ -822,7 +822,9 @@ var Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var imageXML = XmlUtil.fromString( xml );
-
+//    if (String(imageXML.oso::object.oso::identifier).match(/\|150049/)) {
+//      
+//    }
     var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image\|(.*)/, "$2:$1");
 
     Log.info( "Identifier isImageOf: " + identifier );
@@ -856,19 +858,16 @@ var Relations = function() {
     Log.debug( "niw1: " + manifestationXML);
     //Image relation for DFI
     Log.debug( "niw2: " + String(manifestationXML.dkabm::record.ac::identifier));
-    if (String(manifestationXML.dkabm::record.ac::identifier) === "150049") {
+    if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|150049/)) {
       var imageIds = [];
       for each (var child in manifestationXML.ting::originalData.oai::metadata.dfi::Film.dfi::DocumentationCollection.dfi::MediaObject.dfi::ObjectId) {
         Log.debug( "niw3: " + String(child));
         imageIds.push(String(child));
       }    
-      
-      
-      
-      
-      
-      
-      
+
+
+
+
       for (var y = 0; y < imageIds.length; ++y){
         identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image") + imageIds[y]; 
                 //add relations based on the results
