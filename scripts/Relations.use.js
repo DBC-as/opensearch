@@ -849,10 +849,48 @@ var Relations = function() {
     Log.info ("Start hasImage" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
+    var dfi = new Namespace ("dfititle","http://dfi.dev.netmester.dk/netmester/EFG");
+    var oai = new Namespace ("oai","http://www.openarchives.org/OAI/2.0/"); 
     var manifestationXML = XmlUtil.fromString( xml );
-
-    var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image");
-
+    var identifier = "";
+    Log.debug( "niw1: " + manifestationXML);
+    //Image relation for DFI
+    Log.debug( "niw2: " + String(manifestationXML.dkabm::record.ac::identifier));
+    if (String(manifestationXML.dkabm::record.ac::identifier) === "150049") {
+      var imageIds = [];
+      for each (var child in manifestationXML.ting::originalData.oai::metadata.dfi::Film.dfi::DocumentationCollection.dfi::MediaObject.dfi::ObjectId) {
+        Log.debug( "niw3: " + String(child));
+        imageIds.push(String(child));
+      }    
+      
+      
+      
+      
+      
+      
+      
+      for (var y = 0; y < imageIds.length; ++y){
+        identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image") + imageIds[y]; 
+                //add relations based on the results
+        Log.info( "Identifier hasImage: " + identifier );
+        Log.info( "pid hasImage: " + pid );
+      
+        var results = FedoraPIDSearch.pid( identifier );
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+      
+          Log.info( "result: " + result );
+      
+          var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+      
+          if (!String(result).match(/work:.*/)) {
+            DbcAddiRelations.isImageOf( result, pid );
+          }
+        }
+      }    
+    }
+    else {
+      identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image");
     Log.info( "Identifier hasImage: " + identifier );
     Log.info( "pid hasImage: " + pid );
 
@@ -869,6 +907,7 @@ var Relations = function() {
           DbcAddiRelations.isImageOf( result, pid );
         }
       }
+    }
 
     Log.info ("End hasImage" );
 
