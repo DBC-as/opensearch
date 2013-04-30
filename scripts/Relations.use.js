@@ -825,7 +825,8 @@ var Relations = function() {
 //    if (String(imageXML.oso::object.oso::identifier).match(/\|150049/)) {
 //      
 //    }
-    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image\|(.*)/, "$2:$1");
+//    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image\|(.*)/, "$2:$1");
+    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image.*\|(.*)/, "$2:$1");
 
     Log.info( "Identifier isImageOf: " + identifier );
     Log.info( "pid isImageOf: " + pid );
@@ -853,20 +854,19 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var dfi = new Namespace ("dfititle","http://dfi.dev.netmester.dk/netmester/EFG");
     var oai = new Namespace ("oai","http://www.openarchives.org/OAI/2.0/"); 
+
     var manifestationXML = XmlUtil.fromString( xml );
     var identifier = "";
-    Log.debug( "niw1: " + manifestationXML);
+
+    Log.debug( "niw manifestationXML: " + manifestationXML);
     //Image relation for DFI
-    Log.debug( "niw2: " + String(manifestationXML.dkabm::record.ac::identifier));
+    Log.debug( "niw identifier: " + String(manifestationXML.dkabm::record.ac::identifier));
     if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|150049/)) {
       var imageIds = [];
       for each (var child in manifestationXML.ting::originalData.oai::metadata.dfi::Film.dfi::DocumentationCollection.dfi::MediaObject.dfi::ObjectId) {
-        Log.debug( "niw3: " + String(child));
+        Log.debug( "niw imageId: " + String(child));
         imageIds.push(String(child));
       }    
-
-
-
 
       for (var y = 0; y < imageIds.length; ++y){
         identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image") + imageIds[y]; 
@@ -890,10 +890,10 @@ var Relations = function() {
     }
     else {
       identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image");
-    Log.info( "Identifier hasImage: " + identifier );
-    Log.info( "pid hasImage: " + pid );
+      Log.info( "Identifier hasImage: " + identifier );
+      Log.info( "pid hasImage: " + pid );
 
-    var results = FedoraPIDSearch.pid( identifier );
+      var results = FedoraPIDSearch.pid( identifier );
 
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
