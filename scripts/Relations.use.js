@@ -852,19 +852,19 @@ var Relations = function() {
     Log.info ("Start hasImage" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var dfi = new Namespace ("dfititle","http://dfi.dev.netmester.dk/netmester/EFG");
+    var dfi = new Namespace ("dfititle","http://www.dfi.dk/netmester/EFG");
     var oai = new Namespace ("oai","http://www.openarchives.org/OAI/2.0/"); 
 
     var manifestationXML = XmlUtil.fromString( xml );
     var identifier = "";
 
-    Log.debug( "niw manifestationXML: " + manifestationXML);
+    Log.debug( "manifestationXML: " + manifestationXML);
     //Image relation for DFI
-    Log.debug( "niw identifier: " + String(manifestationXML.dkabm::record.ac::identifier));
+    Log.debug( "identifier: " + String(manifestationXML.dkabm::record.ac::identifier));
     if (String(manifestationXML.dkabm::record.ac::identifier).match(/\|150049/)) {
       var imageIds = [];
       for each (var child in manifestationXML.ting::originalData.oai::metadata.dfi::Film.dfi::DocumentationCollection.dfi::MediaObject.dfi::ObjectId) {
-        Log.debug( "niw imageId: " + String(child));
+        Log.debug( "imageId: " + String(child));
         imageIds.push(String(child));
       }    
 
