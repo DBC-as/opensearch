@@ -1,5 +1,0 @@
-========
-Datadock
-========
-
-The Datadock is...
